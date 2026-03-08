@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { authService } from "@/lib/api-client";
 
 const logo = "/images/logoPrimer 1.png";
 
@@ -12,20 +13,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     // Basic validation
     if (!email || !password) {
       setError("Email dan password harus diisi");
+      setIsLoading(false);
       return;
     }
 
-    // TODO: Implement actual authentication
-    // For now, redirect to admin dashboard
-    router.push("/admin/manajemen-akun-internal");
+    try {
+      const data: any = await authService.login({ email, password });
+
+      // Store tokens and user info
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userName", data.nama);
+
+      // Simple routing based on role
+      if (["SuperAdmin", "Marketing", "Finance", "CEO", "Komisaris"].includes(data.role)) {
+        router.push("/admin/manajemen-akun-internal");
+      } else {
+        router.push("/");
+      }
+    } catch (err: any) {
+      if (err.status === 401) {
+        setError("Email atau password salah");
+      } else if (err.status === 403) {
+        setError("Akun Anda tidak aktif atau sudah dihapus");
+      } else {
+        setError(err.message || "Gagal menghubungkan ke server");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -120,9 +147,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-[#1a8245] text-white py-3 rounded-lg font-semibold hover:bg-[#22ad5c] transition-colors"
+              disabled={isLoading}
+              className="w-full bg-[#1a8245] text-white py-3 rounded-lg font-semibold hover:bg-[#22ad5c] disabled:opacity-50 transition-colors"
             >
-              Masuk
+              {isLoading ? "Memproses..." : "Masuk"}
             </button>
           </form>
 
