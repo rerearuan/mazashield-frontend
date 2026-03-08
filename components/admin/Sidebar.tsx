@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { authService } from "@/lib/api-client";
 
 const logo = "/images/logoPrimer 1.png";
 
@@ -13,6 +14,7 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
+  { href: "/admin/profile", label: "Profil Saya" },
   { href: "/admin/manajemen-akun-internal", label: "Manajemen Akun Internal & SuperAdmin" },
   { href: "/admin/manajemen-akun-external", label: "Manajemen Akun External" },
   { href: "/admin/katalog-mazdafarm", label: "Katalog Mazdafarm" },
@@ -29,6 +31,22 @@ const sidebarItems: SidebarItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (refreshToken) {
+        try {
+          await authService.logout(refreshToken);
+        } catch (e) {
+          console.error("Logout error", e);
+        }
+      }
+      localStorage.clear();
+      router.push("/login");
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-white shadow-lg border-r border-gray-200 overflow-y-auto">
@@ -53,11 +71,10 @@ export default function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#1a8245] text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
+                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? "bg-[#1a8245] text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -66,7 +83,13 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 space-y-2">
+        <button
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+        >
+          Logout
+        </button>
         <Link
           href="/"
           className="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
