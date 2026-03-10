@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { authService } from "@/lib/api-client";
 
+import Link from "next/link";
+
 const logo = "/images/logoPrimer 1.png";
 
 export default function LoginPage() {
@@ -140,9 +142,9 @@ export default function LoginPage() {
                 />
                 <span className="ml-2 text-sm text-gray-600">Ingat saya</span>
               </label>
-              <a href="#" className="text-sm text-[#1a8245] hover:underline">
+              <Link href="/forgot-password" className="text-sm text-[#1a8245] hover:underline">
                 Lupa password?
-              </a>
+              </Link>
             </div>
 
             <button

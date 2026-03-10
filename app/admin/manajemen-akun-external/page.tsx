@@ -261,21 +261,25 @@ export default function ManajemenAkunExternalPage() {
                         >
                           Detail
                         </button>
-                        <button
-                          onClick={() => {
-                            setEditingAccount(account);
-                            setShowEditModal(true);
-                          }}
-                          className="text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(account)}
-                          className={`${account.is_active ? 'text-red-600 hover:text-red-700' : 'text-green-600 hover:text-green-700'} font-medium`}
-                        >
-                          {account.is_active ? "Hapus" : "Aktifkan"}
-                        </button>
+                        {account.is_active && (
+                          <button
+                            onClick={() => {
+                              setEditingAccount(account);
+                              setShowEditModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {account.is_active && (
+                          <button
+                            onClick={() => handleToggleStatus(account)}
+                            className="text-red-600 hover:text-red-700 font-medium"
+                          >
+                            Hapus
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
