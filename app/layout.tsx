@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Poppins } from "next/font/google";
 import "./globals.css";
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${poppins.variable} antialiased`}
       >
+        <Toaster position="top-right" />
         {children}
       </body>
     </html>

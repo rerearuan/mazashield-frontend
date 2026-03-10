@@ -1,97 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import PageHeader from "@/components/common/PageHeader";
 import ProductCard from "@/components/common/ProductCard";
 import Pagination from "@/components/common/Pagination";
 import CTASection from "@/components/common/CTASection";
+import { catalogService } from "@/lib/api-client";
 
-const images = {
-  limosin1: "http://localhost:3845/assets/f1da604f0ce126df7354f735f18d34f6a960011f.png",
-  limosin2: "http://localhost:3845/assets/91d18f320952c2ad9cd5222b5bab33950390dfd0.png",
-  simental: "http://localhost:3845/assets/30f5a04bd9cda5b379ddf5ca40c834fa22fcf7e1.png",
-  limosin3: "http://localhost:3845/assets/e3ba08c7545d74fe0f87935f2e096c80b26f4df3.png",
-  limosin4: "http://localhost:3845/assets/4a8bbd9166951cbd56ff214c13a6bfbd9eea84dd.png",
-  po: "http://localhost:3845/assets/2b62c75edef217bc48013426ba4e0c080c1974ed.png",
-};
-
-const cattle = [
-  {
-    image: images.limosin1,
-    title: "Sapi Limosin Jantan",
-    description: "Sapi limosin jantan premium dengan pertumbuhan optimal. Cocok untuk penggemukan dan dijual kembali.",
-    weight: "400-450 kg",
-    age: "2-3 tahun",
-    stock: "15 ekor",
-    price: "Rp 28 Jt",
-  },
-  {
-    image: images.simental,
-    title: "Sapi Simental Betina",
-    description: "Sapi simental betina berkualitas tinggi. Produktif untuk peternakan dan pengembangbiakan.",
-    weight: "350-400 kg",
-    age: "2-4 tahun",
-    stock: "12 ekor",
-    price: "Rp 32 Jt",
-  },
-  {
-    image: images.limosin2,
-    title: "Sapi Brahman Jantan",
-    description: "Sapi brahman jantan dengan daya tahan tubuh yang kuat. Cocok untuk iklim tropis Indonesia.",
-    weight: "380-430 kg",
-    age: "2-3 tahun",
-    stock: "18 ekor",
-    price: "Rp 25 Jt",
-  },
-  {
-    image: images.po,
-    title: "Sapi PO (Peranakan Ongole)",
-    description: "Sapi PO hasil persilangan berkualitas. Populer untuk peternakan rakyat dengan harga terjangkau.",
-    weight: "320-380 kg",
-    age: "2-3 tahun",
-    stock: "30 ekor",
-    price: "Rp 20 Jt",
-  },
-  {
-    image: images.limosin3,
-    title: "Sapi Bali Lokal",
-    description: "Sapi bali asli Indonesia dengan adaptasi terbaik untuk peternakan lokal. Kualitas daging sangat baik.",
-    weight: "300-350 kg",
-    age: "2-3 tahun",
-    stock: "25 ekor",
-    price: "Rp 18 Jt",
-  },
-  {
-    image: images.limosin4,
-    title: "Sapi Ongole Jantan",
-    description: "Sapi ongole dengan pertumbuhan cepat dan kualitas daging yang sangat baik. Cocok untuk qurban.",
-    weight: "420-480 kg",
-    age: "3-4 tahun",
-    stock: "10 ekor",
-    price: "Rp 30 Jt",
-  },
-];
-
-const features = [
-  {
-    title: "Kualitas Terjamin",
-    description: "Semua sapi melalui proses seleksi ketat dan pemeriksaan kesehatan berkala untuk memastikan kualitas terbaik.",
-  },
-  {
-    title: "Harga Kompetitif",
-    description: "Dapatkan harga terbaik dengan kualitas premium. Tersedia juga paket khusus untuk pembelian dalam jumlah besar.",
-  },
-  {
-    title: "Pengiriman Aman",
-    description: "Kami menjamin pengiriman sapi dengan aman dan nyaman menggunakan armada khusus ternak yang berpengalaman.",
-  },
-];
+interface Cattle {
+  id: number;
+  id_ternak: string;
+  nama: string;
+  jenis: string;
+  berat: string;
+  tanggal_lahir: string;
+  umur: number;
+  harga: string;
+  deskripsi: string;
+  foto: string | null;
+  status_ternak: string;
+}
 
 export default function MazdafarmPage() {
+  const [cattle, setCattle] = useState<Cattle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  useEffect(() => {
+    fetchCattle();
+  }, []);
+
+  const fetchCattle = async () => {
+    try {
+      setLoading(true);
+      const data: any = await catalogService.getTernakInternal({ status_ternak: "Tersedia" });
+      setCattle(Array.isArray(data) ? data : data.results || []);
+    } catch (error) {
+      console.error("Gagal mengambil data ternak:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const totalPages = Math.ceil(cattle.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentCattle = cattle.slice(startIndex, startIndex + itemsPerPage);
@@ -100,10 +53,25 @@ export default function MazdafarmPage() {
     window.open(`https://wa.me/6282230549634?text=Halo, saya tertarik dengan ${cattleTitle}`, "_blank");
   };
 
+  const features = [
+    {
+      title: "Kualitas Terjamin",
+      description: "Semua sapi melalui proses seleksi ketat dan pemeriksaan kesehatan berkala untuk memastikan kualitas terbaik.",
+    },
+    {
+      title: "Harga Kompetitif",
+      description: "Dapatkan harga terbaik dengan kualitas premium. Tersedia juga paket khusus untuk pembelian dalam jumlah besar.",
+    },
+    {
+      title: "Pengiriman Aman",
+      description: "Kami menjamin pengiriman sapi dengan aman dan nyaman menggunakan armada khusus ternak yang berpengalaman.",
+    },
+  ];
+
   return (
     <div className="bg-white min-h-screen">
       <Navbar activePage="mazdafarm" />
-      
+
       <PageHeader
         title="Mazdafarm"
         description="Peternakan sapi modern dengan kualitas terjamin. Kami menyediakan berbagai jenis sapi berkualitas tinggi untuk kebutuhan investasi, penggemukan, dan qurban."
@@ -120,29 +88,43 @@ export default function MazdafarmPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {currentCattle.map((item, idx) => (
-              <ProductCard
-                key={idx}
-                image={item.image}
-                title={item.title}
-                description={item.description}
-                weight={item.weight}
-                age={item.age}
-                stock={item.stock}
-                price={item.price}
-                buttonColor="#1a8245"
-                onButtonClick={() => handleOrder(item.title)}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a8245]"></div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {currentCattle.length === 0 ? (
+                  <div className="col-span-full py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <p className="text-gray-500 font-medium">Belum ada sapi yang tersedia saat ini.</p>
+                  </div>
+                ) : (
+                  currentCattle.map((item) => (
+                    <ProductCard
+                      key={item.id}
+                      image={item.foto ? (item.foto.startsWith('http') ? item.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${item.foto}`) : "/images/homepages/Sapi.png"}
+                      title={item.nama}
+                      description={item.deskripsi || `${item.jenis} berkualitas tinggi.`}
+                      weight={`${Number(item.berat).toLocaleString()} kg`}
+                      age={`${item.umur} Bulan`}
+                      stock="Tersedia"
+                      price={`Rp ${Number(item.harga).toLocaleString("id-ID")}`}
+                      buttonColor="#1a8245"
+                      onButtonClick={() => handleOrder(item.nama)}
+                    />
+                  ))
+                )}
+              </div>
 
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
+            </>
           )}
         </div>
       </section>
