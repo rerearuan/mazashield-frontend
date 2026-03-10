@@ -73,3 +73,11 @@ export const userService = {
         });
     },
 };
+
+export const catalogService = {
+    // MAZDAFARM - Internal
+    getTernakInternal: (params?: any) => apiFetch("/sales/mazdafarm", { method: "GET", params }),
+    createTernak: (formData: FormData) => apiFetch("/sales/mazdafarm", { method: "POST", body: formData }),
+    updateTernak: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdafarm/${id}`, { method: "PUT", body: formData }),
+    deleteTernak: (id: number | string) => apiFetch(`/sales/mazdafarm/${id}`, { method: "DELETE" }),
+};
