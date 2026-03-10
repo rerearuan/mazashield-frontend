@@ -401,37 +401,62 @@ export default function ManajemenAkunExternalPage() {
       )}
       {/* Edit Modal */}
       {showEditModal && editingAccount && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Akun External</h2>
-            <form onSubmit={handleEditAccount} className="space-y-4">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowEditModal(false)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-[#1a8245]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit Akun External
+                </h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <form onSubmit={handleEditAccount} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nama</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
                 <input
                   type="text"
                   required
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg"
                   value={editingAccount.nama}
                   onChange={(e) => setEditingAccount({ ...editingAccount, nama: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-[#1a8245] outline-none transition-all"
+                  placeholder="Masukkan nama lengkap"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nomor Telepon</label>
                 <input
                   type="text"
                   required
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg"
                   value={editingAccount.nomor_telepon}
                   onChange={(e) => setEditingAccount({ ...editingAccount, nomor_telepon: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-[#1a8245] outline-none transition-all"
+                  placeholder="08xxxxxxxxxx"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
                 <select
                   disabled={userRole !== "SuperAdmin"}
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg disabled:bg-gray-100"
                   value={editingAccount.role}
                   onChange={(e) => setEditingAccount({ ...editingAccount, role: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-[#1a8245] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   <option value="Customer">Customer</option>
                   <option value="Investor">Investor</option>
@@ -441,15 +466,15 @@ export default function ManajemenAkunExternalPage() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#1a8245] text-white py-2 rounded-lg font-semibold"
+                  className="flex-1 px-4 py-3 bg-[#1a8245] text-white rounded-lg font-semibold hover:bg-[#22ad5c] transition-all shadow-md hover:shadow-lg"
                 >
-                  Simpan
+                  Simpan Perubahan
                 </button>
               </div>
             </form>
@@ -459,47 +484,103 @@ export default function ManajemenAkunExternalPage() {
 
       {/* Detail Modal */}
       {showDetailModal && editingAccount && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Detail Akun</h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-500">Nama</span>
-                <span className="text-sm font-medium text-gray-900 col-span-2">{editingAccount.nama}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-500">Email</span>
-                <span className="text-sm font-medium text-gray-900 col-span-2">{editingAccount.email}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-500">Telepon</span>
-                <span className="text-sm font-medium text-gray-900 col-span-2">{editingAccount.nomor_telepon}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-500">Role</span>
-                <span className="text-sm font-medium text-gray-900 col-span-2">{editingAccount.role}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-500">Status</span>
-                <span className="col-span-2">
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${editingAccount.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {editingAccount.is_active ? 'Aktif' : 'Nonaktif'}
-                  </span>
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 py-2 mb-4">
-                <span className="text-sm text-gray-500">Terdaftar</span>
-                <span className="text-sm font-medium text-gray-900 col-span-2">
-                  {new Date(editingAccount.created_at).toLocaleString("id-ID")}
-                </span>
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowDetailModal(false)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-[#1a8245]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Detail Akun External
+                </h2>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
             </div>
-            <button
-              onClick={() => setShowDetailModal(false)}
-              className="w-full mt-6 bg-[#1a8245] text-white py-2 rounded-lg font-semibold"
-            >
-              Tutup
-            </button>
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                <input
+                  type="text"
+                  value={editingAccount.nama}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={editingAccount.email}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nomor Telepon</label>
+                <input
+                  type="text"
+                  value={editingAccount.nomor_telepon || "-"}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
+                <input
+                  type="text"
+                  value={editingAccount.role}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                <input
+                  type="text"
+                  value={editingAccount.is_active ? "Aktif" : "Nonaktif"}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Tanggal Terdaftar</label>
+                <input
+                  type="text"
+                  value={new Date(editingAccount.created_at).toLocaleString("id-ID", {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 cursor-not-allowed"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="flex-1 px-4 py-3 bg-[#1a8245] text-white rounded-lg font-semibold hover:bg-[#22ad5c] transition-all shadow-md hover:shadow-lg"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
