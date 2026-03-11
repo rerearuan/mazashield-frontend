@@ -37,7 +37,10 @@ export default function ManajemenAkunInternalPage() {
   const fetchAccounts = async () => {
     setIsLoading(true);
     try {
-      const data: any = await userService.getUsers();
+      const response: any = await userService.getUsers();
+      // Handle potential paginated response where data is in response.results
+      const data = Array.isArray(response) ? response : (response.results || []);
+
       // Filter for Internal Roles Only
       const internalRoles = ["SuperAdmin", "Marketing", "Finance", "CEO", "Komisaris"];
       const internalData = data.filter((u: any) => internalRoles.includes(u.role));
@@ -416,11 +419,11 @@ export default function ManajemenAkunInternalPage() {
       )}
       {/* Edit Modal */}
       {showEditModal && editingAccount && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowEditModal(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
@@ -515,11 +518,11 @@ export default function ManajemenAkunInternalPage() {
       )}
       {/* Detail Modal */}
       {showDetailModal && editingAccount && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowDetailModal(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
