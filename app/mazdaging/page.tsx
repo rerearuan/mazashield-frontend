@@ -76,7 +76,6 @@ export default function MazdagingPage() {
   return (
     <div className="bg-white min-h-screen">
       <Navbar activePage="mazdaging" />
-
       <PageHeader
         title="Mazdaging"
         description="Menyediakan daging sapi berkualitas premium langsung dari peternakan kami. Segar, higienis, dan memenuhi standar kualitas internasional."

@@ -86,4 +86,9 @@ export const catalogService = {
     createDaging: (formData: FormData) => apiFetch("/sales/mazdaging", { method: "POST", body: formData }),
     updateDaging: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdaging/${id}`, { method: "PUT", body: formData }),
     deleteDaging: (id: number | string) => apiFetch(`/sales/mazdaging/${id}`, { method: "DELETE" }),
+
+    // PUBLIC
+    getTernakPublic: (params?: any) => apiFetch("/mazdafarm", { method: "GET", params }),
+    getDagingPublic: (params?: any) => apiFetch("/mazdaging", { method: "GET", params }),
+
 };
