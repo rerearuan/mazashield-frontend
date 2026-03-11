@@ -80,4 +80,10 @@ export const catalogService = {
     createTernak: (formData: FormData) => apiFetch("/sales/mazdafarm", { method: "POST", body: formData }),
     updateTernak: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdafarm/${id}`, { method: "PUT", body: formData }),
     deleteTernak: (id: number | string) => apiFetch(`/sales/mazdafarm/${id}`, { method: "DELETE" }),
+
+    // MAZDAGING - Internal
+    getDagingInternal: (params?: any) => apiFetch("/sales/mazdaging", { method: "GET", params }),
+    createDaging: (formData: FormData) => apiFetch("/sales/mazdaging", { method: "POST", body: formData }),
+    updateDaging: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdaging/${id}`, { method: "PUT", body: formData }),
+    deleteDaging: (id: number | string) => apiFetch(`/sales/mazdaging/${id}`, { method: "DELETE" }),
 };
