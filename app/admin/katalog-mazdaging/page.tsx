@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { catalogService } from "@/lib/api-client";
 import { toast, Toaster } from "react-hot-toast";
+import { Button } from "@/components/button";
 
 interface Daging {
   id: number;
@@ -170,15 +171,17 @@ export default function KatalogMazdagingPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Katalog Mazdaging</h1>
           <p className="text-gray-600">Kelola katalog produk daging sapi</p>
         </div>
-        <button
+        <Button
           onClick={() => {
             resetForm();
             setShowModal(true);
           }}
-          className="bg-[#1a8245] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#22ad5c] transition-all shadow-lg shadow-green-200 flex items-center gap-2"
+          variant="primary"
+          size="md"
+          leftIcon={<span>+</span>}
         >
-          <span>+ Tambah Daging</span>
-        </button>
+          Tambah Daging
+        </Button>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
@@ -229,7 +232,7 @@ export default function KatalogMazdagingPage() {
             </select>
           </div>
           <div className="flex items-end">
-            <button
+            <Button
               onClick={() => {
                 setSearchTerm("");
                 setFilterStatus("all");
@@ -237,10 +240,12 @@ export default function KatalogMazdagingPage() {
                 setMaxPrice("");
                 setCurrentPage(1);
               }}
-              className="w-full py-2 bg-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-200 transition-all"
+              variant="secondary"
+              size="sm"
+              fullWidth
             >
               Reset
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -308,18 +313,21 @@ export default function KatalogMazdagingPage() {
                     </p>
 
                     <div className="flex gap-2">
-                      <button
+                      <Button
                         onClick={() => handleEdit(item)}
-                        className="flex-1 px-4 py-2 bg-[#1a8245] text-white rounded-lg text-sm font-medium hover:bg-[#22ad5c] transition-colors"
+                        variant="primary"
+                        size="sm"
+                        className="flex-1"
                       >
                         Edit
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleDelete(item.id)}
-                        className="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+                        variant="danger"
+                        size="sm"
                       >
                         Hapus
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -451,19 +459,23 @@ export default function KatalogMazdagingPage() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-8 py-4 bg-gray-50 text-gray-500 rounded-2xl font-bold hover:bg-gray-100 transition-all border border-gray-100"
+                  variant="secondary"
+                  size="lg"
+                  className="flex-1"
                 >
                   Batal
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  className="flex-[2] px-8 py-4 bg-[#1a8245] text-white rounded-2xl font-bold hover:bg-[#22ad5c] transition-all shadow-xl shadow-green-100"
+                  variant="primary"
+                  size="lg"
+                  className="flex-[2]"
                 >
                   {isEditing ? "Simpan Perubahan" : "Tambah ke Katalog"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
