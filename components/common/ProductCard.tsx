@@ -24,64 +24,65 @@ export default function ProductCard({
   weight,
   age,
   buttonText = "Pesan Sekarang",
-  buttonColor = "#25d366",
+  buttonColor = "#1a8245",
   onButtonClick,
 }: ProductCardProps) {
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-[12px] overflow-hidden">
-      <div className="bg-[#f3f4f6] h-[240px] relative">
-        <Image src={image} alt={title} fill className="object-cover" />
+    <div className="bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
+      <div className="bg-gray-50 h-[260px] relative overflow-hidden">
+        <Image src={image} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
       </div>
-      <div className="p-6 space-y-4">
+      <div className="p-8 space-y-6">
         <div>
-          <h3 className="text-black font-semibold text-lg mb-2">{title}</h3>
-          <p className="text-[#4a5565] text-sm leading-5">{description}</p>
+          <h3 className="text-gray-900 font-black text-xl mb-2 tracking-tight">{title}</h3>
+          <p className="text-gray-500 text-sm leading-relaxed font-medium">{description}</p>
         </div>
-        
+
         {(weight || age) && (
-          <div className="bg-[#f9fafb] p-3 rounded-lg grid grid-cols-2 gap-3">
+          <div className="bg-gray-50/80 p-4 rounded-2xl grid grid-cols-2 gap-4 border border-gray-100">
             {weight && (
               <div>
-                <p className="text-[#6a7282] text-xs mb-1">Berat</p>
-                <p className="text-black font-semibold text-sm">{weight}</p>
+                <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Berat</p>
+                <p className="text-gray-900 font-black text-sm">{weight}</p>
               </div>
             )}
             {age && (
               <div>
-                <p className="text-[#6a7282] text-xs mb-1">Usia</p>
-                <p className="text-black font-semibold text-sm">{age}</p>
+                <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Usia</p>
+                <p className="text-gray-900 font-black text-sm">{age}</p>
               </div>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-2">
           {stock && (
             <div>
-              <p className="text-[#6a7282] text-xs mb-1">Stok Tersedia</p>
-              <p className="text-[#1a8245] font-semibold text-sm">{stock}</p>
+              <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Status</p>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                <p className="text-[#1a8245] font-black uppercase tracking-widest text-[10px]">{stock}</p>
+              </div>
             </div>
           )}
           {price && (
             <div className="text-right">
-              <p className="text-[#6a7282] text-xs mb-1">Harga{price.includes("kg") ? " / kg" : ""}</p>
-              <p className="text-[#008236] font-bold text-lg">{price}</p>
+              <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Harga{price.includes("kg") ? " / kg" : ""}</p>
+              <p className="text-[#1a8245] font-black text-xl tracking-tight">{price}</p>
             </div>
           )}
         </div>
 
         <button
           onClick={onButtonClick}
-          className="w-full py-2.5 rounded-lg font-medium text-sm text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+          className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-white flex items-center justify-center gap-3 hover:opacity-90 shadow-lg shadow-green-900/10 transition-all active:scale-95"
           style={{ backgroundColor: buttonColor }}
         >
           {buttonText}
-          <Image
-            src="http://localhost:3845/assets/0159145aa2021d567703c5ee86269a8d94ac8a9a.svg"
-            alt=""
-            width={16}
-            height={16}
-          />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
         </button>
       </div>
     </div>

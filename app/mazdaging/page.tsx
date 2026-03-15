@@ -7,7 +7,7 @@ import PageHeader from "@/components/common/PageHeader";
 import ProductCard from "@/components/common/ProductCard";
 import Pagination from "@/components/common/Pagination";
 import CTASection from "@/components/common/CTASection";
-import { catalogService } from "@/lib/api-client";
+import { catalogService } from "@/services/catalog.service";
 
 interface Daging {
   id: number;

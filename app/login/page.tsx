@@ -1,168 +1,123 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import Image from "next/image";
-import { authService } from "@/lib/api-client";
-
 import Link from "next/link";
+import { useAuth } from "@/features/auth/useAuth";
+import { Button } from "@/components/button";
 
 const logo = "/images/logoPrimer 1.png";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { login, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    // Basic validation
-    if (!email || !password) {
-      setError("Email dan password harus diisi");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const data: any = await authService.login({ email, password });
-
-      // Store tokens and user info
-      localStorage.setItem("accessToken", data.access);
-      localStorage.setItem("refreshToken", data.refresh);
-      localStorage.setItem("userRole", data.role);
-      localStorage.setItem("userName", data.nama);
-
-      // Simple routing based on role
-      if (["SuperAdmin", "Marketing", "Finance", "CEO", "Komisaris"].includes(data.role)) {
-        router.push("/admin/manajemen-akun-internal");
-      } else {
-        router.push("/");
-      }
-    } catch (err: any) {
-      if (err.status === 401) {
-        setError("Email atau password salah");
-      } else if (err.status === 403) {
-        setError("Akun Anda tidak aktif atau sudah dihapus");
-      } else {
-        setError(err.message || "Gagal menghubungkan ke server");
-      }
-    } finally {
-      setIsLoading(false);
+      await login({ email, password });
+    } catch (err) {
+      // Error handled in hook/toast
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a8245] to-[#22ad5c] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Logo and Title */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 relative overflow-hidden font-primary">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#1a8245]/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#22ad5c]/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
+
+      <div className="w-full max-w-[480px] relative z-10">
+        <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-10 md:p-14">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <div className="inline-flex p-4 rounded-3xl bg-gray-50 mb-6 group hover:scale-105 transition-transform duration-300">
               <Image
                 src={logo}
-                alt="PT Mazashi Semuda Farm Logo"
-                width={80}
-                height={80}
+                alt="Logo"
+                width={64}
+                height={64}
                 className="object-contain"
                 unoptimized
               />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Login</h1>
-            <p className="text-gray-600">Masuk ke Admin Panel</p>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tighter mb-3">
+              Selamat <span className="text-[#1a8245]">Datang</span>
+            </h1>
+            <p className="text-gray-500 font-medium">Masuk untuk mengakses dasbor Mazashi Anda.</p>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          {/* Login Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                Alamat Email
               </label>
               <input
-                id="email"
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none transition"
-                placeholder="Masukkan email Anda"
-                required
+                placeholder="nama@perusahaan.com"
+                className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300"
               />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  Kata Sandi
+                </label>
+                <Link href="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] hover:opacity-70 transition-opacity">
+                  Lupa Sandi?
+                </Link>
+              </div>
               <div className="relative">
                 <input
-                  id="password"
                   type={showPassword ? "text" : "password"}
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none transition pr-12"
-                  placeholder="Masukkan password Anda"
-                  required
+                  placeholder="••••••••"
+                  className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1a8245] transition-colors"
                 >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
+                  {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-[#1a8245] border-gray-300 rounded focus:ring-[#1a8245]"
-                />
-                <span className="ml-2 text-sm text-gray-600">Ingat saya</span>
-              </label>
-              <Link href="/forgot-password" className="text-sm text-[#1a8245] hover:underline">
-                Lupa password?
-              </Link>
-            </div>
-
-            <button
+            <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-[#1a8245] text-white py-3 rounded-lg font-semibold hover:bg-[#22ad5c] disabled:opacity-50 transition-colors"
+              variant="primary"
+              size="lg"
+              fullWidth
+              isLoading={loading}
+              className="rounded-[22px] py-6 font-black uppercase tracking-widest text-xs shadow-xl shadow-green-100 mt-4"
             >
-              {isLoading ? "Memproses..." : "Masuk"}
-            </button>
+              Masuk Sekarang
+            </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Footer */}
+          <div className="mt-10 text-center space-y-4">
+            <p className="text-sm text-gray-500 font-medium">
               Belum punya akun?{" "}
-              <a href="#" className="text-[#1a8245] hover:underline font-medium">
-                Hubungi Administrator
-              </a>
+              <Link href="/register" className="text-[#1a8245] font-black hover:opacity-70 transition-opacity">
+                Daftar Sekarang
+              </Link>
             </p>
+            <div className="pt-6 border-t border-gray-100">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                &copy; 2024 PT Mazashi Semuda Farm
+              </p>
+            </div>
           </div>
         </div>
       </div>

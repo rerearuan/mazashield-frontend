@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import PageHeader from "@/components/common/PageHeader";
 import CTASection from "@/components/common/CTASection";
-
-const faqIcon = "http://localhost:3845/assets/c7ad65c9bca12f064c993db743c46d60420c007c.svg";
-const chevronIcon = "http://localhost:3845/assets/029838f9e53b4a42fca1515ab9136225d94b426c.svg";
 
 const faqs = [
   { category: "Umum", question: "Apa itu Mazashi Semuda Farm?", answer: "PT Mazashi Semuda Farm adalah perusahaan yang bergerak di bidang peternakan, pengelolaan daging, dan layanan qurban. Kami menghubungkan peternak, investor, dan konsumen melalui teknologi modern." },
@@ -28,129 +24,74 @@ const faqs = [
   { category: "Layanan", question: "Apakah ada layanan konsultasi gratis?", answer: "Ya, kami menyediakan layanan konsultasi gratis untuk membantu Anda memilih produk atau paket investasi yang sesuai dengan kebutuhan." },
 ];
 
-const popularFaqs = [
-  {
-    question: "Bagaimana cara memulai investasi?",
-    answer: "Pilih paket investasi yang sesuai, lakukan pendaftaran, dan transfer dana investasi. Tim kami akan membantu proses selanjutnya.",
-  },
-  {
-    question: "Apakah daging dijamin halal?",
-    answer: "Ya, semua produk kami memiliki sertifikat halal dari MUI dan diproses sesuai standar syariah.",
-  },
-  {
-    question: "Berapa lama proses pengiriman?",
-    answer: "Untuk Jabodetabek 1-2 hari kerja, untuk luar kota 3-5 hari kerja tergantung lokasi tujuan.",
-  },
-  {
-    question: "Apakah bisa berkunjung ke peternakan?",
-    answer: "Tentu! Kami menerima kunjungan dengan jadwal yang sudah ditentukan. Silakan hubungi kami untuk reservasi.",
-  },
-];
-
 const categories = ["Semua", "Umum", "Produk", "Sapi", "Investasi", "Pembayaran", "Qurban", "Layanan"];
 
 export default function FAQPage() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const filteredFaqs = selectedCategory === "Semua" 
-    ? faqs 
+  const filteredFaqs = selectedCategory === "Semua"
+    ? faqs
     : faqs.filter(faq => faq.category === selectedCategory);
 
-  const stats = [
-    { value: "15", label: "Pertanyaan Terjawab" },
-    { value: "7", label: "Kategori Topik" },
-    { value: "24/7", label: "Customer Support" },
-  ];
-
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen font-primary">
       <Navbar activePage="faq" />
-      
+
       <PageHeader
         title="FAQ"
         description="Temukan jawaban untuk pertanyaan yang sering diajukan seputar produk, layanan, dan investasi di Mazashi Semuda Farm."
-        icon={faqIcon}
       />
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="bg-white border border-[#e5e7eb] rounded-xl p-8 text-center">
-                <p className="text-[#1a8245] font-bold text-5xl mb-2">{stat.value}</p>
-                <p className="text-[#4a5565] text-base">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+      <section className="py-24 px-6 lg:px-8 max-w-5xl mx-auto">
+        <div className="flex flex-wrap gap-3 mb-16 justify-center">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${selectedCategory === category
+                  ? "bg-[#1a8245] text-white shadow-xl shadow-green-900/20"
+                  : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
-          <div className="mb-8">
-            <h3 className="text-black font-semibold text-xl mb-4">Filter Berdasarkan Kategori</h3>
-            <div className="flex flex-wrap gap-3">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-5 py-2.5 rounded-[50px] font-medium text-sm transition-colors ${
-                    selectedCategory === category
-                      ? "bg-[#1a8245] text-white"
-                      : "bg-[#f3f4f6] text-[#364153] hover:bg-gray-200"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-4 mb-16">
-            {filteredFaqs.map((faq, idx) => (
-              <div key={idx} className="bg-white border border-[#e5e7eb] rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-6 text-left"
-                >
-                  <div className="flex-1">
-                    <span className="bg-[#e8f5e9] text-[#1a8245] text-xs font-medium px-3 py-1 rounded mb-2 inline-block">
-                      {faq.category}
-                    </span>
-                    <h4 className="text-black font-semibold text-lg">{faq.question}</h4>
-                  </div>
-                  <div className={`transform transition-transform ${openIndex === idx ? "rotate-180" : ""}`}>
-                    <Image src={chevronIcon} alt="" width={24} height={24} />
-                  </div>
-                </button>
-                {openIndex === idx && (
-                  <div className="px-6 pb-6">
-                    <p className="text-[#4a5565] text-sm leading-5">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-12">
-            <h3 className="text-[#008236] font-semibold text-3xl lg:text-[32px] mb-8">
-              Pertanyaan Populer
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {popularFaqs.map((faq, idx) => (
-                <div key={idx} className="bg-white border border-[#e5e7eb] rounded-xl p-6">
-                  <h4 className="text-black font-semibold text-lg mb-3">{faq.question}</h4>
-                  <p className="text-[#4a5565] text-sm leading-5 mb-4">{faq.answer}</p>
-                  <button className="text-[#1a8245] font-medium text-sm hover:underline">
-                    Baca Selengkapnya →
-                  </button>
+        <div className="space-y-4">
+          {filteredFaqs.map((faq, idx) => (
+            <div key={idx} className="bg-white border border-gray-100 rounded-[32px] overflow-hidden transition-all duration-300">
+              <button
+                onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                className="w-full flex items-center justify-between p-8 text-left"
+              >
+                <div className="flex-1 pr-6">
+                  <span className="text-[#1a8245] font-black text-[9px] uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full mb-3 inline-block">
+                    {faq.category}
+                  </span>
+                  <h4 className="text-gray-900 font-black text-xl tracking-tight">{faq.question}</h4>
                 </div>
-              ))}
+                <div className={`w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center transition-all duration-300 ${openIndex === idx ? "bg-[#1a8245] text-white rotate-180" : "text-gray-400 group-hover:bg-gray-100"}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </button>
+              <div
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === idx ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
+              >
+                <div className="px-8 pb-8 pt-0">
+                  <div className="w-full h-px bg-gray-50 mb-8" />
+                  <p className="text-gray-500 font-medium leading-relaxed">{faq.answer}</p>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
       <CTASection
-        title="Tidak Menemukan Jawaban yang Anda Cari?"
-        description="Tim customer service kami siap membantu menjawab pertanyaan Anda kapan saja."
+        title="Masih Punya Pertanyaan?"
+        description="Tim customer service kami siap membantu menjawab pertanyaan Anda melalui WhatsApp kapan saja."
         buttonText="Hubungi Customer Service"
         onButtonClick={() => window.open("https://wa.me/6282230549634", "_blank")}
       />

@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { authService } from "@/lib/api-client";
+import { useAuth } from "@/features/auth/useAuth";
+import { Button } from "@/components/button";
 
 const logo = "/images/logoPrimer 1.png";
 
 export default function RegisterPage() {
-    const router = useRouter();
+    const { register, loading } = useAuth();
     const [formData, setFormData] = useState({
         nama: "",
         email: "",
@@ -17,141 +17,138 @@ export default function RegisterPage() {
         password: "",
         confirmPassword: "",
     });
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
-
         if (formData.password !== formData.confirmPassword) {
-            setError("Password dan konfirmasi password tidak cocok");
+            const { toast } = await import("react-hot-toast");
+            toast.error("Konfirmasi password tidak cocok");
             return;
         }
 
-        setIsLoading(true);
         try {
-            await authService.register({
+            await register({
                 nama: formData.nama,
                 email: formData.email,
                 nomor_telepon: formData.nomor_telepon,
                 password: formData.password,
             });
-            setIsSuccess(true);
-            setTimeout(() => router.push("/login"), 3000);
-        } catch (err: any) {
-            setError(err.message || "Gagal melakukan registrasi");
-        } finally {
-            setIsLoading(false);
+        } catch (err) {
+            // Handled in hook
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-[#1a8245] to-[#22ad5c] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl">
-                <div className="text-center">
-                    <Image
-                        src={logo}
-                        alt="Logo"
-                        width={80}
-                        height={80}
-                        className="mx-auto"
-                        unoptimized
-                    />
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Buat Akun Baru</h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Daftar untuk mulai berinvestasi dan memesan di Mazashi
-                    </p>
-                </div>
+    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
+    const labelClasses = "text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block";
 
-                {isSuccess ? (
-                    <div className="bg-green-50 border border-green-200 p-4 rounded-lg text-center">
-                        <p className="text-green-800 font-semibold text-lg">Registrasi Berhasil!</p>
-                        <p className="text-green-700 text-sm mt-1">Anda akan dialihkan ke halaman login sejenak...</p>
+    return (
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 relative overflow-hidden font-primary">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-[-10%] right-[-10%] w-[45%] h-[45%] bg-[#1a8245]/10 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-[45%] h-[45%] bg-[#22ad5c]/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
+
+            <div className="w-full max-w-[540px] relative z-10 py-10">
+                <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-10 md:p-14">
+                    {/* Header */}
+                    <div className="text-center mb-10">
+                        <div className="inline-flex p-4 rounded-3xl bg-gray-50 mb-6 group hover:scale-105 transition-transform duration-300">
+                            <Image
+                                src={logo}
+                                alt="Logo"
+                                width={56}
+                                height={56}
+                                className="object-contain"
+                                unoptimized
+                            />
+                        </div>
+                        <h1 className="text-4xl font-black text-gray-900 tracking-tighter mb-3">
+                            Buat <span className="text-[#1a8245]">Akun</span>
+                        </h1>
+                        <p className="text-gray-500 font-medium">Mulai langkah investasi Anda bersama Mazashi hari ini.</p>
                     </div>
-                ) : (
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                        {error && (
-                            <div className="bg-red-50 border border-red-200 p-3 rounded-lg text-red-600 text-sm">
-                                {error}
-                            </div>
-                        )}
-                        <div className="rounded-md shadow-sm space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="md:col-span-2">
+                                <label className={labelClasses}>Nama Lengkap</label>
                                 <input
                                     type="text"
                                     required
-                                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#1a8245] focus:border-[#1a8245] focus:z-10 sm:text-sm"
-                                    placeholder="Nama Lengkap"
                                     value={formData.nama}
                                     onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+                                    placeholder="Masukkan nama lengkap"
+                                    className={inputClasses}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Email</label>
+                                <label className={labelClasses}>Email</label>
                                 <input
                                     type="email"
                                     required
-                                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#1a8245] focus:border-[#1a8245] focus:z-10 sm:text-sm"
-                                    placeholder="Email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    placeholder="name@email.com"
+                                    className={inputClasses}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                                <label className={labelClasses}>Telepon</label>
                                 <input
                                     type="text"
                                     required
-                                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#1a8245] focus:border-[#1a8245] focus:z-10 sm:text-sm"
-                                    placeholder="08xxxxxxxxxx"
                                     value={formData.nomor_telepon}
                                     onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
+                                    placeholder="0812xxxx"
+                                    className={inputClasses}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Password</label>
+                                <label className={labelClasses}>Kata Sandi</label>
                                 <input
                                     type="password"
                                     required
                                     minLength={8}
-                                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#1a8245] focus:border-[#1a8245] focus:z-10 sm:text-sm"
-                                    placeholder="Password (min. 8 karakter)"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    placeholder="••••••••"
+                                    className={inputClasses}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
+                                <label className={labelClasses}>Ulangi Sandi</label>
                                 <input
                                     type="password"
                                     required
-                                    className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#1a8245] focus:border-[#1a8245] focus:z-10 sm:text-sm"
-                                    placeholder="Ulangi Password"
                                     value={formData.confirmPassword}
                                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                    placeholder="••••••••"
+                                    className={inputClasses}
                                 />
                             </div>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
-                            disabled={isLoading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#1a8245] hover:bg-[#22ad5c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a8245] disabled:opacity-50 transition-colors"
+                            variant="primary"
+                            size="lg"
+                            fullWidth
+                            isLoading={loading}
+                            className="rounded-[22px] py-6 font-black uppercase tracking-widest text-xs shadow-xl shadow-green-100 mt-6"
                         >
-                            {isLoading ? "Mendaftar..." : "Daftar"}
-                        </button>
-
-                        <div className="text-center mt-4">
-                            <span className="text-sm text-gray-600">Sudah punya akun? </span>
-                            <Link href="/login" className="text-sm font-medium text-[#1a8245] hover:underline">
-                                Login Sekarang
-                            </Link>
-                        </div>
+                            Daftar Sekarang
+                        </Button>
                     </form>
-                )}
+
+                    {/* Footer */}
+                    <div className="mt-10 text-center">
+                        <p className="text-sm text-gray-500 font-medium">
+                            Sudah memiliki akun?{" "}
+                            <Link href="/login" className="text-[#1a8245] font-black hover:opacity-70 transition-opacity">
+                                Masuk Disini
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
