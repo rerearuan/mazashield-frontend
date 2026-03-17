@@ -25,14 +25,21 @@ export default function InvestModal({
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         id_invest: "",
-        nama: "",
+        nama_paket: "",
         jenis: "Sapi",
         berat: "",
-        umur: "",
-        harga_beli: "",
-        harga_jual_per_kg: "",
+        durasi_hari: "120",
+        harga_sapi: "",
+        biaya_pemeliharaan: "",
+        vaksin_vitamin: "",
+        fee_marketing: "",
+        total_modal: "",
+        harga_jual: "",
+        keuntungan: "",
+        hasil_investor: "",
+        roi_persen: "",
         deskripsi: "",
-        status_investernak: "Tersedia" as "Tersedia" | "Dipesan" | "Terjual",
+        status_investernak: "Open" as "Open" | "Ongoing" | "Closed",
     });
     const [uploadFile, setUploadFile] = useState<File | null>(null);
 
@@ -40,26 +47,40 @@ export default function InvestModal({
         if (isEditing && selectedItem) {
             setFormData({
                 id_invest: selectedItem.id_invest,
-                nama: selectedItem.nama,
+                nama_paket: selectedItem.nama_paket,
                 jenis: selectedItem.jenis || "Sapi",
                 berat: selectedItem.berat,
-                umur: selectedItem.umur.toString(),
-                harga_beli: selectedItem.harga_beli,
-                harga_jual_per_kg: selectedItem.harga_jual_per_kg,
+                durasi_hari: selectedItem.durasi_hari?.toString() || "120",
+                harga_sapi: selectedItem.harga_sapi,
+                biaya_pemeliharaan: selectedItem.biaya_pemeliharaan,
+                vaksin_vitamin: selectedItem.vaksin_vitamin,
+                fee_marketing: selectedItem.fee_marketing,
+                total_modal: selectedItem.total_modal,
+                harga_jual: selectedItem.harga_jual,
+                keuntungan: selectedItem.keuntungan,
+                hasil_investor: selectedItem.hasil_investor,
+                roi_persen: selectedItem.roi_persen,
                 deskripsi: selectedItem.deskripsi,
                 status_investernak: selectedItem.status_investernak,
             });
         } else {
             setFormData({
                 id_invest: "",
-                nama: "",
+                nama_paket: "",
                 jenis: "Sapi",
                 berat: "",
-                umur: "",
-                harga_beli: "",
-                harga_jual_per_kg: "",
+                durasi_hari: "120",
+                harga_sapi: "",
+                biaya_pemeliharaan: "",
+                vaksin_vitamin: "",
+                fee_marketing: "",
+                total_modal: "",
+                harga_jual: "",
+                keuntungan: "",
+                hasil_investor: "",
+                roi_persen: "",
                 deskripsi: "",
-                status_investernak: "Tersedia",
+                status_investernak: "Open",
             });
         }
         setUploadFile(null);
@@ -76,12 +97,19 @@ export default function InvestModal({
             if (!isEditing) {
                 formDataToSend.append("id_invest", formData.id_invest);
             }
-            formDataToSend.append("nama", formData.nama);
+            formDataToSend.append("nama_paket", formData.nama_paket);
             formDataToSend.append("jenis", formData.jenis);
             formDataToSend.append("berat", formData.berat);
-            formDataToSend.append("umur", formData.umur);
-            formDataToSend.append("harga_beli", formData.harga_beli);
-            formDataToSend.append("harga_jual_per_kg", formData.harga_jual_per_kg);
+            formDataToSend.append("durasi_hari", formData.durasi_hari);
+            formDataToSend.append("harga_sapi", formData.harga_sapi);
+            formDataToSend.append("biaya_pemeliharaan", formData.biaya_pemeliharaan);
+            formDataToSend.append("vaksin_vitamin", formData.vaksin_vitamin);
+            formDataToSend.append("fee_marketing", formData.fee_marketing);
+            formDataToSend.append("total_modal", formData.total_modal);
+            formDataToSend.append("harga_jual", formData.harga_jual);
+            formDataToSend.append("keuntungan", formData.keuntungan);
+            formDataToSend.append("hasil_investor", formData.hasil_investor);
+            formDataToSend.append("roi_persen", formData.roi_persen);
             formDataToSend.append("deskripsi", formData.deskripsi);
             formDataToSend.append("status_investernak", formData.status_investernak);
 
@@ -110,21 +138,10 @@ export default function InvestModal({
             isOpen={isOpen}
             onClose={onClose}
             title={isEditing ? "Edit Invest Ternak" : "Tambah Invest Baru"}
-            size="lg"
+            size="xl"
         >
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis Ternak</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.jenis}
-                            onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}
-                            placeholder="Sapi, Kambing..."
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
-                        />
-                    </div>
+            <form onSubmit={handleSubmit} className="space-y-8 max-h-[70vh] overflow-y-auto px-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID Invest (Unik)</label>
                         <input
@@ -138,61 +155,132 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Invest</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Paket</label>
                         <input
                             type="text"
                             required
-                            value={formData.nama}
-                            onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                            placeholder="Contoh: Paket Sapi Premium..."
+                            value={formData.nama_paket}
+                            onChange={(e) => setFormData({ ...formData, nama_paket: e.target.value })}
+                            placeholder="Contoh: Paket Sapi Bali B..."
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.jenis}
+                            onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Berat (kg)</label>
                         <input
-                            type="number"
-                            step="0.01"
-                            required
-                            min="0"
+                            type="text"
                             value={formData.berat}
                             onChange={(e) => setFormData({ ...formData, berat: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Umur (bulan)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Durasi (Hari)</label>
                         <input
                             type="number"
                             required
-                            min="0"
-                            value={formData.umur}
-                            onChange={(e) => setFormData({ ...formData, umur: e.target.value })}
+                            value={formData.durasi_hari}
+                            onChange={(e) => setFormData({ ...formData, durasi_hari: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Sapi (Rp)</label>
+                        <input
+                            type="number"
+                            required
+                            value={formData.harga_sapi}
+                            onChange={(e) => setFormData({ ...formData, harga_sapi: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] border-green-200 focus:ring-2 focus:ring-[#1a8245]"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Beli (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pemeliharaan (Rp)</label>
                         <input
                             type="number"
-                            required
-                            min="0"
-                            value={formData.harga_beli}
-                            onChange={(e) => setFormData({ ...formData, harga_beli: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
+                            value={formData.biaya_pemeliharaan}
+                            onChange={(e) => setFormData({ ...formData, biaya_pemeliharaan: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Jual / Kg (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Vaksin/Vit (Rp)</label>
                         <input
                             type="number"
-                            required
-                            min="0"
-                            value={formData.harga_jual_per_kg}
-                            onChange={(e) => setFormData({ ...formData, harga_jual_per_kg: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
+                            value={formData.vaksin_vitamin}
+                            onChange={(e) => setFormData({ ...formData, vaksin_vitamin: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
                         />
                     </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fee Marketing (Rp)</label>
+                        <input
+                            type="number"
+                            value={formData.fee_marketing}
+                            onChange={(e) => setFormData({ ...formData, fee_marketing: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Modal (Rp)</label>
+                        <input
+                            type="number"
+                            value={formData.total_modal}
+                            onChange={(e) => setFormData({ ...formData, total_modal: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black text-[#1a8245]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Jual (Rp)</label>
+                        <input
+                            type="number"
+                            value={formData.harga_jual}
+                            onChange={(e) => setFormData({ ...formData, harga_jual: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Keuntungan (Rp)</label>
+                        <input
+                            type="number"
+                            value={formData.keuntungan}
+                            onChange={(e) => setFormData({ ...formData, keuntungan: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hasil Investor (50%)</label>
+                        <input
+                            type="number"
+                            value={formData.hasil_investor}
+                            onChange={(e) => setFormData({ ...formData, hasil_investor: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ROI (%)</label>
+                        <input
+                            type="text"
+                            value={formData.roi_persen}
+                            onChange={(e) => setFormData({ ...formData, roi_persen: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black text-amber-600"
+                        />
+                    </div>
+
                     <div className="space-y-2 md:col-span-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Invest</label>
                         <select
@@ -201,35 +289,33 @@ export default function InvestModal({
                             onChange={(e) => setFormData({ ...formData, status_investernak: e.target.value as any })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
-                            <option value="Tersedia">Tersedia</option>
-                            <option value="Dipesan">Dipesan</option>
-                            <option value="Terjual">Terjual</option>
+                            <option value="Open">Open</option>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Closed">Closed</option>
                         </select>
                     </div>
-                    <div className="space-y-2 md:col-span-2">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Foto</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                            className="w-full text-xs text-gray-400 bg-gray-50/50 p-3 rounded-[20px] border border-gray-100"
+                        />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Deskripsi Paket</label>
                         <textarea
-                            rows={3}
-                            required
+                            rows={2}
                             value={formData.deskripsi}
                             onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium resize-none"
                         />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Foto Produk</label>
-                        <div className="relative">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                                className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-[#1a8245] file:text-white hover:file:opacity-90 cursor-pointer bg-gray-50/50 p-2 rounded-[22px] border border-gray-100/50"
-                            />
-                        </div>
-                    </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white py-4 border-t border-gray-50">
                     <Button
                         type="button"
                         onClick={onClose}

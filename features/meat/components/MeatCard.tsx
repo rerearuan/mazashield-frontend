@@ -3,14 +3,16 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { Meat } from "../useMeatCatalog";
+import { getRandomMeatImage } from "@/lib/image-utils";
 
 interface MeatCardProps {
     item: Meat;
+    userRole: string | null;
     onEdit: (item: Meat) => void;
     onDelete: (id: number) => void;
 }
 
-export default function MeatCard({ item, onEdit, onDelete }: MeatCardProps) {
+export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardProps) {
     const getImageUrl = (foto: string | null) => {
         if (!foto) return null;
         if (foto.startsWith("http")) return foto;
@@ -32,9 +34,13 @@ export default function MeatCard({ item, onEdit, onDelete }: MeatCardProps) {
                         unoptimized
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
-                        <span className="text-5xl">🥩</span>
-                    </div>
+                    <Image
+                        src={getRandomMeatImage(item.id_daging)}
+                        alt={item.nama}
+                        fill
+                        className="object-cover opacity-80"
+                        unoptimized
+                    />
                 )}
                 <div className="absolute top-4 right-4">
                     <span
@@ -67,24 +73,26 @@ export default function MeatCard({ item, onEdit, onDelete }: MeatCardProps) {
                     </p>
                 </div>
 
-                <div className="flex gap-3">
-                    <Button
-                        onClick={() => onEdit(item)}
-                        variant="primary"
-                        size="sm"
-                        className="flex-1 rounded-2xl font-bold"
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        onClick={() => onDelete(item.id)}
-                        variant="danger"
-                        size="sm"
-                        className="rounded-2xl p-2.5"
-                    >
-                        🗑️
-                    </Button>
-                </div>
+                {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+                    <div className="flex gap-3">
+                        <Button
+                            onClick={() => onEdit(item)}
+                            variant="primary"
+                            size="sm"
+                            className="flex-1 rounded-2xl font-bold"
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            onClick={() => onDelete(item.id)}
+                            variant="danger"
+                            size="sm"
+                            className="rounded-2xl p-2.5"
+                        >
+                            🗑️
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
 import { useUserManagement } from "@/features/admin-users/useUserManagement";
 
+import { Icons } from "@/components/common/Icons";
+
 const UserModal = dynamic(() => import("@/features/admin-users/components/UserModal"), {
   loading: () => null,
 });
@@ -25,9 +27,6 @@ export default function ManajemenAkunExternalPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [userToToggle, setUserToToggle] = useState<any>(null);
-
   const handleOpenAdd = () => {
     setIsEditing(false);
     setSelectedUser(null);
@@ -40,18 +39,6 @@ export default function ManajemenAkunExternalPage() {
     setShowModal(true);
   };
 
-  const handleOpenToggle = (user: any) => {
-    setUserToToggle(user);
-    setShowConfirmModal(true);
-  };
-
-  const onConfirmToggle = async () => {
-    if (userToToggle) {
-      await actions.toggleStatus(userToToggle);
-      setShowConfirmModal(false);
-      setUserToToggle(null);
-    }
-  };
 
   const itemsPerPage = 8;
   const totalPages = Math.ceil(users.length / itemsPerPage);
@@ -59,24 +46,24 @@ export default function ManajemenAkunExternalPage() {
 
   return (
     <div className="p-10 relative font-primary">
-      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Client Relations
           </span>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Akun <span className="text-[#1a8245]">External</span>
           </h1>
-          <p className="text-gray-500 font-medium">
+          <p className="text-gray-500 font-medium text-sm">
             Manajemen profil Investor dan Customer eksternal.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 justify-center">
           <Button
             onClick={actions.exportData}
             variant="secondary"
             size="lg"
-            className="rounded-[24px] font-black uppercase text-[10px] tracking-widest px-8"
+            className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
           >
             Export CSV
           </Button>
@@ -85,7 +72,7 @@ export default function ManajemenAkunExternalPage() {
               onClick={handleOpenAdd}
               variant="primary"
               size="lg"
-              className="rounded-[24px] shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-[10px] tracking-widest px-8"
+              className="rounded-2xl shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-[10px] tracking-widest px-8 h-14"
             >
               + Akun Baru
             </Button>
@@ -97,15 +84,17 @@ export default function ManajemenAkunExternalPage() {
       <div className="bg-white/70 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 p-8 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Cari Klien</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block ml-1">Cari Klien</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <Icons.Search className="w-4 h-4" />
+              </span>
               <input
                 type="text"
                 placeholder="Nama, email, atau nomor telepon..."
                 value={filters.searchTerm}
                 onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:font-medium"
+                className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm placeholder:font-medium placeholder:text-gray-300"
               />
             </div>
           </div>
@@ -178,20 +167,12 @@ export default function ManajemenAkunExternalPage() {
                     <td className="px-8 py-6">
                       <div className="flex justify-end gap-2">
                         <Button
-                          variant="secondary"
+                          variant="primary"
                           size="sm"
-                          className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100 hover:bg-gray-100"
+                          className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
                           onClick={() => handleOpenEdit(user)}
                         >
                           Edit
-                        </Button>
-                        <Button
-                          variant={user.is_active ? "danger" : "primary"}
-                          size="sm"
-                          className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4"
-                          onClick={() => handleOpenToggle(user)}
-                        >
-                          {user.is_active ? 'Block' : 'Unblock'}
                         </Button>
                       </div>
                     </td>
@@ -233,15 +214,6 @@ export default function ManajemenAkunExternalPage() {
         currentUserRole={userRole}
       />
 
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={onConfirmToggle}
-        title={userToToggle?.is_active ? "Blokir Akun" : "Aktifkan Akun"}
-        message={`Apakah Anda yakin ingin ${userToToggle?.is_active ? 'memblokir sementara' : 'membuka blokir'} akses untuk ${userToToggle?.nama}?`}
-        confirmText={userToToggle?.is_active ? "Ya, Blokir" : "Ya, Aktifkan"}
-        type={userToToggle?.is_active ? "danger" : "primary"}
-      />
     </div>
   );
 }

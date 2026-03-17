@@ -5,15 +5,22 @@ import toast from "react-hot-toast";
 export interface InvestTernak {
     id: number;
     id_invest: string;
-    nama: string;
+    nama_paket: string;
+    harga_sapi: string;
+    biaya_pemeliharaan: string;
+    vaksin_vitamin: string;
+    fee_marketing: string;
+    total_modal: string;
+    harga_jual: string;
+    keuntungan: string;
+    hasil_investor: string;
+    roi_persen: string;
     jenis: string;
     berat: string;
-    umur: number;
-    harga_beli: string;
-    harga_jual_per_kg: string;
+    durasi_hari: number;
     deskripsi: string;
     foto: string | null;
-    status_investernak: "Tersedia" | "Dipesan" | "Terjual";
+    status_investernak: "Open" | "Ongoing" | "Closed";
     created_at: string;
     updated_at: string;
 }
@@ -27,14 +34,14 @@ export function useInvestCatalog() {
 
     // Filters
     const [searchTerm, setSearchTerm] = useState("");
-    const [minHargaBeli, setMinHargaBeli] = useState("");
-    const [maxHargaBeli, setMaxHargaBeli] = useState("");
+    const [minHargaSapi, setMinHargaSapi] = useState("");
+    const [maxHargaSapi, setMaxHargaSapi] = useState("");
     const [minHargaJual, setMinHargaJual] = useState("");
     const [maxHargaJual, setMaxHargaJual] = useState("");
     const [minBerat, setMinBerat] = useState("");
     const [maxBerat, setMaxBerat] = useState("");
-    const [minUmur, setMinUmur] = useState("");
-    const [maxUmur, setMaxUmur] = useState("");
+    const [minDurasi, setMinDurasi] = useState("");
+    const [maxDurasi, setMaxDurasi] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [jenisFilter, setJenisFilter] = useState("");
 
@@ -43,15 +50,15 @@ export function useInvestCatalog() {
             setLoading(true);
             const params: any = { page: currentPage.toString() };
 
-            if (searchTerm) params.nama = searchTerm;
-            if (minHargaBeli) params.min_harga_beli = minHargaBeli;
-            if (maxHargaBeli) params.max_harga_beli = maxHargaBeli;
+            if (searchTerm) params.nama_paket = searchTerm;
+            if (minHargaSapi) params.min_harga_sapi = minHargaSapi;
+            if (maxHargaSapi) params.max_harga_sapi = maxHargaSapi;
             if (minHargaJual) params.min_harga_jual = minHargaJual;
             if (maxHargaJual) params.max_harga_jual = maxHargaJual;
             if (minBerat) params.min_berat = minBerat;
             if (maxBerat) params.max_berat = maxBerat;
-            if (minUmur) params.min_umur = minUmur;
-            if (maxUmur) params.max_umur = maxUmur;
+            if (minDurasi) params.min_durasi = minDurasi;
+            if (maxDurasi) params.max_durasi = maxDurasi;
             if (statusFilter !== "all") params.status_investernak = statusFilter;
             if (jenisFilter) params.jenis = jenisFilter;
 
@@ -76,18 +83,18 @@ export function useInvestCatalog() {
 
     useEffect(() => {
         fetchInvestList();
-    }, [currentPage, searchTerm, minHargaBeli, maxHargaBeli, minHargaJual, maxHargaJual, minBerat, maxBerat, minUmur, maxUmur, statusFilter, jenisFilter]);
+    }, [currentPage, searchTerm, minHargaSapi, maxHargaSapi, minHargaJual, maxHargaJual, minBerat, maxBerat, minDurasi, maxDurasi, statusFilter, jenisFilter]);
 
     const resetFilters = () => {
         setSearchTerm("");
-        setMinHargaBeli("");
-        setMaxHargaBeli("");
+        setMinHargaSapi("");
+        setMaxHargaSapi("");
         setMinHargaJual("");
         setMaxHargaJual("");
         setMinBerat("");
         setMaxBerat("");
-        setMinUmur("");
-        setMaxUmur("");
+        setMinDurasi("");
+        setMaxDurasi("");
         setStatusFilter("all");
         setJenisFilter("");
         setCurrentPage(1);
@@ -112,14 +119,14 @@ export function useInvestCatalog() {
         setCurrentPage,
         filters: {
             searchTerm, setSearchTerm,
-            minHargaBeli, setMinHargaBeli,
-            maxHargaBeli, setMaxHargaBeli,
+            minHargaSapi, setMinHargaSapi,
+            maxHargaSapi, setMaxHargaSapi,
             minHargaJual, setMinHargaJual,
             maxHargaJual, setMaxHargaJual,
             minBerat, setMinBerat,
             maxBerat, setMaxBerat,
-            minUmur, setMinUmur,
-            maxUmur, setMaxUmur,
+            minDurasi, setMinDurasi,
+            maxDurasi, setMaxDurasi,
             statusFilter, setStatusFilter,
             jenisFilter, setJenisFilter,
             resetFilters,

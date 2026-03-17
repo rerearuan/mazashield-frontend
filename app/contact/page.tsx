@@ -32,22 +32,22 @@ const Icons = {
 const contactInfo = [
   {
     icon: <Icons.Phone />,
-    title: "Telepon",
-    value: "+62 822-3054-9634",
+    title: "Hubungi Admin",
+    value: "+62 858-1905-1216",
     desc: "Hubungi kami via telepon atau WhatsApp.",
     color: "bg-green-50 text-[#1a8245]"
   },
   {
     icon: <Icons.Email />,
-    title: "Email",
-    value: "support@mazashi.farm",
+    title: "Email Resmi",
+    value: "mazdafarmco@gmail.com",
     desc: "Kami akan membalas dalam 24 jam.",
     color: "bg-amber-50 text-amber-600"
   },
   {
     icon: <Icons.Location />,
-    title: "Alamat",
-    value: "Jakarta, Indonesia",
+    title: "Alamat Kantor",
+    value: "Jl Syuhada, Jatisari, Kec. Jatiasih, Kota Bks, Jawa Barat 17426",
     desc: "Kunjungi peternakan modern kami.",
     color: "bg-blue-50 text-blue-600"
   },
@@ -65,7 +65,7 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const text = `Nama: ${formData.name}\nEmail: ${formData.email}\nPesan: ${formData.message}`;
-    window.open(`https://wa.me/6282230549634?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/6285819051216?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -164,13 +164,13 @@ export default function ContactPage() {
               <p className="text-gray-400 font-medium mb-8 leading-relaxed">Tim kami tersedia di WhatsApp untuk konsultasi langsung 24/7 mengenai investasi qurban dan pembelian hewan ternak.</p>
 
               <a
-                href="https://wa.me/6282230549634"
+                href="https://wa.me/6285819051216"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white text-gray-900 px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[#fbbf24] transition-all"
               >
                 <Icons.WhatsApp />
-                Chat WhatsApp
+                Hubungi Admin
               </a>
             </div>
 
