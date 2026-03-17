@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "./SafeImage";
+import { Icons } from "./Icons";
 
 interface ProductCardProps {
   image: string;
@@ -30,12 +31,12 @@ export default function ProductCard({
   return (
     <div className="bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
       <div className="bg-gray-50 h-[260px] relative overflow-hidden">
-        <Image src={image} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
+        <SafeImage src={image} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
       </div>
       <div className="p-8 space-y-6">
         <div>
           <h3 className="text-gray-900 font-black text-xl mb-2 tracking-tight">{title}</h3>
-          <p className="text-gray-500 text-sm leading-relaxed font-medium">{description}</p>
+          <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-2">{description}</p>
         </div>
 
         {(weight || age) && (
@@ -79,10 +80,7 @@ export default function ProductCard({
           style={{ backgroundColor: buttonColor }}
         >
           {buttonText}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
+          <Icons.ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

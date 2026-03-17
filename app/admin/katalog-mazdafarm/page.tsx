@@ -1,15 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
 import { useCattleCatalog, Cattle } from "@/features/cattle/useCattleCatalog";
-import Image from "next/image";
 import { catalogService } from "@/services/catalog.service";
 import toast from "react-hot-toast";
+import { Icons } from "@/components/common/Icons";
+import SafeImage from "@/components/common/SafeImage";
+import { getRandomCowImage } from "@/lib/image-utils";
 
 // Code splitting
 const ConfirmationModal = dynamic(() => import("@/components/ui/ConfirmationModal"), {
+  loading: () => null,
+});
+const CattleModal = dynamic(() => import("@/features/cattle/components/CattleModal"), {
   loading: () => null,
 });
 
@@ -24,8 +29,30 @@ export default function KatalogMazdafarmPage() {
     fetchCattle
   } = useCattleCatalog();
 
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserRole(localStorage.getItem("userRole"));
+  }, []);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Cattle | null>(null);
+
+  const handleOpenAdd = () => {
+    setIsEditing(false);
+    setSelectedItem(null);
+    setShowModal(true);
+  };
+
+  const handleOpenEdit = (item: Cattle) => {
+    setSelectedItem(item);
+    setIsEditing(true);
+    setShowModal(true);
+  };
 
   const handleOpenDeleteModal = (id: number) => {
     setItemToDelete(id);
@@ -54,25 +81,28 @@ export default function KatalogMazdafarmPage() {
 
   return (
     <div className="p-10 relative">
-      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Dashboard Ternak
           </span>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Katalog <span className="text-[#1a8245]">Mazdafarm</span>
           </h1>
-          <p className="text-gray-500 font-medium">
+          <p className="text-gray-500 font-medium text-sm">
             Manajemen unit hewan ternak secara komprehensif.
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="lg"
-          className="rounded-[24px] shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10"
-        >
-          + Tambah Unit Ternak
-        </Button>
+        {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+          <Button
+            onClick={handleOpenAdd}
+            variant="primary"
+            size="lg"
+            className="rounded-2xl shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10 h-14"
+          >
+            + Tambah Unit Ternak
+          </Button>
+        )}
       </div>
 
       {/* Grid Content */}
@@ -86,36 +116,56 @@ export default function KatalogMazdafarmPage() {
           {cattle.map((item) => (
             <div key={item.id} className="bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300">
               <div className="relative h-56 bg-gray-100">
-                <Image
-                  src={getImageUrl(item.foto) || "https://placehold.co/400x300?text=Cow"}
+                <SafeImage
+                  src={getImageUrl(item.foto)}
+                  fallbackSrc={getRandomCowImage(item.id_ternak)}
                   alt={item.nama}
                   fill
                   className="object-cover"
                   unoptimized
                 />
                 <div className="absolute top-4 right-4">
-                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.status_ternak === 'Tersedia' ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
+                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.status_ternak === 'Tersedia' ? 'bg-[#1a8245] text-white' : 'bg-amber-500 text-white'
                     }`}>
                     {item.status_ternak}
                   </span>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="font-black text-xl text-gray-900 mb-1">{item.nama}</h3>
+                <h3 className="font-black text-xl text-gray-900 mb-1 tracking-tight">{item.nama}</h3>
                 <div className="bg-gray-50/50 p-4 rounded-2xl mb-6 space-y-2 border border-gray-100/50">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Berat</span>
-                    <span className="font-extrabold text-gray-900">{item.berat} kg</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Jenis</span>
+                    <span className="font-black text-gray-900">{item.jenis}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Usia</span>
-                    <span className="font-extrabold text-gray-900">{item.umur} Bln</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Kelas</span>
+                    <span className="font-black text-[#1a8245]">{item.kelas}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Berat</span>
+                    <span className="font-black text-gray-900">{item.berat} kg</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Usia</span>
+                    <span className="font-black text-gray-900">{item.umur} Bln</span>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1 rounded-2xl">Edit</Button>
-                  <Button variant="danger" size="sm" className="rounded-2xl" onClick={() => handleOpenDeleteModal(item.id)}>🗑️</Button>
-                </div>
+                {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="flex-1 rounded-2xl font-black uppercase text-[10px] tracking-widest py-3"
+                      onClick={() => handleOpenEdit(item)}
+                    >
+                      Edit
+                    </Button>
+                    <Button variant="danger" size="sm" className="rounded-2xl px-4" onClick={() => handleOpenDeleteModal(item.id)}>
+                      <Icons.Trash className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -130,6 +180,16 @@ export default function KatalogMazdafarmPage() {
         message="Menghapus ternak ini akan menghilangkan data monitoring secara permanen. Lanjutkan?"
         confirmText="Hapus Sekarang"
         type="danger"
+      />
+      <CattleModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={() => {
+          setShowModal(false);
+          fetchCattle();
+        }}
+        isEditing={isEditing}
+        selectedItem={selectedItem}
       />
     </div>
   );

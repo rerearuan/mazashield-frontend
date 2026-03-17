@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
 import { useMeatCatalog, Meat } from "@/features/meat/useMeatCatalog";
 import MeatCard from "@/features/meat/components/MeatCard";
+
+import { Icons } from "@/components/common/Icons";
 
 // Dynamic imports for code splitting
 const MeatModal = dynamic(() => import("@/features/meat/components/MeatModal"), {
@@ -30,6 +32,12 @@ export default function KatalogMazdagingPage() {
   const [selectedItem, setSelectedItem] = useState<Meat | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserRole(localStorage.getItem("userRole"));
+  }, []);
 
   const handleOpenAddModal = () => {
     setIsEditing(false);
@@ -67,51 +75,54 @@ export default function KatalogMazdagingPage() {
   return (
     <div className="p-10 relative">
       {/* Header */}
-      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Dashboard Produk
           </span>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Katalog <span className="text-[#1a8245]">Mazdaging</span>
           </h1>
-          <p className="text-gray-500 font-medium">
+          <p className="text-gray-500 font-medium text-sm">
             Kelola stok dan harga produk daging sapi premium.
           </p>
         </div>
-        <Button
-          onClick={handleOpenAddModal}
-          variant="primary"
-          size="lg"
-          className="rounded-[24px] shadow-xl shadow-green-100/50 hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10"
-          leftIcon={<span className="text-lg">+</span>}
-        >
-          Tambah Daging
-        </Button>
+        {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+          <Button
+            onClick={handleOpenAddModal}
+            variant="primary"
+            size="lg"
+            className="rounded-2xl shadow-xl shadow-green-100/50 hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10 h-14"
+          >
+            + Tambah Daging
+          </Button>
+        )}
       </div>
 
-      {/* Filters (Simplified for now, could be its own component) */}
+      {/* Filters */}
       <div className="bg-white/70 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 p-8 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="flex-1 relative col-span-1 md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Cari Produk</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Cari Produk</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <Icons.Search className="w-4 h-4" />
+              </span>
               <input
                 type="text"
                 placeholder="ID, Nama, atau Bagian..."
                 value={filters.searchTerm}
                 onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-medium"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm"
               />
             </div>
           </div>
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Status</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Status</label>
             <select
               value={filters.filterStatus}
               onChange={(e) => filters.setFilterStatus(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none font-bold text-sm transition-all appearance-none"
+              className="w-full px-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none font-black text-sm transition-all appearance-none"
             >
               <option value="all">Semua Status</option>
               <option value="Tersedia">Tersedia</option>
@@ -125,9 +136,9 @@ export default function KatalogMazdagingPage() {
               variant="secondary"
               size="md"
               fullWidth
-              className="rounded-2xl font-black text-[10px] uppercase tracking-widest h-[50px]"
+              className="rounded-2xl font-black text-[10px] uppercase tracking-widest h-[50px] shadow-sm"
             >
-              Reset
+              Reset Filter
             </Button>
           </div>
         </div>
@@ -144,14 +155,17 @@ export default function KatalogMazdagingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {meatList.length === 0 ? (
               <div className="col-span-full py-32 text-center bg-white/50 backdrop-blur-md rounded-[40px] border-2 border-dashed border-gray-200">
-                <div className="text-6xl mb-6 opacity-20">🥩</div>
-                <p className="text-gray-400 font-bold text-xl">Belum ada stok terdaftar.</p>
+                <div className="flex justify-center mb-6 text-[#1a8245]/20">
+                  <Icons.Meat className="w-20 h-20" />
+                </div>
+                <p className="text-gray-400 font-black text-xl tracking-tight">Belum ada stok terdaftar.</p>
               </div>
             ) : (
               meatList.map((item) => (
                 <MeatCard
                   key={item.id}
                   item={item}
+                  userRole={userRole}
                   onEdit={handleOpenEditModal}
                   onDelete={handleOpenDeleteModal}
                 />

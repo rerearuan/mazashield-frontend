@@ -6,7 +6,8 @@ export interface Cattle {
     id: number;
     id_ternak: string;
     nama: string;
-    jenis: string;
+    jenis: "Sapi" | "Kambing";
+    kelas: "A" | "B" | "C" | "D" | "E" | "Patungan";
     berat: string;
     tanggal_penimbangan: string;
     berat_target: string;

@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
 import { useInvestCatalog, InvestTernak } from "@/features/invest-ternak/useInvestCatalog";
 import InvestCard from "@/features/invest-ternak/components/InvestCard";
 import InvestFilters from "@/features/invest-ternak/components/InvestFilters";
+
+import { Icons } from "@/components/common/Icons";
 
 // Dynamic imports for code splitting
 const InvestModal = dynamic(() => import("@/features/invest-ternak/components/InvestModal"), {
@@ -32,6 +34,12 @@ export default function KatalogInvestTernakPage() {
   const [selectedItem, setSelectedItem] = useState<InvestTernak | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserRole(localStorage.getItem("userRole"));
+  }, []);
 
   const handleOpenAddModal = () => {
     setIsEditing(false);
@@ -61,27 +69,28 @@ export default function KatalogInvestTernakPage() {
   return (
     <div className="p-10 relative">
       {/* Header */}
-      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Dashboard Investasi
           </span>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Katalog <span className="text-[#1a8245]">Invest Ternak</span>
           </h1>
-          <p className="text-gray-500 font-medium">
+          <p className="text-gray-500 font-medium text-sm">
             Manajemen paket investasi ternak secara efektif dan transparan.
           </p>
         </div>
-        <Button
-          onClick={handleOpenAddModal}
-          variant="primary"
-          size="lg"
-          className="rounded-[24px] shadow-xl shadow-green-100/50 hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10"
-          leftIcon={<span className="text-lg">+</span>}
-        >
-          Tambah Invest Baru
-        </Button>
+        {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+          <Button
+            onClick={handleOpenAddModal}
+            variant="primary"
+            size="lg"
+            className="rounded-2xl shadow-xl shadow-green-100/50 hover:shadow-green-200/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-xs tracking-widest px-10 h-14"
+          >
+            + Tambah Invest Baru
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -100,15 +109,18 @@ export default function KatalogInvestTernakPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {investList.length === 0 ? (
               <div className="col-span-full py-32 text-center bg-white/50 backdrop-blur-md rounded-[40px] border-2 border-dashed border-gray-200">
-                <div className="text-6xl mb-6 opacity-20">📭</div>
-                <p className="text-gray-400 font-bold text-xl">Katalog masih kosong.</p>
-                <p className="text-gray-400">Gunakan tombol tambah untuk membuat paket perdana.</p>
+                <div className="flex justify-center mb-6 text-[#1a8245]/20">
+                  <Icons.Mailbox className="w-20 h-20" />
+                </div>
+                <p className="text-gray-400 font-black text-xl tracking-tight">Katalog masih kosong.</p>
+                <p className="text-gray-400 font-medium text-sm mt-2">Gunakan tombol tambah untuk membuat paket perdana.</p>
               </div>
             ) : (
               investList.map((item) => (
                 <InvestCard
                   key={item.id}
                   item={item}
+                  userRole={userRole}
                   onEdit={handleOpenEditModal}
                   onDelete={handleOpenDeleteModal}
                 />
