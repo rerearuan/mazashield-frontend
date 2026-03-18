@@ -15,17 +15,10 @@ export function useUserManagement(type: "internal" | "external") {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response: any = await userService.getUsers();
+            // Pass type to backend — backend filters by role group AND includes nonaktif (soft-deleted)
+            const response: any = await userService.getUsers(type);
             const data = Array.isArray(response) ? response : (response.results || []);
-
-            const internalRoles = ["SuperAdmin", "Marketing", "Finance", "CEO", "Komisaris"];
-            const externalRoles = ["Customer", "Investor"];
-
-            const filteredByType = data.filter((u: any) =>
-                type === "internal" ? internalRoles.includes(u.role) : externalRoles.includes(u.role)
-            );
-
-            setUsers(filteredByType);
+            setUsers(data);
         } catch (err: any) {
             setError(err.message || "Gagal mengambil data user");
             toast.error("Gagal mengambil data user");
@@ -80,6 +73,18 @@ export function useUserManagement(type: "internal" | "external") {
     const exportData = async () => {
         try {
             const response = await userService.exportUsers(type);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMsg = `Export gagal (${response.status})`;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMsg = errorJson.error || errorJson.detail || errorMsg;
+                } catch {}
+                toast.error(errorMsg);
+                return;
+            }
+
             const blob = await response.blob();
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement("a");
@@ -88,6 +93,7 @@ export function useUserManagement(type: "internal" | "external") {
             document.body.appendChild(link);
             link.click();
             link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
             toast.success("Data berhasil diekspor");
         } catch (err) {
             toast.error("Gagal mengekspor data");

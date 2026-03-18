@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/useAuth";
 import { Button } from "@/components/button";
 
@@ -10,6 +11,7 @@ const logo = "/images/logoPrimer 1.png";
 
 export default function RegisterPage() {
     const { register, loading } = useAuth();
+    const router = useRouter();
     const [formData, setFormData] = useState({
         nama: "",
         email: "",
@@ -18,28 +20,72 @@ export default function RegisterPage() {
         confirmPassword: "",
     });
 
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrors({});
+
+        let newErrors: { [key: string]: string } = {};
+
+        // Validation for frontend
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            newErrors.email = "Format email tidak valid";
+        }
+        
+        if (formData.password.length < 8) {
+            newErrors.password = "Password minimal 8 karakter";
+        }
+
         if (formData.password !== formData.confirmPassword) {
-            const { toast } = await import("react-hot-toast");
-            toast.error("Konfirmasi password tidak cocok");
+            newErrors.confirmPassword = "Konfirmasi password tidak cocok";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
         try {
-            await register({
+            const success = await register({
                 nama: formData.nama,
                 email: formData.email,
                 nomor_telepon: formData.nomor_telepon,
                 password: formData.password,
             });
-        } catch (err) {
-            // Handled in hook
+            
+            if (success) {
+                const { toast } = await import("react-hot-toast");
+                toast.success("Registrasi berhasil");
+                router.push("/login");
+            }
+        } catch (err: any) {
+            const apiErrors: any = {};
+            if (err.status === 409 || err.errors?.email?.some((e: string) => e.includes('sudah terdaftar'))) {
+                apiErrors.email = "Email sudah terdaftar";
+            } else if (err.errors) {
+                for (const key in err.errors) {
+                    if (Array.isArray(err.errors[key])) {
+                        apiErrors[key] = err.errors[key][0];
+                    } else {
+                        apiErrors[key] = err.errors[key];
+                    }
+                }
+            } else {
+                const { toast } = await import("react-hot-toast");
+                toast.error(err.message || "Gagal registrasi");
+            }
+            if (Object.keys(apiErrors).length > 0) {
+                setErrors(apiErrors);
+            }
         }
     };
 
-    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
+    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
     const labelClasses = "text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block";
+    
+    const isFormFilled = formData.nama && formData.email && formData.nomor_telepon && formData.password && formData.confirmPassword;
 
     return (
         <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 relative overflow-hidden font-primary">
@@ -77,8 +123,9 @@ export default function RegisterPage() {
                                     value={formData.nama}
                                     onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
                                     placeholder="Masukkan nama lengkap"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${errors.nama ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />
+                                {errors.nama && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.nama}</span>}
                             </div>
                             <div>
                                 <label className={labelClasses}>Email</label>
@@ -88,8 +135,9 @@ export default function RegisterPage() {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="name@email.com"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${errors.email ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />
+                                {errors.email && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.email}</span>}
                             </div>
                             <div>
                                 <label className={labelClasses}>Telepon</label>
@@ -99,8 +147,9 @@ export default function RegisterPage() {
                                     value={formData.nomor_telepon}
                                     onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
                                     placeholder="0812xxxx"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${errors.nomor_telepon ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />
+                                {errors.nomor_telepon && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.nomor_telepon}</span>}
                             </div>
                             <div>
                                 <label className={labelClasses}>Kata Sandi</label>
@@ -111,8 +160,9 @@ export default function RegisterPage() {
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     placeholder="••••••••"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${errors.password ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />
+                                {errors.password && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.password}</span>}
                             </div>
                             <div>
                                 <label className={labelClasses}>Ulangi Sandi</label>
@@ -122,8 +172,9 @@ export default function RegisterPage() {
                                     value={formData.confirmPassword}
                                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                                     placeholder="••••••••"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${errors.confirmPassword ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />
+                                {errors.confirmPassword && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.confirmPassword}</span>}
                             </div>
                         </div>
 
@@ -132,8 +183,9 @@ export default function RegisterPage() {
                             variant="primary"
                             size="lg"
                             fullWidth
+                            disabled={!isFormFilled || loading}
                             isLoading={loading}
-                            className="rounded-[22px] py-6 font-black uppercase tracking-widest text-xs shadow-xl shadow-green-100 mt-6"
+                            className="rounded-[22px] py-6 font-black uppercase tracking-widest text-xs shadow-xl shadow-green-100 mt-6 disabled:opacity-50"
                         >
                             Daftar Sekarang
                         </Button>

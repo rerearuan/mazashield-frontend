@@ -38,7 +38,7 @@ export default function MazdafarmPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [jenisSapi, setJenisSapi] = useState("all");
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 3;
 
   useEffect(() => {
     fetchProducts();
@@ -200,6 +200,7 @@ export default function MazdafarmPage() {
                       image={item.foto ? (item.foto.startsWith('http') ? item.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${item.foto}`) : getRandomCowImage(item.id_ternak)}
                       title={item.nama}
                       description={item.deskripsi || `${item.jenis} berkualitas tinggi.`}
+                      code={item.id_ternak}
                       weight={`${Number(item.berat).toLocaleString()} kg`}
                       age={item.usia}
                       stock="Tersedia"

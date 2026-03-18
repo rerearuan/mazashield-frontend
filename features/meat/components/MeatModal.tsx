@@ -97,18 +97,17 @@ export default function MeatModal({
         >
             <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID Daging (Unik)</label>
-                        <input
-                            type="text"
-                            required
-                            disabled={isEditing}
-                            value={formData.id_daging}
-                            onChange={(e) => setFormData({ ...formData, id_daging: e.target.value })}
-                            placeholder="DG-00X"
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold disabled:opacity-50"
-                        />
-                    </div>
+                    {isEditing && (
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID Daging (Auto-Generated)</label>
+                            <input
+                                type="text"
+                                disabled
+                                value={formData.id_daging}
+                                className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold opacity-50 cursor-not-allowed"
+                            />
+                        </div>
+                    )}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Produk</label>
                         <input
@@ -166,6 +165,26 @@ export default function MeatModal({
                     </div>
                     <div className="space-y-2 md:col-span-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Foto Produk</label>
+                        {isEditing && selectedItem?.foto && !uploadFile && (
+                            <div className="mb-4">
+                                <p className="text-[10px] font-bold text-gray-400 mb-2">FOTO SAAT INI:</p>
+                                <img 
+                                    src={selectedItem.foto.startsWith('http') ? selectedItem.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000'}${selectedItem.foto}`} 
+                                    alt="Current preview" 
+                                    className="h-32 w-auto object-cover rounded-[16px] border" 
+                                />
+                            </div>
+                        )}
+                        {uploadFile && (
+                            <div className="mb-4">
+                                <p className="text-[10px] font-bold text-[#1a8245] mb-2">PREVIEW FOTO BARU:</p>
+                                <img 
+                                    src={URL.createObjectURL(uploadFile)} 
+                                    alt="New preview" 
+                                    className="h-32 w-auto object-cover rounded-[16px] border border-[#1a8245]" 
+                                />
+                            </div>
+                        )}
                         <input
                             type="file"
                             accept="image/*"

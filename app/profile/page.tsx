@@ -55,7 +55,7 @@ export default function PublicProfilePage() {
         } catch (err) { }
     };
 
-    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
+    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
     const labelClasses = "text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-2 block";
 
     return (

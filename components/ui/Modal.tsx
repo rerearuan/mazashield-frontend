@@ -83,7 +83,7 @@ export default function Modal({
 
                 {/* Footer */}
                 {footer && (
-                    <div className="p-8 pt-4 border-t border-gray-100 flex gap-4 justify-end">
+                    <div className="p-8 pt-4 border-t border-gray-100 flex gap-4">
                         {footer}
                     </div>
                 )}
