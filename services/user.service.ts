@@ -13,8 +13,8 @@ export const userService = {
         apiFetch("/profile/change-password", { method: "PUT", body: JSON.stringify(data) }),
 
     // Admin only
-    getUsers: () =>
-        apiFetch("/admin/users/list"),
+    getUsers: (type?: string) =>
+        apiFetch(`/admin/users/list${type ? `?type=${type}` : ''}`),
 
     getUserDetail: (id: string | number) =>
         apiFetch(`/admin/users/${id}`),

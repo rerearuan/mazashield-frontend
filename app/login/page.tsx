@@ -62,7 +62,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@perusahaan.com"
-                className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300 text-sm"
+                className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300 text-sm"
               />
             </div>
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300 text-sm"
+                  className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300 text-sm"
                 />
                 <button
                   type="button"
@@ -99,8 +99,9 @@ export default function LoginPage() {
               variant="primary"
               size="lg"
               fullWidth
+              disabled={!email || !password || loading}
               isLoading={loading}
-              className="rounded-2xl py-5 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-100 mt-4 h-auto"
+              className="rounded-2xl py-5 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-100 mt-4 h-auto disabled:opacity-50"
             >
               Masuk Sekarang
             </Button>
