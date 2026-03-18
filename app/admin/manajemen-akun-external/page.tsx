@@ -27,6 +27,22 @@ export default function ManajemenAkunExternalPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+
+  const handleOpenDelete = (user: any) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const onConfirmDelete = async () => {
+    if (userToDelete) {
+      await actions.toggleStatus(userToDelete);
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+    }
+  };
+
   const handleOpenAdd = () => {
     setIsEditing(false);
     setSelectedUser(null);
@@ -166,14 +182,32 @@ export default function ManajemenAkunExternalPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
-                          onClick={() => handleOpenEdit(user)}
-                        >
-                          Edit
-                        </Button>
+                        {user.is_active ? (
+                          <>
+                            {(userRole === "SuperAdmin" || userRole === "Marketing") && (
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
+                                onClick={() => handleOpenEdit(user)}
+                              >
+                                Edit
+                              </Button>
+                            )}
+                            {userRole === "SuperAdmin" && (
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="rounded-xl px-3 border-red-100"
+                                onClick={() => handleOpenDelete(user)}
+                              >
+                                <Icons.Trash className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Terhapus</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -212,6 +246,16 @@ export default function ManajemenAkunExternalPage() {
         selectedUser={selectedUser}
         type="external"
         currentUserRole={userRole}
+      />
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={onConfirmDelete}
+        title="Hapus Klien Eksternal"
+        message="Akun klien ini akan dinonaktifkan (soft delete) dan tidak dapat diakses lagi. Lanjutkan?"
+        confirmText="Hapus Akun"
+        type="danger"
       />
 
     </div>

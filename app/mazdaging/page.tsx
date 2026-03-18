@@ -36,7 +36,7 @@ export default function MazdagingPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [bagian, setBagian] = useState("all");
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 3;
 
   useEffect(() => {
     fetchProducts();
@@ -182,6 +182,7 @@ export default function MazdagingPage() {
                       image={item.foto ? (item.foto.startsWith('http') ? item.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${item.foto}`) : getRandomMeatImage(item.id_daging)}
                       title={item.nama}
                       description={item.deskripsi || `Bagian ${item.bagian} berkualitas segar.`}
+                      code={item.id_daging}
                       stock="Tersedia"
                       price={`Rp ${Number(item.harga_per_kg).toLocaleString("id-ID")}`}
                       onButtonClick={() => handleOrder(item.nama)}
