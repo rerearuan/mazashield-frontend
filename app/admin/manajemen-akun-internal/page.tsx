@@ -27,6 +27,22 @@ export default function ManajemenAkunInternalPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+
+  const handleOpenDelete = (user: any) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const onConfirmDelete = async () => {
+    if (userToDelete) {
+      await actions.toggleStatus(userToDelete);
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+    }
+  };
+
   const handleOpenAdd = () => {
     setIsEditing(false);
     setSelectedUser(null);
@@ -94,7 +110,7 @@ export default function ManajemenAkunInternalPage() {
                 placeholder="Nama atau alamat email..."
                 value={filters.searchTerm}
                 onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm placeholder:font-medium placeholder:text-gray-300"
+                className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm placeholder:font-medium placeholder:text-gray-300"
               />
             </div>
           </div>
@@ -103,7 +119,7 @@ export default function ManajemenAkunInternalPage() {
             <select
               value={filters.filterRole}
               onChange={(e) => filters.setFilterRole(e.target.value)}
-              className="w-full px-5 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none font-black text-xs uppercase tracking-widest transition-all appearance-none cursor-pointer"
+              className="w-full px-5 py-3.5 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none font-black text-xs uppercase tracking-widest transition-all appearance-none cursor-pointer"
             >
               <option value="all">Semua Jabatan</option>
               <option value="SuperAdmin">SuperAdmin</option>
@@ -167,14 +183,32 @@ export default function ManajemenAkunInternalPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4"
-                          onClick={() => handleOpenEdit(user)}
-                        >
-                          Edit
-                        </Button>
+                        {user.is_active ? (
+                          <>
+                            {userRole === "SuperAdmin" && (
+                              <>
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
+                                  onClick={() => handleOpenEdit(user)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  className="rounded-xl px-3 border-red-100"
+                                  onClick={() => handleOpenDelete(user)}
+                                >
+                                  <Icons.Trash className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Terhapus</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -213,6 +247,16 @@ export default function ManajemenAkunInternalPage() {
         selectedUser={selectedUser}
         type="internal"
         currentUserRole={userRole}
+      />
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={onConfirmDelete}
+        title="Hapus Akun Pengguna"
+        message="Akun ini akan dinonaktifkan (soft delete) dan tidak dapat diakses lagi. Lanjutkan?"
+        confirmText="Hapus Akun"
+        type="danger"
       />
 
     </div>

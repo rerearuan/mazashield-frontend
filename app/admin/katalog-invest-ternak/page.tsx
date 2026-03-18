@@ -106,7 +106,7 @@ export default function KatalogInvestTernakPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {investList.length === 0 ? (
               <div className="col-span-full py-32 text-center bg-white/50 backdrop-blur-md rounded-[40px] border-2 border-dashed border-gray-200">
                 <div className="flex justify-center mb-6 text-[#1a8245]/20">

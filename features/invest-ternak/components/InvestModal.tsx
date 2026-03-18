@@ -94,9 +94,7 @@ export default function InvestModal({
         try {
             const formDataToSend = new FormData();
 
-            if (!isEditing) {
-                formDataToSend.append("id_invest", formData.id_invest);
-            }
+            // id_invest auto-generated in backend
             formDataToSend.append("nama_paket", formData.nama_paket);
             formDataToSend.append("jenis", formData.jenis);
             formDataToSend.append("berat", formData.berat);
@@ -139,21 +137,44 @@ export default function InvestModal({
             onClose={onClose}
             title={isEditing ? "Edit Invest Ternak" : "Tambah Invest Baru"}
             size="xl"
+            footer={
+                <>
+                    <Button
+                        type="button"
+                        onClick={onClose}
+                        variant="secondary"
+                        size="lg"
+                        className="flex-1 rounded-[24px]"
+                        disabled={loading}
+                    >
+                        Batal
+                    </Button>
+                    <Button
+                        type="submit"
+                        form="invest-form"
+                        variant="primary"
+                        size="lg"
+                        className="flex-[2] rounded-[24px]"
+                        isLoading={loading}
+                    >
+                        {isEditing ? "Simpan Perubahan" : "Konfirmasi & Tambahkan"}
+                    </Button>
+                </>
+            }
         >
-            <form onSubmit={handleSubmit} className="space-y-8 max-h-[70vh] overflow-y-auto px-1">
+            <form id="invest-form" onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID Invest (Unik)</label>
-                        <input
-                            type="text"
-                            required
-                            disabled={isEditing}
-                            value={formData.id_invest}
-                            onChange={(e) => setFormData({ ...formData, id_invest: e.target.value })}
-                            placeholder="INV-00X"
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold disabled:opacity-50"
-                        />
-                    </div>
+                    {isEditing && (
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ID Invest (Auto-Generated)</label>
+                            <input
+                                type="text"
+                                disabled
+                                value={formData.id_invest}
+                                className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold opacity-50 cursor-not-allowed"
+                            />
+                        </div>
+                    )}
                     <div className="space-y-2 md:col-span-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Paket</label>
                         <input
@@ -296,6 +317,26 @@ export default function InvestModal({
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Foto</label>
+                        {isEditing && selectedItem?.foto && !uploadFile && (
+                            <div className="mb-4">
+                                <p className="text-[10px] font-bold text-gray-400 mb-2">FOTO SAAT INI:</p>
+                                <img 
+                                    src={selectedItem.foto.startsWith('http') ? selectedItem.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000'}${selectedItem.foto}`} 
+                                    alt="Current preview" 
+                                    className="h-32 w-auto object-cover rounded-[16px] border" 
+                                />
+                            </div>
+                        )}
+                        {uploadFile && (
+                            <div className="mb-4">
+                                <p className="text-[10px] font-bold text-[#1a8245] mb-2">PREVIEW FOTO BARU:</p>
+                                <img 
+                                    src={URL.createObjectURL(uploadFile)} 
+                                    alt="New preview" 
+                                    className="h-32 w-auto object-cover rounded-[16px] border border-[#1a8245]" 
+                                />
+                            </div>
+                        )}
                         <input
                             type="file"
                             accept="image/*"
@@ -313,28 +354,6 @@ export default function InvestModal({
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium resize-none"
                         />
                     </div>
-                </div>
-
-                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white py-4 border-t border-gray-50">
-                    <Button
-                        type="button"
-                        onClick={onClose}
-                        variant="secondary"
-                        size="lg"
-                        className="flex-1 rounded-[24px]"
-                        disabled={loading}
-                    >
-                        Batal
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        size="lg"
-                        className="flex-[2] rounded-[24px]"
-                        isLoading={loading}
-                    >
-                        {isEditing ? "Simpan Perubahan" : "Konfirmasi & Tambahkan"}
-                    </Button>
                 </div>
             </form>
         </Modal>
