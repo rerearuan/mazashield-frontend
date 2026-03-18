@@ -75,14 +75,17 @@ export default function ManajemenAkunInternalPage() {
           </p>
         </div>
         <div className="flex gap-3 justify-center">
-          <Button
-            onClick={actions.exportData}
-            variant="secondary"
-            size="lg"
-            className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
-          >
-            Export CSV
-          </Button>
+          {/* Export CSV: only SuperAdmin can export internal accounts */}
+          {userRole === "SuperAdmin" && (
+            <Button
+              onClick={actions.exportData}
+              variant="secondary"
+              size="lg"
+              className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
+            >
+              Export CSV
+            </Button>
+          )}
           {userRole === "SuperAdmin" && (
             <Button
               onClick={handleOpenAdd}
@@ -181,11 +184,11 @@ export default function ManajemenAkunInternalPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex justify-end gap-2">
-                        {user.is_active ? (
-                          <>
-                            {userRole === "SuperAdmin" && (
+                      <td className="px-8 py-6">
+                        <div className="flex justify-end gap-2">
+                          {/* CEO/Komisaris: read-only, no action buttons */}
+                          {userRole === "SuperAdmin" && (
+                            user.is_active ? (
                               <>
                                 <Button
                                   variant="primary"
@@ -204,13 +207,15 @@ export default function ManajemenAkunInternalPage() {
                                   <Icons.Trash className="w-4 h-4" />
                                 </Button>
                               </>
-                            )}
-                          </>
-                        ) : (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Terhapus</span>
-                        )}
-                      </div>
-                    </td>
+                            ) : (
+                              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
+                            )
+                          )}
+                          {(userRole === "CEO" || userRole === "Komisaris" || userRole === "Marketing" || userRole === "Finance") && !user.is_active && (
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
+                          )}
+                        </div>
+                      </td>
                   </tr>
                 ))
               )}

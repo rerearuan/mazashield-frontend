@@ -19,17 +19,16 @@ export function useAuth() {
 
             toast.success(`Selamat datang, ${data.nama}!`);
 
+            // All internal roles → home dashboard, external → public home
             if (["SuperAdmin", "Marketing", "Finance", "CEO", "Komisaris"].includes(data.role)) {
-                router.push("/admin/manajemen-akun-internal");
+                router.push("/admin");
             } else {
                 router.push("/");
             }
         } catch (err: any) {
-            const message = err.status === 401
+            const message = [400, 401, 403, 404].includes(err?.status)
                 ? "Email atau password salah"
-                : err.status === 403
-                    ? "Akun Anda tidak aktif"
-                    : err.message || "Gagal login";
+                : "Terjadi kesalahan pada server";
             toast.error(message);
             throw err;
         } finally {
@@ -41,10 +40,10 @@ export function useAuth() {
         setLoading(true);
         try {
             await authService.register(userData);
-            toast.success("Registrasi berhasil! Silakan login.");
-            router.push("/login");
+            // Let the component handle success toast so it can redirect smoothly
+            return true;
         } catch (err: any) {
-            toast.error(err.message || "Gagal registrasi");
+            // Throw the error so the component can handle inline validation (errors state)
             throw err;
         } finally {
             setLoading(false);

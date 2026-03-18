@@ -99,8 +99,9 @@ export default function LoginPage() {
               variant="primary"
               size="lg"
               fullWidth
+              disabled={!email || !password || loading}
               isLoading={loading}
-              className="rounded-2xl py-5 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-100 mt-4 h-auto"
+              className="rounded-2xl py-5 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-100 mt-4 h-auto disabled:opacity-50"
             >
               Masuk Sekarang
             </Button>

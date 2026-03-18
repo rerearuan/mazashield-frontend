@@ -75,14 +75,17 @@ export default function ManajemenAkunExternalPage() {
           </p>
         </div>
         <div className="flex gap-3 justify-center">
-          <Button
-            onClick={actions.exportData}
-            variant="secondary"
-            size="lg"
-            className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
-          >
-            Export CSV
-          </Button>
+          {/* Export CSV: SuperAdmin and Marketing can export external accounts */}
+          {(userRole === "SuperAdmin" || userRole === "Marketing") && (
+            <Button
+              onClick={actions.exportData}
+              variant="secondary"
+              size="lg"
+              className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
+            >
+              Export CSV
+            </Button>
+          )}
           {(userRole === "SuperAdmin" || userRole === "Marketing") && (
             <Button
               onClick={handleOpenAdd}
@@ -206,7 +209,7 @@ export default function ManajemenAkunExternalPage() {
                             )}
                           </>
                         ) : (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Terhapus</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
                         )}
                       </div>
                     </td>
