@@ -105,7 +105,8 @@ export default function MazdafarmPage() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Filter Section */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-12">
+          <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Sapi</label>
@@ -118,7 +119,7 @@ export default function MazdafarmPage() {
                     placeholder="Nama sapi..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+                    className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
                   />
                 </div>
               </div>
@@ -130,14 +131,14 @@ export default function MazdafarmPage() {
                     placeholder="Min"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
                   />
                   <input
                     type="number"
                     placeholder="Max"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
                   />
                 </div>
               </div>
@@ -146,7 +147,7 @@ export default function MazdafarmPage() {
                 <select
                   value={jenisSapi}
                   onChange={(e) => setJenisSapi(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm appearance-none"
+                  className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm appearance-none shadow-sm"
                 >
                   <option value="all">Semua Jenis</option>
                   <option value="Limousin">Limousin</option>

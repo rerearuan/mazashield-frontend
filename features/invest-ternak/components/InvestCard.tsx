@@ -83,7 +83,7 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
                     </div>
                 </div>
 
-                {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+                {(userRole === "SuperAdmin" || userRole === "CEO") && (
                     <div className="flex gap-3">
                         <Button
                             onClick={() => onEdit(item)}

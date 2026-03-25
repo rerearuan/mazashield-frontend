@@ -30,7 +30,22 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${poppins.variable} antialiased`}
       >
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            className: 'premium-toast',
+            duration: 4000,
+            style: {
+              background: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(10px)',
+              color: '#1e293b',
+              padding: '16px 24px',
+              borderRadius: '24px',
+              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+            },
+          }}
+        />
         {children}
       </body>
     </html>

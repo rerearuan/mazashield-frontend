@@ -9,7 +9,7 @@ interface InvestFiltersProps {
 
 export default function InvestFilters({ filters }: InvestFiltersProps) {
     return (
-        <div className="bg-white/70 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 p-8 mb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white/40 p-10 mb-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 {/* Search */}
                 <div className="lg:col-span-2">
@@ -23,7 +23,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                             placeholder="ID atau Nama Paket..."
                             value={filters.searchTerm}
                             onChange={(e) => filters.setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm text-gray-900"
+                            className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm text-gray-900 shadow-sm"
                         />
                     </div>
                 </div>
@@ -37,7 +37,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                             placeholder="Min"
                             value={filters.minHargaSapi}
                             onChange={(e) => filters.setMinHargaSapi(e.target.value)}
-                            className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                            className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
                         />
                         <span className="text-gray-300 self-center font-bold">-</span>
                         <input
@@ -45,7 +45,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                             placeholder="Max"
                             value={filters.maxHargaSapi}
                             onChange={(e) => filters.setMaxHargaSapi(e.target.value)}
-                            className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                            className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
                         />
                     </div>
                 </div>
@@ -56,7 +56,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                     <select
                         value={filters.statusFilter}
                         onChange={(e) => filters.setStatusFilter(e.target.value)}
-                        className="w-full px-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none font-bold text-sm transition-all appearance-none text-gray-900"
+                        className="w-full px-6 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-bold text-sm transition-all appearance-none text-gray-900 shadow-sm"
                     >
                         <option value="all">Semua Status</option>
                         <option value="Open">Open</option>
