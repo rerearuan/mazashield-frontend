@@ -87,7 +87,7 @@ export default function KatalogMazdagingPage() {
             Kelola stok dan harga produk daging sapi premium.
           </p>
         </div>
-        {(userRole === "SuperAdmin" || userRole === "CEO") && (
+        {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
           <Button
             onClick={handleOpenAddModal}
             variant="primary"
