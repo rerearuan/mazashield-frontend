@@ -77,8 +77,8 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                     </p>
                 </div>
 
-                {(userRole === "SuperAdmin" || userRole === "CEO") && (
-                    <div className="mt-5 flex gap-4">
+                {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
+                    <div className="flex gap-3">
                         <Button
                             onClick={() => onEdit(item)}
                             variant="primary"

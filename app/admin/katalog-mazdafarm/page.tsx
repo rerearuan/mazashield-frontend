@@ -94,7 +94,7 @@ export default function KatalogMazdafarmPage() {
             Manajemen unit hewan ternak secara komprehensif.
           </p>
         </div>
-        {(userRole === "SuperAdmin" || userRole === "CEO") && (
+        {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
           <Button
             onClick={handleOpenAdd}
             variant="primary"
@@ -167,7 +167,7 @@ export default function KatalogMazdafarmPage() {
                         {Number(item.harga).toLocaleString("id-ID")}
                     </p>
                 </div>
-                {(userRole === "SuperAdmin" || userRole === "CEO") && (
+                {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
                   <div className="flex gap-2">
                     <Button
                       variant="primary"
