@@ -23,7 +23,7 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
     const imageUrl = getImageUrl(item.foto);
 
     return (
-        <div className="bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div className="group bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="relative h-56 bg-gray-100">
                 {imageUrl ? (
                     <Image
@@ -61,19 +61,21 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                 </div>
             </div>
 
-            <div className="p-6">
-                <h3 className="font-black text-xl text-gray-900 mb-1 truncate">{item.nama}</h3>
-                <p className="text-[#1a8245] font-black text-sm mb-4 uppercase tracking-widest">{item.bagian}</p>
+            <div className="p-8">
+                <div className="mb-4">
+                    <h3 className="font-black text-2xl text-gray-900 tracking-tight leading-none mb-1">{item.nama}</h3>
+                    <p className="text-[#1a8245] font-black text-[10px] uppercase tracking-[0.2em]">{item.bagian}</p>
+                </div>
 
-                <div className="bg-gray-50/50 p-4 rounded-2xl mb-6 border border-gray-100/50">
-                    <p className="text-gray-900 font-black text-2xl tracking-tighter">
-                        <span className="text-xs mr-1 font-bold text-gray-400">Rp</span>
+                <div className="bg-gray-900/5 p-5 rounded-[24px] border border-gray-900/5 transition-colors group-hover:bg-[#1a8245]/5 group-hover:border-[#1a8245]/10">
+                    <p className="text-gray-900 font-black text-3xl tracking-tighter flex items-center">
+                        <span className="text-[10px] mr-1 font-bold text-gray-400 uppercase tracking-widest self-start mt-1.5">Rp</span>
                         {Number(item.harga_per_kg).toLocaleString("id-ID")}
-                        <span className="text-[10px] font-bold text-gray-400 ml-1">/KG</span>
+                        <span className="text-[10px] font-bold text-gray-400 ml-1.5">/ KG</span>
                     </p>
                 </div>
 
-                {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+                {(userRole === "SuperAdmin" || userRole === "CEO") && (
                     <div className="flex gap-3">
                         <Button
                             onClick={() => onEdit(item)}

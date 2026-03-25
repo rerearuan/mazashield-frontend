@@ -144,20 +144,22 @@ export default function ManajemenAkunInternalPage() {
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Lengkap</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Role / Jabatan</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Aksi</th>
+                {userRole !== "Marketing" && (
+                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Aksi</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="px-8 py-20 text-center">
+                  <td colSpan={userRole === "Marketing" ? 3 : 4} className="px-8 py-20 text-center">
                     <div className="w-10 h-10 border-4 border-[#1a8245]/20 border-t-[#1a8245] rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Menyinkronkan data...</p>
                   </td>
                 </tr>
               ) : paginatedUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-8 py-20 text-center">
+                  <td colSpan={userRole === "Marketing" ? 3 : 4} className="px-8 py-20 text-center">
                     <p className="text-gray-400 font-bold text-lg">Tidak ada akun ditemukan.</p>
                   </td>
                 </tr>
@@ -171,7 +173,11 @@ export default function ManajemenAkunInternalPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${user.role === 'SuperAdmin' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${user.role === 'SuperAdmin' ? 'bg-purple-50 text-purple-600' :
+                          user.role === 'CEO' ? 'bg-indigo-50 text-indigo-600' :
+                            user.role === 'Komisaris' ? 'bg-amber-50 text-amber-600' :
+                              user.role === 'Finance' ? 'bg-emerald-50 text-emerald-600' :
+                                'bg-blue-50 text-blue-600'
                         }`}>
                         {user.role}
                       </span>
@@ -184,38 +190,40 @@ export default function ManajemenAkunInternalPage() {
                         </span>
                       </div>
                     </td>
-                      <td className="px-8 py-6">
-                        <div className="flex justify-end gap-2">
-                          {/* CEO/Komisaris: read-only, no action buttons */}
-                          {userRole === "SuperAdmin" && (
-                            user.is_active ? (
-                              <>
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
-                                  onClick={() => handleOpenEdit(user)}
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  className="rounded-xl px-3 border-red-100"
-                                  onClick={() => handleOpenDelete(user)}
-                                >
-                                  <Icons.Trash className="w-4 h-4" />
-                                </Button>
-                              </>
-                            ) : (
+                      {userRole !== "Marketing" && (
+                        <td className="px-8 py-6">
+                          <div className="flex justify-end gap-2">
+                            {/* CEO/Komisaris: read-only, no action buttons */}
+                            {userRole === "SuperAdmin" && (
+                              user.is_active ? (
+                                <>
+                                  <Button
+                                    variant="primary"
+                                    size="sm"
+                                    className="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 border-gray-100"
+                                    onClick={() => handleOpenEdit(user)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="danger"
+                                    size="sm"
+                                    className="rounded-xl px-3 border-red-100"
+                                    onClick={() => handleOpenDelete(user)}
+                                  >
+                                    <Icons.Trash className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              ) : (
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
+                              )
+                            )}
+                            {(userRole === "CEO" || userRole === "Komisaris" || userRole === "Finance") && !user.is_active && (
                               <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
-                            )
-                          )}
-                          {(userRole === "CEO" || userRole === "Komisaris" || userRole === "Marketing" || userRole === "Finance") && !user.is_active && (
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 py-1.5 px-3">Nonaktif</span>
-                          )}
-                        </div>
-                      </td>
+                            )}
+                          </div>
+                        </td>
+                      )}
                   </tr>
                 ))
               )}

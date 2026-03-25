@@ -6,6 +6,7 @@ import Footer from "@/components/common/Footer";
 import PageHeader from "@/components/common/PageHeader";
 import { useProfile } from "@/features/profile/useProfile";
 import { Button } from "@/components/button";
+import toast from "react-hot-toast";
 
 export default function PublicProfilePage() {
     const { profile, loading, isUpdating, updateProfile, changePassword } = useProfile();
@@ -36,13 +37,15 @@ export default function PublicProfilePage() {
         e.preventDefault();
         try {
             await updateProfile(formData);
-        } catch (err) { }
+            toast.success("Profil berhasil diperbarui!");
+        } catch (err) {
+            // Error managed by hook toast
+        }
     };
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (passwordData.new_password !== passwordData.confirm_password) {
-            const { toast } = await import("react-hot-toast");
             toast.error("Konfirmasi password tidak cocok");
             return;
         }
@@ -51,12 +54,15 @@ export default function PublicProfilePage() {
                 old_password: passwordData.old_password,
                 new_password: passwordData.new_password,
             });
+            toast.success("Password berhasil diubah!");
             setPasswordData({ old_password: "", new_password: "", confirm_password: "" });
-        } catch (err) { }
+        } catch (err) {
+            // Error managed by hook toast
+        }
     };
 
-    const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
-    const labelClasses = "text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-2 block";
+    const inputClasses = "w-full px-6 py-4 bg-white border border-gray-300 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none transition-all font-bold placeholder:text-gray-400 shadow-sm hover:border-gray-400";
+    const labelClasses = "text-[10px] font-black uppercase tracking-widest text-[#1a8245] ml-1 mb-2 block";
 
     return (
         <div className="bg-white min-h-screen font-primary">

@@ -151,10 +151,7 @@ export default function UserModal({
                                     <option value="Komisaris">Komisaris</option>
                                 </>
                             ) : (
-                                <>
-                                    <option value="Customer">Customer</option>
-                                    <option value="Investor">Investor</option>
-                                </>
+                                <option value="Customer">Customer</option>
                             )}
                         </select>
                     </div>
