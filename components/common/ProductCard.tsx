@@ -42,43 +42,46 @@ export default function ProductCard({
             </div>
         )}
       </div>
-      <div className="p-8 space-y-6">
-        <div>
-          <h3 className="text-gray-900 font-black text-xl mb-2 tracking-tight">{title}</h3>
-          <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-2">{description}</p>
+      <div className="p-8 space-y-7">
+        <div className="min-h-[100px]">
+          <h3 className="text-gray-900 font-black text-2xl mb-2 tracking-tight line-clamp-1">{title}</h3>
+          <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-3">{description}</p>
         </div>
 
         {(weight || age) && (
-          <div className="bg-gray-50/80 p-4 rounded-2xl grid grid-cols-2 gap-4 border border-gray-100">
+          <div className="bg-gray-50/80 p-5 rounded-[24px] grid grid-cols-2 gap-4 border border-gray-100/50 shadow-inner">
             {weight && (
               <div>
-                <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Berat</p>
-                <p className="text-gray-900 font-black text-sm">{weight}</p>
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1.5 opacity-70">Berat</p>
+                <div className="flex items-end gap-1">
+                  <p className="text-gray-900 font-black text-base">{weight.split(' ')[0]}</p>
+                  <span className="text-[10px] font-bold text-gray-400 mb-0.5">{weight.split(' ')[1]}</span>
+                </div>
               </div>
             )}
             {age && (
               <div>
-                <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Usia</p>
-                <p className="text-gray-900 font-black text-sm">{age}</p>
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1.5 opacity-70">Usia</p>
+                <p className="text-gray-900 font-black text-base">{age}</p>
               </div>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-50">
           {stock && (
             <div>
-              <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Status</p>
-              <div className="flex items-center gap-2">
+              <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-2 opacity-70">Stock Status</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                <p className="text-[#1a8245] font-black uppercase tracking-widest text-[10px]">{stock}</p>
+                <p className="text-[#1a8245] font-black uppercase tracking-widest text-[9px]">{stock}</p>
               </div>
             </div>
           )}
           {price && (
             <div className="text-right">
-              <p className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-1">Harga{price.includes("kg") ? " / kg" : ""}</p>
-              <p className="text-[#1a8245] font-black text-xl tracking-tight">{price}</p>
+              <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1 opacity-70">Investment Price</p>
+              <p className="text-[#1a8245] font-black text-2xl tracking-tighter">{price}</p>
             </div>
           )}
         </div>

@@ -93,7 +93,7 @@ export default function KatalogMazdafarmPage() {
             Manajemen unit hewan ternak secara komprehensif.
           </p>
         </div>
-        {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+        {(userRole === "SuperAdmin" || userRole === "CEO") && (
           <Button
             onClick={handleOpenAdd}
             variant="primary"
@@ -106,7 +106,7 @@ export default function KatalogMazdafarmPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white/70 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 p-8 mb-8">
+      <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white/40 p-10 mb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Cari Ternak</label>
@@ -119,7 +119,7 @@ export default function KatalogMazdafarmPage() {
                 placeholder="ID atau Nama Ternak..."
                 value={filters.searchTerm}
                 onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-sm text-gray-900"
+                className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm text-gray-900 shadow-sm"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function KatalogMazdafarmPage() {
                 placeholder="Min"
                 value={filters.minPrice}
                 onChange={(e) => filters.setMinPrice(e.target.value)}
-                className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
               />
               <span className="text-gray-300 self-center font-bold">-</span>
               <input
@@ -140,7 +140,7 @@ export default function KatalogMazdafarmPage() {
                 placeholder="Max"
                 value={filters.maxPrice}
                 onChange={(e) => filters.setMaxPrice(e.target.value)}
-                className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
               />
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function KatalogMazdafarmPage() {
                 placeholder="Min"
                 value={filters.minWeight}
                 onChange={(e) => filters.setMinWeight(e.target.value)}
-                className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
               />
               <span className="text-gray-300 self-center font-bold">-</span>
               <input
@@ -161,7 +161,7 @@ export default function KatalogMazdafarmPage() {
                 placeholder="Max"
                 value={filters.maxWeight}
                 onChange={(e) => filters.setMaxWeight(e.target.value)}
-                className="w-full px-3 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold text-xs text-gray-900"
+                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function KatalogMazdafarmPage() {
               </div>
               <div className="p-6">
                 <h3 className="font-black text-xl text-gray-900 mb-1 tracking-tight">{item.nama}</h3>
-                <div className="bg-gray-50/50 p-4 rounded-2xl mb-6 space-y-2 border border-gray-100/50">
+                <div className="bg-[#1a8245]/5 p-4 rounded-2xl mb-6 space-y-2 border border-[#1a8245]/10">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Jenis</span>
                     <span className="font-black text-gray-900">{item.jenis}</span>
@@ -231,7 +231,14 @@ export default function KatalogMazdafarmPage() {
                     <span className="font-black text-gray-900">{item.umur} Bln</span>
                   </div>
                 </div>
-                {(userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "CEO") && (
+
+                <div className="bg-gray-900/5 p-4 rounded-2xl mb-6 border border-gray-900/5">
+                    <p className="text-gray-900 font-black text-2xl tracking-tighter">
+                        <span className="text-xs mr-1 font-bold text-gray-400">Rp</span>
+                        {Number(item.harga).toLocaleString("id-ID")}
+                    </p>
+                </div>
+                {(userRole === "SuperAdmin" || userRole === "CEO") && (
                   <div className="flex gap-2">
                     <Button
                       variant="primary"
