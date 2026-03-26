@@ -54,6 +54,7 @@ export default function AdminProfilePage() {
 
     const inputClasses = "w-full px-6 py-4 bg-white border border-gray-300 text-gray-900 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none transition-all font-bold placeholder:text-gray-400 shadow-sm hover:border-gray-400";
     const labelClasses = "text-[10px] font-black uppercase tracking-widest text-[#1a8245] ml-1 mb-2 block";
+    const normalizePhone = (value: string) => value.replace(/\D/g, "");
 
     if (loading) {
         return (
@@ -78,16 +79,16 @@ export default function AdminProfilePage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 items-stretch">
                 {/* Profile Info */}
-                <div className="xl:col-span-2 space-y-10">
-                    <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-xl shadow-gray-200/50 border border-white/20 p-10 md:p-14">
+                <div className="xl:col-span-2 h-full">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-xl shadow-gray-200/50 border border-white/20 p-10 md:p-14 h-full flex flex-col">
                         <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
                             <span className="w-2 h-8 bg-[#1a8245] rounded-full"></span>
                             Informasi Pribadi
                         </h2>
 
-                        <form onSubmit={handleUpdateProfile} className="space-y-8">
+                        <form onSubmit={handleUpdateProfile} className="space-y-8 h-full flex flex-col">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className={labelClasses}>Nama Lengkap</label>
@@ -113,8 +114,10 @@ export default function AdminProfilePage() {
                                     <input
                                         type="text"
                                         required
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         value={formData.nomor_telepon}
-                                        onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, nomor_telepon: normalizePhone(e.target.value) })}
                                         className={inputClasses}
                                     />
                                 </div>
@@ -126,7 +129,7 @@ export default function AdminProfilePage() {
                                 </div>
                             </div>
 
-                            <div className="pt-4 flex justify-end">
+                            <div className="mt-auto pt-4 flex justify-end">
                                 <Button
                                     type="submit"
                                     variant="primary"
@@ -142,14 +145,14 @@ export default function AdminProfilePage() {
                 </div>
 
                 {/* Security */}
-                <div className="space-y-10">
-                    <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-xl shadow-gray-200/50 border border-white/20 p-10">
+                <div className="h-full">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-xl shadow-gray-200/50 border border-white/20 p-10 md:p-14 h-full flex flex-col">
                         <h2 className="text-xl font-black text-gray-900 mb-8 flex items-center gap-3">
                             <span className="w-2 h-6 bg-amber-400 rounded-full"></span>
                             Ganti Password
                         </h2>
 
-                        <form onSubmit={handleChangePassword} className="space-y-6">
+                        <form onSubmit={handleChangePassword} className="space-y-6 h-full flex flex-col">
                             <div className="space-y-2">
                                 <label className={labelClasses}>Password Lama</label>
                                 <input
@@ -187,7 +190,7 @@ export default function AdminProfilePage() {
                                 size="lg"
                                 fullWidth
                                 isLoading={isUpdating}
-                                className="rounded-2xl font-black uppercase text-[10px] tracking-widest"
+                                className="rounded-2xl font-black uppercase text-[10px] tracking-widest mt-auto"
                             >
                                 Ubah Password
                             </Button>

@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
-import { useMeatCatalog, Meat } from "@/features/meat/useMeatCatalog";
-import MeatCard from "@/features/meat/components/MeatCard";
+import { useMeatCatalog, Meat } from "@/features/mazdaging-catalog/useMeatCatalog";
+import MeatCard from "@/features/mazdaging-catalog/components/MeatCard";
+import MeatFilters from "@/features/mazdaging-catalog/components/MeatFilters";
 
 import { Icons } from "@/components/common/Icons";
 
 // Dynamic imports for code splitting
-const MeatModal = dynamic(() => import("@/features/meat/components/MeatModal"), {
+const MeatModal = dynamic(() => import("@/features/mazdaging-catalog/components/MeatModal"), {
   loading: () => null,
 });
 const ConfirmationModal = dynamic(() => import("@/components/ui/ConfirmationModal"), {
@@ -99,50 +100,7 @@ export default function KatalogMazdagingPage() {
         )}
       </div>
 
-      {/* Filters */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white/40 p-10 mb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="flex-1 relative col-span-1 md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Cari Produk</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <Icons.Search className="w-4 h-4" />
-              </span>
-              <input
-                type="text"
-                placeholder="ID, Nama, atau Bagian..."
-                value={filters.searchTerm}
-                onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm text-gray-900 shadow-sm"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Status</label>
-            <select
-              value={filters.filterStatus}
-              onChange={(e) => filters.setFilterStatus(e.target.value)}
-              className="w-full px-6 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-bold text-sm transition-all appearance-none shadow-sm"
-            >
-              <option value="all">Semua Status</option>
-              <option value="Tersedia">Tersedia</option>
-              <option value="Terjual">Terjual</option>
-              <option value="Pre Order">Pre Order</option>
-            </select>
-          </div>
-          <div className="flex items-end">
-            <Button
-              onClick={filters.resetFilters}
-              variant="secondary"
-              size="md"
-              fullWidth
-              className="rounded-2xl font-black text-[10px] uppercase tracking-widest h-[50px] shadow-sm"
-            >
-              Reset Filter
-            </Button>
-          </div>
-        </div>
-      </div>
+      <MeatFilters filters={filters} />
 
       {/* Grid Content */}
       {loading ? (

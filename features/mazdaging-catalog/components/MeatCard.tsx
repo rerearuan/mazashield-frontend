@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/button";
+import { Icons } from "@/components/common/Icons";
 import { Meat } from "../useMeatCatalog";
 import { getRandomMeatImage } from "@/lib/image-utils";
 
@@ -67,11 +68,12 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                     <p className="text-[#1a8245] font-black text-[10px] uppercase tracking-[0.2em]">{item.bagian}</p>
                 </div>
 
-                <div className="bg-gray-900/5 p-5 rounded-[24px] border border-gray-900/5 transition-colors group-hover:bg-[#1a8245]/5 group-hover:border-[#1a8245]/10">
-                    <p className="text-gray-900 font-black text-3xl tracking-tighter flex items-center">
-                        <span className="text-[10px] mr-1 font-bold text-gray-400 uppercase tracking-widest self-start mt-1.5">Rp</span>
+                <div className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-[20px] border border-gray-200/80 shadow-sm transition-colors group-hover:border-[#1a8245]/20 group-hover:shadow-md">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Harga per Kg</p>
+                    <p className="text-gray-900 font-black text-xl tracking-tight flex items-end">
+                        <span className="text-[10px] mr-1 font-bold text-[#1a8245] uppercase tracking-widest mb-1">Rp</span>
                         {Number(item.harga_per_kg).toLocaleString("id-ID")}
-                        <span className="text-[10px] font-bold text-gray-400 ml-1.5">/ KG</span>
+                        <span className="text-[10px] font-bold text-gray-400 ml-1.5 mb-1">/ KG</span>
                     </p>
                 </div>
 
@@ -91,7 +93,7 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                             size="sm"
                             className="rounded-2xl p-2.5"
                         >
-                            🗑️
+                            <Icons.Trash className="w-4 h-4" />
                         </Button>
                     </div>
                 )}

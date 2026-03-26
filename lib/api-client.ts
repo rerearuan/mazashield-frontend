@@ -56,3 +56,58 @@ export async function apiFetch<T>(endpoint: string, options: FetchOptions = {}):
 
     return data;
 }
+
+export const authService = {
+    login: (credentials: any) => apiFetch("/auth/login", { method: "POST", body: JSON.stringify(credentials) }),
+    register: (data: any) => apiFetch("/auth/register", { method: "POST", body: JSON.stringify(data) }),
+    logout: (refreshToken: string) => apiFetch("/auth/logout", { method: "POST", body: JSON.stringify({ refresh: refreshToken }) }),
+    forgotPassword: (data: { email: string }) => apiFetch("/auth/forgot-password", { method: "POST", body: JSON.stringify(data) }),
+    resetPassword: (data: any) => apiFetch("/auth/reset-password", { method: "POST", body: JSON.stringify(data) }),
+};
+
+export const userService = {
+    getProfile: () => apiFetch("/profile"),
+    updateProfile: (data: any) => apiFetch("/profile", { method: "PUT", body: JSON.stringify(data) }),
+    changePassword: (data: any) => apiFetch("/profile/change-password", { method: "PUT", body: JSON.stringify(data) }),
+
+    // Admin only
+    getUsers: () => apiFetch("/admin/users/list"),
+    getUserDetail: (id: string | number) => apiFetch(`/admin/users/${id}`),
+    adminCreateUser: (data: any) => apiFetch("/admin/users", { method: "POST", body: JSON.stringify(data) }),
+    updateUser: (id: string | number, data: any) => apiFetch(`/admin/users/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+    deleteUser: (id: string | number) => apiFetch(`/admin/users/${id}/delete`, { method: "DELETE" }),
+    exportUsers: (type: string) => {
+        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+        return fetch(`${API_BASE_URL}/admin/users/export?type=${type}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+    },
+};
+
+export const catalogService = {
+    // MAZDAFARM - Internal
+    getTernakInternal: (params?: any) => apiFetch("/sales/mazdafarm", { method: "GET", params }),
+    createTernak: (formData: FormData) => apiFetch("/sales/mazdafarm", { method: "POST", body: formData }),
+    updateTernak: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdafarm/${id}`, { method: "PUT", body: formData }),
+    deleteTernak: (id: number | string) => apiFetch(`/sales/mazdafarm/${id}`, { method: "DELETE" }),
+
+    // MAZDAGING - Internal
+    getDagingInternal: (params?: any) => apiFetch("/sales/mazdaging", { method: "GET", params }),
+    createDaging: (formData: FormData) => apiFetch("/sales/mazdaging", { method: "POST", body: formData }),
+    updateDaging: (id: number | string, formData: FormData) => apiFetch(`/sales/mazdaging/${id}`, { method: "PUT", body: formData }),
+    deleteDaging: (id: number | string) => apiFetch(`/sales/mazdaging/${id}`, { method: "DELETE" }),
+
+    // INVEST TERNAK - Internal
+    getInvestInternal: (params?: any) => apiFetch("/sales/invest", { method: "GET", params }),
+    createInvest: (formData: FormData) => apiFetch("/sales/invest", { method: "POST", body: formData }),
+    updateInvest: (id: number | string, formData: FormData) => apiFetch(`/sales/invest/${id}`, { method: "PUT", body: formData }),
+    deleteInvest: (id: number | string) => apiFetch(`/sales/invest/${id}`, { method: "DELETE" }),
+
+    // PUBLIC
+    getTernakPublic: (params?: any) => apiFetch("/mazdafarm", { method: "GET", params }),
+    getDagingPublic: (params?: any) => apiFetch("/mazdaging", { method: "GET", params }),
+    getInvestPublic: (params?: any) => apiFetch("/invest", { method: "GET", params }),
+
+};
