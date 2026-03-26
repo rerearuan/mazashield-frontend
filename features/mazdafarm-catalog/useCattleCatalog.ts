@@ -2,75 +2,86 @@ import { useState, useEffect } from "react";
 import { catalogService } from "@/services/catalog.service";
 import toast from "react-hot-toast";
 
-export interface Meat {
+export interface Cattle {
     id: number;
-    id_daging: string;
+    id_ternak: string;
     nama: string;
-    bagian: string;
-    harga_per_kg: string;
+    jenis: "Sapi" | "Kambing";
+    kelas: "A" | "B" | "C" | "D" | "E" | "Patungan";
+    berat: string;
+    tanggal_penimbangan: string;
+    berat_target: string;
+    tanggal_lahir: string;
+    umur: number;
+    harga: string;
     deskripsi: string;
     foto: string | null;
-    status_daging: string;
+    status_ternak: "Tersedia" | "Dipesan" | "Terjual";
     created_at: string;
     updated_at: string;
 }
 
-export function useMeatCatalog() {
-    const [meatList, setMeatList] = useState<Meat[]>([]);
+export function useCattleCatalog() {
+    const [cattle, setCattle] = useState<Cattle[]>([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Filters
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterStatus, setFilterStatus] = useState("all");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
+    const [minWeight, setMinWeight] = useState("");
+    const [maxWeight, setMaxWeight] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
 
-    const fetchMeatList = async () => {
+    const fetchCattle = async () => {
         try {
             setLoading(true);
             const params: any = { page: currentPage.toString() };
 
             if (searchTerm) params.nama = searchTerm;
-            if (filterStatus !== "all") params.status_daging = filterStatus;
             if (minPrice) params.min_harga = minPrice;
             if (maxPrice) params.max_harga = maxPrice;
+            if (minWeight) params.min_berat = minWeight;
+            if (maxWeight) params.max_berat = maxWeight;
+            if (statusFilter !== "all") params.status_ternak = statusFilter;
 
-            const data: any = await catalogService.getDagingInternal(params);
+            const data: any = await catalogService.getTernakInternal(params);
 
             if (data.results) {
-                setMeatList(data.results);
+                setCattle(data.results);
                 setTotalCount(data.count);
                 setTotalPages(Math.ceil(data.count / 10));
             } else {
-                setMeatList(Array.isArray(data) ? data : []);
+                setCattle(Array.isArray(data) ? data : []);
                 setTotalCount(Array.isArray(data) ? data.length : 0);
                 setTotalPages(1);
             }
         } catch (error: any) {
-            console.error("Error fetching meat list:", error);
-            toast.error(error.message || "Gagal mengambil data katalog daging");
+            console.error("Error fetching cattle:", error);
+            toast.error(error.message || "Gagal mengambil data ternak");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchMeatList();
-    }, [currentPage, searchTerm, filterStatus, minPrice, maxPrice]);
+        fetchCattle();
+    }, [currentPage, searchTerm, minPrice, maxPrice, minWeight, maxWeight, statusFilter]);
 
     const resetFilters = () => {
         setSearchTerm("");
-        setFilterStatus("all");
         setMinPrice("");
         setMaxPrice("");
+        setMinWeight("");
+        setMaxWeight("");
+        setStatusFilter("all");
         setCurrentPage(1);
     };
 
     return {
-        meatList,
+        cattle,
         loading,
         totalCount,
         totalPages,
@@ -78,11 +89,13 @@ export function useMeatCatalog() {
         setCurrentPage,
         filters: {
             searchTerm, setSearchTerm,
-            filterStatus, setFilterStatus,
             minPrice, setMinPrice,
             maxPrice, setMaxPrice,
+            minWeight, setMinWeight,
+            maxWeight, setMaxWeight,
+            statusFilter, setStatusFilter,
             resetFilters,
         },
-        fetchMeatList,
+        fetchCattle,
     };
 }

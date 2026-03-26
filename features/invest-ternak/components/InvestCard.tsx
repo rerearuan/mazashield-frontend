@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/button";
+import { Icons } from "@/components/common/Icons";
 import { InvestTernak } from "../useInvestCatalog";
 import { getRandomCowImage } from "@/lib/image-utils";
 
@@ -99,7 +100,7 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
                             size="sm"
                             className="flex-none rounded-2xl p-2.5"
                         >
-                            🗑️
+                            <Icons.Trash className="w-4 h-4" />
                         </Button>
                     </div>
                 )}
