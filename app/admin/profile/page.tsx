@@ -112,12 +112,18 @@ export default function AdminProfilePage() {
                                 <div className="space-y-2">
                                     <label className={labelClasses}>Nomor Telepon</label>
                                     <input
-                                        type="text"
+                                        type="tel"
                                         required
                                         inputMode="numeric"
                                         pattern="[0-9]*"
+                                        maxLength={13}
                                         value={formData.nomor_telepon}
-                                        onChange={(e) => setFormData({ ...formData, nomor_telepon: normalizePhone(e.target.value) })}
+                                        onChange={(e) => {
+                                            const value = normalizePhone(e.target.value);
+                                            if (value.length <= 13) {
+                                                setFormData({ ...formData, nomor_telepon: value });
+                                            }
+                                        }}
                                         className={inputClasses}
                                     />
                                 </div>

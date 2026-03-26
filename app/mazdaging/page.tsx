@@ -89,71 +89,99 @@ export default function MazdagingPage() {
           {/* Filter Section */}
           <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Produk</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                    <Icons.Search className="w-4 h-4" />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Nama daging..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
+            
+            {/* Helper functions for currency formatting */}
+            {(() => {
+              const formatCurrency = (value: string) => {
+                if (!value) return "";
+                const cleanValue = value.replace(/\D/g, "");
+                if (!cleanValue) return "";
+                return parseInt(cleanValue).toLocaleString("id-ID");
+              };
+
+              const handlePriceChange = (value: string, setter: (val: string) => void) => {
+                const cleanValue = value.replace(/\D/g, "");
+                setter(cleanValue);
+              };
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Produk</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Icons.Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Nama daging..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga /kg</label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                          Rp
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="100.000"
+                          value={formatCurrency(minPrice)}
+                          onChange={(e) => handlePriceChange(e.target.value, setMinPrice)}
+                          className="w-full pl-10 pr-3.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                        />
+                      </div>
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                          Rp
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="250.000"
+                          value={formatCurrency(maxPrice)}
+                          onChange={(e) => handlePriceChange(e.target.value, setMaxPrice)}
+                          className="w-full pl-10 pr-3.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Bagian Daging</label>
+                    <select
+                      value={bagian}
+                      onChange={(e) => setBagian(e.target.value)}
+                      className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm appearance-none shadow-sm"
+                    >
+                      <option value="all">Semua Bagian</option>
+                      <option value="Has Dalam">Has Dalam</option>
+                      <option value="Has Luar">Has Luar</option>
+                      <option value="Iga">Iga</option>
+                      <option value="Sirloin">Sirloin</option>
+                      <option value="Tenderloin">Tenderloin</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setMinPrice("");
+                        setMaxPrice("");
+                        setBagian("all");
+                        setCurrentPage(1);
+                      }}
+                      className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all font-bold"
+                    >
+                      Reset Filter
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga /kg (Rp)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Bagian Daging</label>
-                <select
-                  value={bagian}
-                  onChange={(e) => setBagian(e.target.value)}
-                  className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm appearance-none shadow-sm"
-                >
-                  <option value="all">Semua Bagian</option>
-                  <option value="Has Dalam">Has Dalam</option>
-                  <option value="Has Luar">Has Luar</option>
-                  <option value="Iga">Iga</option>
-                  <option value="Sirloin">Sirloin</option>
-                  <option value="Tenderloin">Tenderloin</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setMinPrice("");
-                    setMaxPrice("");
-                    setBagian("all");
-                    setCurrentPage(1);
-                  }}
-                  className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all"
-                >
-                  Reset Filter
-                </button>
-              </div>
-            </div>
+              );
+            })()}
           </div>
 
           <div className="mb-10">

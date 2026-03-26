@@ -170,6 +170,7 @@ export default function CattleModal({
                         <input
                             type="date"
                             required
+                            max={new Date().toISOString().split("T")[0]}
                             value={formData.tanggal_lahir}
                             onChange={(e) => setFormData({ ...formData, tanggal_lahir: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
