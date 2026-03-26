@@ -8,6 +8,18 @@ interface InvestFiltersProps {
 }
 
 export default function InvestFilters({ filters }: InvestFiltersProps) {
+    const formatCurrency = (value: string) => {
+        if (!value) return "";
+        const cleanValue = value.replace(/\D/g, "");
+        if (!cleanValue) return "";
+        return parseInt(cleanValue).toLocaleString("id-ID");
+    };
+
+    const handlePriceChange = (value: string, setter: (val: string) => void) => {
+        const cleanValue = value.replace(/\D/g, "");
+        setter(cleanValue);
+    };
+
     const preventInvalidNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (["-", "+", "e", "E"].includes(e.key)) {
             e.preventDefault();
@@ -36,27 +48,33 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
 
                 {/* Harga Sapi Range */}
                 <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Harga Sapi (Rp)</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Harga Sapi</label>
                     <div className="flex gap-2">
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Min"
-                            value={filters.minHargaSapi}
-                            onChange={(e) => filters.setMinHargaSapi(e.target.value)}
-                            onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
-                        />
+                        <div className="relative flex-1">
+                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                                Rp
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="1.000.000"
+                                value={formatCurrency(filters.minHargaSapi)}
+                                onChange={(e) => handlePriceChange(e.target.value, filters.setMinHargaSapi)}
+                                className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            />
+                        </div>
                         <span className="text-gray-300 self-center font-bold">-</span>
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Max"
-                            value={filters.maxHargaSapi}
-                            onChange={(e) => filters.setMaxHargaSapi(e.target.value)}
-                            onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
-                        />
+                        <div className="relative flex-1">
+                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                                Rp
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="10.000.000"
+                                value={formatCurrency(filters.maxHargaSapi)}
+                                onChange={(e) => handlePriceChange(e.target.value, filters.setMaxHargaSapi)}
+                                className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            />
+                        </div>
                     </div>
                 </div>
 

@@ -109,10 +109,18 @@ export default function PublicProfilePage() {
                                             <div>
                                                 <label className={labelClasses}>Nomor Telepon</label>
                                                 <input
-                                                    type="text"
+                                                    type="tel"
                                                     required
+                                                    inputMode="numeric"
+                                                    pattern="[0-9]*"
+                                                    maxLength={13}
                                                     value={formData.nomor_telepon}
-                                                    onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value.replace(/\D/g, "");
+                                                        if (value.length <= 13) {
+                                                            setFormData({ ...formData, nomor_telepon: value });
+                                                        }
+                                                    }}
                                                     className={inputClasses}
                                                 />
                                             </div>
