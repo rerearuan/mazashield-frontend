@@ -3,18 +3,19 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/button";
-import { useCattleCatalog, Cattle } from "@/features/cattle/useCattleCatalog";
+import { useCattleCatalog, Cattle } from "@/features/mazdafarm-catalog/useCattleCatalog";
 import { catalogService } from "@/services/catalog.service";
 import toast from "react-hot-toast";
 import { Icons } from "@/components/common/Icons";
 import SafeImage from "@/components/common/SafeImage";
 import { getRandomCowImage } from "@/lib/image-utils";
+import CattleFilters from "@/features/mazdafarm-catalog/components/CattleFilters";
 
 // Code splitting
 const ConfirmationModal = dynamic(() => import("@/components/ui/ConfirmationModal"), {
   loading: () => null,
 });
-const CattleModal = dynamic(() => import("@/features/cattle/components/CattleModal"), {
+const CattleModal = dynamic(() => import("@/features/mazdafarm-catalog/components/CattleModal"), {
   loading: () => null,
 });
 
@@ -105,80 +106,7 @@ export default function KatalogMazdafarmPage() {
         )}
       </div>
 
-      {/* Filters */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white/40 p-10 mb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Cari Ternak</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <Icons.Search className="w-4 h-4" />
-              </span>
-              <input
-                type="text"
-                placeholder="ID atau Nama Ternak..."
-                value={filters.searchTerm}
-                onChange={(e) => filters.setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm text-gray-900 shadow-sm"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Range Harga</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                value={filters.minPrice}
-                onChange={(e) => filters.setMinPrice(e.target.value)}
-                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
-              />
-              <span className="text-gray-300 self-center font-bold">-</span>
-              <input
-                type="number"
-                placeholder="Max"
-                value={filters.maxPrice}
-                onChange={(e) => filters.setMaxPrice(e.target.value)}
-                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-2 block">Range Berat (Kg)</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                value={filters.minWeight}
-                onChange={(e) => filters.setMinWeight(e.target.value)}
-                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
-              />
-              <span className="text-gray-300 self-center font-bold">-</span>
-              <input
-                type="number"
-                placeholder="Max"
-                value={filters.maxWeight}
-                onChange={(e) => filters.setMaxWeight(e.target.value)}
-                className="w-full px-4 py-4 bg-gray-50/80 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs text-gray-900 shadow-sm"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-end">
-            <Button
-              onClick={filters.resetFilters}
-              variant="secondary"
-              size="md"
-              fullWidth
-              className="rounded-2xl font-black text-[10px] uppercase tracking-widest h-[46px] shadow-sm"
-            >
-              Reset Filter
-            </Button>
-          </div>
-        </div>
-      </div>
+      <CattleFilters filters={filters} />
 
       {/* Grid Content */}
       {loading ? (
@@ -232,9 +160,10 @@ export default function KatalogMazdafarmPage() {
                   </div>
                 </div>
 
-                <div className="bg-gray-900/5 p-4 rounded-2xl mb-6 border border-gray-900/5">
-                    <p className="text-gray-900 font-black text-2xl tracking-tighter">
-                        <span className="text-xs mr-1 font-bold text-gray-400">Rp</span>
+                <div className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-2xl mb-6 border border-gray-200/80 shadow-sm">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Harga</p>
+                    <p className="text-gray-900 font-black text-xl tracking-tight flex items-end">
+                        <span className="text-[10px] mr-1 font-bold text-[#1a8245] uppercase tracking-widest mb-1">Rp</span>
                         {Number(item.harga).toLocaleString("id-ID")}
                     </p>
                 </div>
