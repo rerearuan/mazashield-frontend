@@ -33,6 +33,19 @@ export default function MazdafarmPage() {
   const [totalCount, setTotalCount] = useState(0);
 
   // Filters
+<<<<<<< HEAD
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [minWeight, setMinWeight] = useState("");
+  const [maxWeight, setMaxWeight] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const itemsPerPage = 6;
+
+  useEffect(() => {
+    fetchCattle();
+  }, [currentPage, minPrice, maxPrice, minWeight, maxWeight, searchTerm]);
+=======
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -43,12 +56,23 @@ export default function MazdafarmPage() {
   useEffect(() => {
     fetchProducts();
   }, [currentPage, searchTerm, minPrice, maxPrice, jenisSapi]);
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const params: any = {
         page: currentPage.toString(),
+<<<<<<< HEAD
+        status_ternak: "Tersedia",
+      };
+
+      if (minPrice) params.min_harga = minPrice;
+      if (maxPrice) params.max_harga = maxPrice;
+      if (minWeight) params.min_berat = minWeight;
+      if (maxWeight) params.max_berat = maxWeight;
+      if (searchTerm) params.nama = searchTerm;
+=======
         status_sapi: "Tersedia",
       };
 
@@ -56,6 +80,7 @@ export default function MazdafarmPage() {
       if (minPrice) params.min_harga = minPrice;
       if (maxPrice) params.max_harga = maxPrice;
       if (jenisSapi !== "all") params.jenis = jenisSapi;
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
 
       const data: any = await catalogService.getTernakPublic(params);
 
@@ -74,8 +99,13 @@ export default function MazdafarmPage() {
     }
   };
 
+<<<<<<< HEAD
+  const handleOrder = (cattleTitle: string) => {
+    window.open(`https://wa.me/6282230549634?text=Halo, saya tertarik dengan ${cattleTitle}`, "_blank");
+=======
   const handleOrder = (productTitle: string) => {
     window.open(`https://wa.me/6285819051216?text=Halo, saya tertarik dengan ${productTitle}`, "_blank");
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
   };
 
   const features = [
@@ -105,6 +135,130 @@ export default function MazdafarmPage() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Filter Section */}
+<<<<<<< HEAD
+<<<<<<< HEAD
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-[#1a8245]">Cari Sapi</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+=======
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Sapi</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Icons.Search className="w-4 h-4" />
+                  </span>
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                  <input
+                    type="text"
+                    placeholder="Nama sapi..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+<<<<<<< HEAD
+                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
+=======
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+<<<<<<< HEAD
+                <label className="text-sm font-bold text-[#1a8245]">Rentang Harga (Rp)</label>
+=======
+                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga (Rp)</label>
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+<<<<<<< HEAD
+                    className="w-full px-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
+=======
+                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+<<<<<<< HEAD
+                    className="w-full px-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
+=======
+                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm"
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+<<<<<<< HEAD
+                <label className="text-sm font-bold text-[#1a8245]">Rentang Berat (kg)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={minWeight}
+                    onChange={(e) => setMinWeight(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={maxWeight}
+                    onChange={(e) => setMaxWeight(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
+                  />
+                </div>
+=======
+                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Jenis Sapi</label>
+                <select
+                  value={jenisSapi}
+                  onChange={(e) => setJenisSapi(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-medium text-sm appearance-none"
+                >
+                  <option value="all">Semua Jenis</option>
+                  <option value="Limousin">Limousin</option>
+                  <option value="Simental">Simental</option>
+                  <option value="Brahman">Brahman</option>
+                  <option value="PO">PO (Peranakan Ongole)</option>
+                  <option value="Bali">Bali</option>
+                </select>
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={() => {
+<<<<<<< HEAD
+                    setMinPrice("");
+                    setMaxPrice("");
+                    setMinWeight("");
+                    setMaxWeight("");
+                    setSearchTerm("");
+                    setCurrentPage(1);
+                  }}
+                  className="w-full py-2.5 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-all"
+=======
+                    setSearchTerm("");
+                    setMinPrice("");
+                    setMaxPrice("");
+                    setJenisSapi("all");
+                    setCurrentPage(1);
+                  }}
+                  className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all font-bold"
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
+                >
+                  Reset Filter
+                </button>
+              </div>
+            </div>
+=======
           <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
             
@@ -200,14 +354,24 @@ export default function MazdafarmPage() {
                 </div>
               );
             })()}
+>>>>>>> 09dc2cfe5959e08480f9acc4d1c4eb42f983915c
           </div>
 
+<<<<<<< HEAD
+          <div className="mb-12">
+            <h2 className="text-[#008236] font-semibold text-3xl lg:text-[32px] mb-2">
+              Katalog Sapi Berkualitas
+            </h2>
+            <p className="text-black text-base">
+              Menampilkan {totalCount} sapi terbaik hasil seleksi ketat tim Mazdafarm.
+=======
           <div className="mb-10">
             <h2 className="text-[#008236] font-black text-3xl tracking-tight mb-2">
               Katalog Sapi Berkualitas
             </h2>
             <p className="text-gray-500 font-medium text-sm">
               Menampilkan {totalCount} ekor sapi terbaik yang siap untuk dikirim.
+>>>>>>> 9c782b3ab20679041e48227693740b9d65d536ff
             </p>
           </div>
 
