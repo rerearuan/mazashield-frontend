@@ -14,7 +14,7 @@ const adminHomeCards = [
   },
   {
     title: "Katalog Mazdafarm",
-    description: "Kelola data ternak sapi dan kambing untuk qurban.",
+    description: "Kelola data ternak sapi dan kambing Mazdafarm.",
     href: "/admin/katalog-mazdafarm",
     icon: <Icons.Meat className="w-8 h-8" />,
     color: "bg-[#1a8245]",

@@ -115,9 +115,9 @@ const sidebarSections: SidebarSection[] = [
   {
     title: "MANAJEMEN PESANAN",
     items: [
+      { href: "/admin/manajemen-pesanan-mazdafarm", label: "Pesanan Mazdafarm", icon: <ShoppingCartIcon /> },
       { href: "/admin/manajemen-invest-ternak", label: "Pesanan Investernak", icon: <ShoppingCartIcon /> },
-      { href: "/admin/manajemen-pesanan-qurban", label: "Pesanan Beli Qurban", icon: <ShoppingCartIcon /> },
-      { href: "/admin/manajemen-pesanan-daging-potong", label: "Pesanan Daging Potong", icon: <ShoppingCartIcon /> },
+      { href: "/admin/manajemen-pesanan-mazdaging", label: "Pesanan Mazdaging", icon: <ShoppingCartIcon /> },
     ],
   },
   {

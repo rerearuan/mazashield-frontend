@@ -14,7 +14,7 @@ export const userService = {
 
     // Admin only
     getUsers: (type?: string) =>
-        apiFetch(`/admin/users/list${type ? `?type=${type}` : ''}`),
+        apiFetch<any[]>(`/admin/users/list${type ? `?type=${type}` : ''}`),
 
     getUserDetail: (id: string | number) =>
         apiFetch(`/admin/users/${id}`),

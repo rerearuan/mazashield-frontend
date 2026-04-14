@@ -3,7 +3,7 @@ import { apiFetch } from "@/lib/api-client";
 export const catalogService = {
     // MAZDAFARM - Internal
     getTernakInternal: (params?: any) =>
-        apiFetch("/sales/mazdafarm", { method: "GET", params }),
+        apiFetch<any[]>("/sales/mazdafarm", { method: "GET", params }),
 
     createTernak: (formData: FormData) =>
         apiFetch("/sales/mazdafarm", { method: "POST", body: formData }),
@@ -16,7 +16,7 @@ export const catalogService = {
 
     // MAZDAGING - Internal
     getDagingInternal: (params?: any) =>
-        apiFetch("/sales/mazdaging", { method: "GET", params }),
+        apiFetch<any[]>("/sales/mazdaging", { method: "GET", params }),
 
     createDaging: (formData: FormData) =>
         apiFetch("/sales/mazdaging", { method: "POST", body: formData }),
@@ -29,7 +29,7 @@ export const catalogService = {
 
     // INVEST TERNAK - Internal
     getInvestInternal: (params?: any) =>
-        apiFetch("/sales/invest", { method: "GET", params }),
+        apiFetch<any[]>("/sales/invest", { method: "GET", params }),
 
     createInvest: (formData: FormData) =>
         apiFetch("/sales/invest", { method: "POST", body: formData }),
