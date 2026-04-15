@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
-import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import Button from "@/components/button/Button";
 import { useInvestOrder, PesananInvest } from "@/features/invest-order/useInvestOrder";
 import { catalogService } from "@/services/catalog.service";
 import { userService } from "@/services/user.service";
+import OrderDetailsModal from "@/features/order-invest-ternak/components/OrderDetailsModal";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const formatRupiah = (val: string | number) =>
@@ -173,173 +173,6 @@ function CreateOrderModal({
     );
 }
 
-// ── Update Status Modal ───────────────────────────────────────────────────────
-function UpdateStatusModal({
-    isOpen,
-    onClose,
-    pesanan,
-    onSuccess,
-    updateOrder,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    pesanan: PesananInvest | null;
-    onSuccess: () => void;
-    updateOrder: (id: number, payload: { status_pesanan?: string; catatan?: string }) => Promise<any>;
-}) {
-    const [newStatus, setNewStatus] = useState("");
-    const [catatan, setCatatan] = useState("");
-    const [saving, setSaving] = useState(false);
-
-    useEffect(() => {
-        if (pesanan) {
-            setNewStatus(pesanan.status_pesanan);
-            setCatatan(pesanan.catatan ?? "");
-        }
-    }, [pesanan]);
-
-    if (!pesanan) return null;
-
-    const handleSubmit = async () => {
-        try {
-            setSaving(true);
-            await updateOrder(pesanan.id_pesanan, { status_pesanan: newStatus, catatan });
-            onSuccess();
-            onClose();
-        } catch (err: any) {
-            toast.error(err.message || "Gagal memperbarui status");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Update Status Pesanan"
-            footer={
-                <>
-                    <Button variant="secondary" onClick={onClose} disabled={saving}>Batal</Button>
-                    <Button variant="primary" onClick={handleSubmit} isLoading={saving}>Simpan</Button>
-                </>
-            }
-        >
-            <div className="space-y-4">
-                <div>
-                    <p className="text-sm text-gray-500 mb-3">
-                        Pesanan <span className="font-bold text-gray-800">#{pesanan.id_pesanan}</span> ·{" "}
-                        {pesanan.data_customer.nama}
-                    </p>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Status Pesanan</label>
-                    <select
-                        value={newStatus}
-                        onChange={(e) => setNewStatus(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none"
-                    >
-                        <option value="Diproses">Diproses</option>
-                        {pesanan.status_pesanan === "Diproses" && (
-                            <>
-                                <option value="Selesai">Selesai</option>
-                                <option value="Dibatalkan">Dibatalkan</option>
-                            </>
-                        )}
-                    </select>
-                    {newStatus === "Selesai" && (
-                        <p className="mt-2 text-xs text-blue-600">
-                            Status investasi akan berubah menjadi <strong>Closed</strong>.
-                        </p>
-                    )}
-                    {newStatus === "Dibatalkan" && (
-                        <p className="mt-2 text-xs text-red-600">
-                            Status investasi akan dikembalikan menjadi <strong>Open</strong>.
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Catatan</label>
-                    <textarea
-                        value={catatan}
-                        onChange={(e) => setCatatan(e.target.value)}
-                        rows={2}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none resize-none"
-                    />
-                </div>
-            </div>
-        </Modal>
-    );
-}
-
-// ── Detail Modal ──────────────────────────────────────────────────────────────
-function DetailModal({
-    isOpen,
-    onClose,
-    pesanan,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    pesanan: PesananInvest | null;
-}) {
-    if (!pesanan) return null;
-    const investStatusColor: Record<string, string> = {
-        Open: "bg-green-100 text-green-700",
-        Ongoing: "bg-yellow-100 text-yellow-700",
-        Closed: "bg-gray-100 text-gray-600",
-    };
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} title={`Detail Pesanan #${pesanan.id_pesanan}`} size="xl">
-            <div className="space-y-5">
-                {/* Customer */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Customer</p>
-                    <p className="font-bold text-gray-900">{pesanan.data_customer.nama}</p>
-                    <p className="text-sm text-gray-500">{pesanan.data_customer.email} · {pesanan.data_customer.no_telp}</p>
-                </div>
-
-                {/* Invest Items */}
-                <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Daftar Investasi</p>
-                    <div className="border border-gray-200 rounded-xl divide-y overflow-hidden">
-                        {pesanan.daftar_invest.map((item) => (
-                            <div key={item.id_invest} className="flex items-center justify-between px-4 py-3">
-                                <div>
-                                    <p className="text-sm font-semibold text-gray-800">{item.nama_paket}</p>
-                                    <p className="text-xs text-gray-500">{item.id_invest} · {item.jenis}{item.berat ? ` · ${item.berat} kg` : ""}</p>
-                                    <p className="text-xs text-gray-400">ROI {item.roi_persen}%</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-sm font-bold text-[#1a8245]">{formatRupiah(item.harga_sapi)}</p>
-                                    <span className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${investStatusColor[item.status_investernak] ?? "bg-gray-100 text-gray-600"}`}>
-                                        {item.status_investernak}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Pembayaran */}
-                <div className="grid grid-cols-3 gap-3">
-                    {[
-                        { label: "Tagihan", val: pesanan.tagihan, color: "text-gray-900" },
-                        { label: "Menunggu Persetujuan", val: pesanan.menunggu_persetujuan, color: "text-yellow-700" },
-                        { label: "Sudah Dibayar", val: pesanan.sudah_dibayar, color: "text-[#1a8245]" },
-                    ].map(({ label, val, color }) => (
-                        <div key={label} className="bg-gray-50 rounded-xl p-3 text-center">
-                            <p className="text-xs text-gray-400 mb-1">{label}</p>
-                            <p className={`font-black text-sm ${color}`}>{formatRupiah(val)}</p>
-                        </div>
-                    ))}
-                </div>
-
-                {pesanan.catatan && (
-                    <div className="bg-gray-50 rounded-xl p-4">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Catatan</p>
-                        <p className="text-sm text-gray-700">{pesanan.catatan}</p>
-                    </div>
-                )}
-            </div>
-        </Modal>
-    );
-}
-
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ManajemenInvestTernakPage() {
     const {
@@ -352,12 +185,10 @@ export default function ManajemenInvestTernakPage() {
         filters,
         fetchOrders,
         createOrder,
-        updateOrder,
     } = useInvestOrder();
 
     const [userRole, setUserRole] = useState<string | null>(null);
     const [showCreate, setShowCreate] = useState(false);
-    const [showUpdate, setShowUpdate] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [selected, setSelected] = useState<PesananInvest | null>(null);
 
@@ -492,23 +323,13 @@ export default function ManajemenInvestTernakPage() {
                                             <td className="px-5 py-4 text-xs text-gray-400">
                                                 {new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                             </td>
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <button
-                                                        onClick={() => { setSelected(order); setShowDetail(true); }}
-                                                        className="text-xs font-semibold text-[#1a8245] hover:underline"
-                                                    >
-                                                        Detail
-                                                    </button>
-                                                    {canManage && order.status_pesanan === "Diproses" && (
-                                                        <button
-                                                            onClick={() => { setSelected(order); setShowUpdate(true); }}
-                                                            className="text-xs font-semibold text-blue-600 hover:underline"
-                                                        >
-                                                            Update
-                                                        </button>
-                                                    )}
-                                                </div>
+                                            <td className="px-5 py-4 text-center">
+                                                <button
+                                                    onClick={() => { setSelected(order); setShowDetail(true); }}
+                                                    className="px-4 py-2 bg-[#1a8245]/10 text-[#1a8245] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#1a8245] hover:text-white transition-all shadow-sm"
+                                                >
+                                                    Detail
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
@@ -521,7 +342,7 @@ export default function ManajemenInvestTernakPage() {
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
-                        <p className="text-xs text-gray-400">Total {totalCount} pesanan</p>
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total {totalCount} pesanan</p>
                         <div className="flex gap-1">
                             {Array.from({ length: totalPages }).map((_, i) => (
                                 <button
@@ -548,17 +369,12 @@ export default function ManajemenInvestTernakPage() {
                 onSuccess={fetchOrders}
                 createOrder={createOrder}
             />
-            <UpdateStatusModal
-                isOpen={showUpdate}
-                onClose={() => setShowUpdate(false)}
-                pesanan={selected}
-                onSuccess={fetchOrders}
-                updateOrder={updateOrder}
-            />
-            <DetailModal
+            
+            <OrderDetailsModal
                 isOpen={showDetail}
                 onClose={() => setShowDetail(false)}
-                pesanan={selected}
+                order={selected}
+                onSuccess={fetchOrders}
             />
         </div>
     );
