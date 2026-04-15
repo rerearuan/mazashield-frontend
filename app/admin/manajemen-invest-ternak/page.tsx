@@ -1,241 +1,565 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import Modal from "@/components/ui/Modal";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import Button from "@/components/button/Button";
+import { useInvestOrder, PesananInvest } from "@/features/invest-order/useInvestOrder";
+import { catalogService } from "@/services/catalog.service";
+import { userService } from "@/services/user.service";
 
-interface InvestmentOrder {
-  id: string;
-  investorName: string;
-  packageName: string;
-  amount: number;
-  status: "Pending" | "Aktif" | "Selesai" | "Dibatalkan";
-  startDate: string;
-  endDate: string;
-  returnAmount: number;
+// ── helpers ──────────────────────────────────────────────────────────────────
+const formatRupiah = (val: string | number) =>
+    `Rp ${Number(val).toLocaleString("id-ID")}`;
+
+const statusColor: Record<string, string> = {
+    Diproses: "bg-yellow-100 text-yellow-800",
+    Selesai: "bg-blue-100 text-blue-800",
+    Dibatalkan: "bg-red-100 text-red-800",
+};
+
+function Badge({ status }: { status: string }) {
+    return (
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor[status] ?? "bg-gray-100 text-gray-800"}`}>
+            {status}
+        </span>
+    );
 }
 
-export default function ManajemenInvestTernakPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "Pending" | "Aktif" | "Selesai" | "Dibatalkan">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+// ── Create Order Modal ────────────────────────────────────────────────────────
+function CreateOrderModal({
+    isOpen,
+    onClose,
+    onSuccess,
+    createOrder,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess: () => void;
+    createOrder: (payload: { id_customer: number; items: string[]; catatan?: string }) => Promise<any>;
+}) {
+    const [customers, setCustomers] = useState<any[]>([]);
+    const [investList, setInvestList] = useState<any[]>([]);
+    const [selectedCustomer, setSelectedCustomer] = useState("");
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const [catatan, setCatatan] = useState("");
+    const [saving, setSaving] = useState(false);
 
-  // Mock data
-  const [orders] = useState<InvestmentOrder[]>([
-    {
-      id: "INV-001",
-      investorName: "John Doe",
-      packageName: "Paket Investasi 6 Bulan",
-      amount: 10000000,
-      status: "Aktif",
-      startDate: "2024-01-15",
-      endDate: "2024-07-15",
-      returnAmount: 11500000,
-    },
-    {
-      id: "INV-002",
-      investorName: "Jane Smith",
-      packageName: "Paket Investasi 12 Bulan",
-      amount: 20000000,
-      status: "Pending",
-      startDate: "-",
-      endDate: "-",
-      returnAmount: 0,
-    },
-  ]);
+    useEffect(() => {
+        if (!isOpen) return;
+        const load = async () => {
+            try {
+                const [custData, invData]: [any, any] = await Promise.all([
+                    userService.getUsers("external"),
+                    catalogService.getInvestInternal({ status_investernak: "Open", page: "1" }),
+                ]);
+                setCustomers(Array.isArray(custData) ? custData : custData.results ?? []);
+                const items = invData.results ?? (Array.isArray(invData) ? invData : []);
+                setInvestList(items);
+            } catch {
+                toast.error("Gagal memuat data");
+            }
+        };
+        load();
+        setSelectedCustomer("");
+        setSelectedItems([]);
+        setCatatan("");
+    }, [isOpen]);
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.investorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.packageName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || order.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+    const toggleItem = (id_invest: string) => {
+        setSelectedItems((prev) =>
+            prev.includes(id_invest) ? prev.filter((x) => x !== id_invest) : [...prev, id_invest]
+        );
+    };
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+    const totalTagihan = investList
+        .filter((i) => selectedItems.includes(i.id_invest))
+        .reduce((sum, i) => sum + Number(i.harga_sapi), 0);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Aktif":
-        return "bg-green-100 text-green-800";
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "Selesai":
-        return "bg-blue-100 text-blue-800";
-      case "Dibatalkan":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+    const handleSubmit = async () => {
+        if (!selectedCustomer) return toast.error("Pilih customer terlebih dahulu");
+        if (selectedItems.length === 0) return toast.error("Pilih minimal 1 investasi");
+        try {
+            setSaving(true);
+            await createOrder({ id_customer: Number(selectedCustomer), items: selectedItems, catatan });
+            onSuccess();
+            onClose();
+        } catch (err: any) {
+            toast.error(err.message || "Gagal membuat pesanan");
+        } finally {
+            setSaving(false);
+        }
+    };
 
-  return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Manajemen Invest Ternak</h1>
-        <p className="text-gray-600">Kelola pesanan investasi ternak</p>
-      </div>
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Buat Pesanan Invest" size="xl"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose} disabled={saving}>Batal</Button>
+                    <Button variant="primary" onClick={handleSubmit} isLoading={saving}>Simpan Pesanan</Button>
+                </>
+            }
+        >
+            <div className="space-y-5">
+                {/* Customer */}
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Customer</label>
+                    <select
+                        value={selectedCustomer}
+                        onChange={(e) => setSelectedCustomer(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none"
+                    >
+                        <option value="">-- Pilih Customer --</option>
+                        {customers.map((c) => (
+                            <option key={c.id} value={c.id}>{c.nama} ({c.email})</option>
+                        ))}
+                    </select>
+                </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Investasi</p>
-          <p className="text-2xl font-bold text-gray-900">Rp 150.000.000</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Investasi Aktif</p>
-          <p className="text-2xl font-bold text-green-600">12</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">5</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Selesai</p>
-          <p className="text-2xl font-bold text-blue-600">28</p>
-        </div>
-      </div>
+                {/* Invest Items */}
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Pilih Investasi <span className="text-gray-400 font-normal">(status Open)</span>
+                    </label>
+                    {investList.length === 0 ? (
+                        <p className="text-sm text-gray-400 italic">Tidak ada investasi yang tersedia saat ini.</p>
+                    ) : (
+                        <div className="border border-gray-200 rounded-xl divide-y max-h-64 overflow-y-auto">
+                            {investList.map((item) => (
+                                <label key={item.id_invest} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedItems.includes(item.id_invest)}
+                                        onChange={() => toggleItem(item.id_invest)}
+                                        className="w-4 h-4 accent-[#1a8245]"
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-800 truncate">{item.nama_paket}</p>
+                                        <p className="text-xs text-gray-500">{item.id_invest} · {item.jenis}</p>
+                                    </div>
+                                    <span className="text-sm font-bold text-[#1a8245] whitespace-nowrap">
+                                        {formatRupiah(item.harga_sapi)}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Cari ID, nama investor, atau paket..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-            />
-          </div>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-          >
-            <option value="all">Semua Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Aktif">Aktif</option>
-            <option value="Selesai">Selesai</option>
-            <option value="Dibatalkan">Dibatalkan</option>
-          </select>
-          <button className="bg-[#1a8245] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#22ad5c] transition-colors whitespace-nowrap">
-            Export Data
-          </button>
-        </div>
-      </div>
+                {/* Total */}
+                {selectedItems.length > 0 && (
+                    <div className="bg-[#f0faf4] border border-[#1a8245]/20 rounded-xl px-4 py-3 flex justify-between items-center">
+                        <span className="text-sm font-semibold text-gray-700">
+                            Total Tagihan ({selectedItems.length} item)
+                        </span>
+                        <span className="text-lg font-black text-[#1a8245]">{formatRupiah(totalTagihan)}</span>
+                    </div>
+                )}
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  ID Investasi
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Investor
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Paket
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Jumlah Investasi
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Return
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Periode
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentOrders.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                    Tidak ada data ditemukan
-                  </td>
-                </tr>
-              ) : (
-                currentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {order.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.investorName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {order.packageName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      Rp {order.amount.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.returnAmount > 0 ? `Rp ${order.returnAmount.toLocaleString("id-ID")}` : "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {order.startDate !== "-" ? `${order.startDate} - ${order.endDate}` : "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex gap-2">
-                        <button className="text-[#1a8245] hover:text-[#22ad5c] font-medium">
-                          Detail
-                        </button>
-                        {order.status === "Pending" && (
-                          <button className="text-blue-600 hover:text-blue-700 font-medium">
-                            Aktifkan
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Menampilkan {startIndex + 1} - {Math.min(startIndex + itemsPerPage, filteredOrders.length)} dari {filteredOrders.length} investasi
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Sebelumnya
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Selanjutnya
-              </button>
+                {/* Catatan */}
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Catatan (opsional)</label>
+                    <textarea
+                        value={catatan}
+                        onChange={(e) => setCatatan(e.target.value)}
+                        rows={2}
+                        placeholder="Tambahkan catatan..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none resize-none"
+                    />
+                </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+        </Modal>
+    );
+}
+
+// ── Update Status Modal ───────────────────────────────────────────────────────
+function UpdateStatusModal({
+    isOpen,
+    onClose,
+    pesanan,
+    onSuccess,
+    updateOrder,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    pesanan: PesananInvest | null;
+    onSuccess: () => void;
+    updateOrder: (id: number, payload: { status_pesanan?: string; catatan?: string }) => Promise<any>;
+}) {
+    const [newStatus, setNewStatus] = useState("");
+    const [catatan, setCatatan] = useState("");
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (pesanan) {
+            setNewStatus(pesanan.status_pesanan);
+            setCatatan(pesanan.catatan ?? "");
+        }
+    }, [pesanan]);
+
+    if (!pesanan) return null;
+
+    const handleSubmit = async () => {
+        try {
+            setSaving(true);
+            await updateOrder(pesanan.id_pesanan, { status_pesanan: newStatus, catatan });
+            onSuccess();
+            onClose();
+        } catch (err: any) {
+            toast.error(err.message || "Gagal memperbarui status");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Update Status Pesanan"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose} disabled={saving}>Batal</Button>
+                    <Button variant="primary" onClick={handleSubmit} isLoading={saving}>Simpan</Button>
+                </>
+            }
+        >
+            <div className="space-y-4">
+                <div>
+                    <p className="text-sm text-gray-500 mb-3">
+                        Pesanan <span className="font-bold text-gray-800">#{pesanan.id_pesanan}</span> ·{" "}
+                        {pesanan.data_customer.nama}
+                    </p>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Status Pesanan</label>
+                    <select
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none"
+                    >
+                        <option value="Diproses">Diproses</option>
+                        {pesanan.status_pesanan === "Diproses" && (
+                            <>
+                                <option value="Selesai">Selesai</option>
+                                <option value="Dibatalkan">Dibatalkan</option>
+                            </>
+                        )}
+                    </select>
+                    {newStatus === "Selesai" && (
+                        <p className="mt-2 text-xs text-blue-600">
+                            Status investasi akan berubah menjadi <strong>Closed</strong>.
+                        </p>
+                    )}
+                    {newStatus === "Dibatalkan" && (
+                        <p className="mt-2 text-xs text-red-600">
+                            Status investasi akan dikembalikan menjadi <strong>Open</strong>.
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Catatan</label>
+                    <textarea
+                        value={catatan}
+                        onChange={(e) => setCatatan(e.target.value)}
+                        rows={2}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none resize-none"
+                    />
+                </div>
+            </div>
+        </Modal>
+    );
+}
+
+// ── Detail Modal ──────────────────────────────────────────────────────────────
+function DetailModal({
+    isOpen,
+    onClose,
+    pesanan,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    pesanan: PesananInvest | null;
+}) {
+    if (!pesanan) return null;
+    const investStatusColor: Record<string, string> = {
+        Open: "bg-green-100 text-green-700",
+        Ongoing: "bg-yellow-100 text-yellow-700",
+        Closed: "bg-gray-100 text-gray-600",
+    };
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title={`Detail Pesanan #${pesanan.id_pesanan}`} size="xl">
+            <div className="space-y-5">
+                {/* Customer */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Customer</p>
+                    <p className="font-bold text-gray-900">{pesanan.data_customer.nama}</p>
+                    <p className="text-sm text-gray-500">{pesanan.data_customer.email} · {pesanan.data_customer.no_telp}</p>
+                </div>
+
+                {/* Invest Items */}
+                <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Daftar Investasi</p>
+                    <div className="border border-gray-200 rounded-xl divide-y overflow-hidden">
+                        {pesanan.daftar_invest.map((item) => (
+                            <div key={item.id_invest} className="flex items-center justify-between px-4 py-3">
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-800">{item.nama_paket}</p>
+                                    <p className="text-xs text-gray-500">{item.id_invest} · {item.jenis}{item.berat ? ` · ${item.berat} kg` : ""}</p>
+                                    <p className="text-xs text-gray-400">ROI {item.roi_persen}%</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-bold text-[#1a8245]">{formatRupiah(item.harga_sapi)}</p>
+                                    <span className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${investStatusColor[item.status_investernak] ?? "bg-gray-100 text-gray-600"}`}>
+                                        {item.status_investernak}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Pembayaran */}
+                <div className="grid grid-cols-3 gap-3">
+                    {[
+                        { label: "Tagihan", val: pesanan.tagihan, color: "text-gray-900" },
+                        { label: "Menunggu Persetujuan", val: pesanan.menunggu_persetujuan, color: "text-yellow-700" },
+                        { label: "Sudah Dibayar", val: pesanan.sudah_dibayar, color: "text-[#1a8245]" },
+                    ].map(({ label, val, color }) => (
+                        <div key={label} className="bg-gray-50 rounded-xl p-3 text-center">
+                            <p className="text-xs text-gray-400 mb-1">{label}</p>
+                            <p className={`font-black text-sm ${color}`}>{formatRupiah(val)}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {pesanan.catatan && (
+                    <div className="bg-gray-50 rounded-xl p-4">
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Catatan</p>
+                        <p className="text-sm text-gray-700">{pesanan.catatan}</p>
+                    </div>
+                )}
+            </div>
+        </Modal>
+    );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function ManajemenInvestTernakPage() {
+    const {
+        orders,
+        loading,
+        totalCount,
+        totalPages,
+        currentPage,
+        setCurrentPage,
+        filters,
+        fetchOrders,
+        createOrder,
+        updateOrder,
+    } = useInvestOrder();
+
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [showCreate, setShowCreate] = useState(false);
+    const [showUpdate, setShowUpdate] = useState(false);
+    const [showDetail, setShowDetail] = useState(false);
+    const [selected, setSelected] = useState<PesananInvest | null>(null);
+
+    useEffect(() => {
+        setUserRole(localStorage.getItem("userRole"));
+    }, []);
+
+    const canManage = userRole === "SuperAdmin" || userRole === "Marketing";
+
+    const countByStatus = (s: string) => orders.filter((o) => o.status_pesanan === s).length;
+    const totalTagihan = orders.reduce((sum, o) => sum + Number(o.tagihan), 0);
+
+    return (
+        <div className="p-8 space-y-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] block mb-1">
+                        Manajemen Pesanan
+                    </span>
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter">
+                        Invest <span className="text-[#1a8245]">Ternak</span>
+                    </h1>
+                    <p className="text-gray-500 text-sm mt-1">Kelola pesanan investasi ternak dari customer.</p>
+                </div>
+                {canManage && (
+                    <Button variant="primary" onClick={() => setShowCreate(true)}
+                        className="rounded-2xl font-black uppercase text-xs tracking-widest px-8 h-12">
+                        + Tambah Pesanan
+                    </Button>
+                )}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                    { label: "Total Tagihan", value: formatRupiah(totalTagihan), color: "text-gray-900" },
+                    { label: "Diproses", value: countByStatus("Diproses"), color: "text-yellow-600" },
+                    { label: "Selesai", value: countByStatus("Selesai"), color: "text-blue-600" },
+                    { label: "Dibatalkan", value: countByStatus("Dibatalkan"), color: "text-red-500" },
+                ].map(({ label, value, color }) => (
+                    <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                        <p className="text-xs text-gray-500 mb-1">{label}</p>
+                        <p className={`text-2xl font-black ${color}`}>{value}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <select
+                        value={filters.statusFilter}
+                        onChange={(e) => { filters.setStatusFilter(e.target.value); setCurrentPage(1); }}
+                        className="px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#1a8245] outline-none"
+                    >
+                        <option value="all">Semua Status</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="Dibatalkan">Dibatalkan</option>
+                    </select>
+                    <input
+                        type="date"
+                        value={filters.startDate}
+                        onChange={(e) => { filters.setStartDate(e.target.value); setCurrentPage(1); }}
+                        className="px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#1a8245] outline-none"
+                    />
+                    <input
+                        type="date"
+                        value={filters.endDate}
+                        onChange={(e) => { filters.setEndDate(e.target.value); setCurrentPage(1); }}
+                        className="px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#1a8245] outline-none"
+                    />
+                    {(filters.statusFilter !== "all" || filters.startDate || filters.endDate) && (
+                        <button
+                            onClick={() => { filters.setStatusFilter("all"); filters.setStartDate(""); filters.setEndDate(""); setCurrentPage(1); }}
+                            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-xl"
+                        >
+                            Reset
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {loading ? (
+                    <div className="flex items-center justify-center py-24">
+                        <div className="w-10 h-10 border-4 border-[#1a8245]/20 border-t-[#1a8245] rounded-full animate-spin" />
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    {["ID Pesanan", "Customer", "Jumlah Investasi", "Total Tagihan", "Sudah Dibayar", "Status", "Tanggal", "Aksi"].map((h) => (
+                                        <th key={h} className="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                            {h}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {orders.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={8} className="py-16 text-center text-gray-400 text-sm">
+                                            Belum ada pesanan investasi.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    orders.map((order) => (
+                                        <tr key={order.id_pesanan} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-5 py-4 text-sm font-mono font-semibold text-gray-800">
+                                                #{order.id_pesanan}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <p className="text-sm font-semibold text-gray-800">{order.data_customer.nama}</p>
+                                                <p className="text-xs text-gray-400">{order.data_customer.email}</p>
+                                            </td>
+                                            <td className="px-5 py-4 text-sm text-gray-700 font-semibold">
+                                                {order.total_item} item
+                                            </td>
+                                            <td className="px-5 py-4 text-sm font-bold text-gray-900">
+                                                {formatRupiah(order.tagihan)}
+                                            </td>
+                                            <td className="px-5 py-4 text-sm font-semibold text-[#1a8245]">
+                                                {formatRupiah(order.sudah_dibayar)}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <Badge status={order.status_pesanan} />
+                                            </td>
+                                            <td className="px-5 py-4 text-xs text-gray-400">
+                                                {new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() => { setSelected(order); setShowDetail(true); }}
+                                                        className="text-xs font-semibold text-[#1a8245] hover:underline"
+                                                    >
+                                                        Detail
+                                                    </button>
+                                                    {canManage && order.status_pesanan === "Diproses" && (
+                                                        <button
+                                                            onClick={() => { setSelected(order); setShowUpdate(true); }}
+                                                            className="text-xs font-semibold text-blue-600 hover:underline"
+                                                        >
+                                                            Update
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+                        <p className="text-xs text-gray-400">Total {totalCount} pesanan</p>
+                        <div className="flex gap-1">
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`min-w-[36px] h-9 rounded-xl text-sm font-bold transition-all ${
+                                        currentPage === i + 1
+                                            ? "bg-[#1a8245] text-white shadow"
+                                            : "text-gray-400 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modals */}
+            <CreateOrderModal
+                isOpen={showCreate}
+                onClose={() => setShowCreate(false)}
+                onSuccess={fetchOrders}
+                createOrder={createOrder}
+            />
+            <UpdateStatusModal
+                isOpen={showUpdate}
+                onClose={() => setShowUpdate(false)}
+                pesanan={selected}
+                onSuccess={fetchOrders}
+                updateOrder={updateOrder}
+            />
+            <DetailModal
+                isOpen={showDetail}
+                onClose={() => setShowDetail(false)}
+                pesanan={selected}
+            />
+        </div>
+    );
 }
