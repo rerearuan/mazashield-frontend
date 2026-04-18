@@ -8,6 +8,8 @@ import Modal from "@/components/ui/Modal";
 import { Button } from "@/components/button";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
+import PaymentUpdateModal from "@/features/payment/components/PaymentUpdateModal";
+
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -22,8 +24,15 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
   const [statusPesanan, setStatusPesanan] = useState(order.status_pesanan);
   const [catatan, setCatatan] = useState(order.catatan || "");
   const [submitting, setSubmitting] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const [role, setRole] = useState("");
 
   useEffect(() => {
+    const savedRole = localStorage.getItem("userRole");
+    if (savedRole) {
+      setRole(savedRole);
+    }
     setStatusPesanan(order.status_pesanan);
     setCatatan(order.catatan || "");
   }, [order]);
@@ -90,6 +99,35 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
                   <span className="font-black text-green-600">Rp {parseFloat(order.sudah_dibayar).toLocaleString('id-ID')}</span>
                 </div>
               </div>
+              
+              {(role === 'Marketing' || role === 'SuperAdmin' || role === 'CEO') && !isCompletedOrCancelled && parseFloat(order.tagihan) > 0 && (
+                <div className="mt-4">
+                  <Button type="button" variant="secondary" onClick={() => setIsPaymentModalOpen(true)} className="w-full text-xs py-2">
+                    + Input Pembayaran
+                  </Button>
+                </div>
+              )}
+
+              {order.log_pembayaran && order.log_pembayaran.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200 space-y-2 max-h-32 overflow-y-auto">
+                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Riwayat (Log) Pembayaran</label>
+                  {order.log_pembayaran.map((log: any) => (
+                    <div key={log.id} className="bg-white p-2 rounded-lg border border-gray-100 flex justify-between items-center shadow-sm">
+                      <div>
+                        <p className="text-[10px] font-bold text-gray-800">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')} <span className="text-gray-400 font-medium">via {log.bank_pengirim}</span></p>
+                        <p className="text-[9px] text-gray-400">{new Date(log.created_at).toLocaleDateString('id-ID')} - {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                      <span className={`text-[9px] font-black uppercase px-2 py-1 rounded ${
+                        log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
+                        log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
+                        'bg-amber-100 text-amber-700'
+                      }`}>
+                        {log.status === 'Menunggu Verifikasi' ? 'MENUNGGU' : log.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -114,9 +152,9 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           <select
             value={statusPesanan}
             onChange={(e) => setStatusPesanan(e.target.value)}
-            disabled={isCompletedOrCancelled}
+            disabled={isCompletedOrCancelled || role === 'Finance'}
             className={`w-full px-4 py-3 border border-gray-200 rounded-xl outline-none font-bold text-sm transition-all ${
-              isCompletedOrCancelled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
+              (isCompletedOrCancelled || role === 'Finance') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
             }`}
           >
             <option value="Diproses">Diproses</option>
@@ -135,9 +173,9 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           <textarea
             value={catatan}
             onChange={(e) => setCatatan(e.target.value)}
-            disabled={isCompletedOrCancelled}
+            disabled={isCompletedOrCancelled || role === 'Finance'}
             className={`w-full px-4 py-3 border border-gray-200 rounded-xl outline-none font-semibold text-sm transition-all h-24 resize-none ${
-              isCompletedOrCancelled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
+              (isCompletedOrCancelled || role === 'Finance') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
             }`}
             placeholder="Catatan pesanan..."
           />
@@ -145,15 +183,27 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="secondary" onClick={onClose}>
-            {isCompletedOrCancelled ? "Tutup" : "Batal"}
+            {isCompletedOrCancelled || role === 'Finance' ? "Tutup" : "Batal"}
           </Button>
-          {!isCompletedOrCancelled && (
+          {(role === 'Marketing' || role === 'SuperAdmin' || role === 'CEO') && !isCompletedOrCancelled && (
             <Button type="submit" variant="primary" disabled={submitting}>
               {submitting ? "Menyimpan..." : "Update Status"}
             </Button>
           )}
         </div>
       </form>
+
+      <PaymentUpdateModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        order={order}
+        orderType="pesanan"
+        onSuccess={() => {
+          onSuccess();
+          setIsPaymentModalOpen(false);
+          onClose(); // Optional: Close detail modal as well to refresh the list easily
+        }}
+      />
     </Modal>
   );
 }

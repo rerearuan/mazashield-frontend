@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -134,9 +134,32 @@ export default function Sidebar() {
   const router = useRouter();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    setUserRole(role);
+  }, []);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
+  };
+
+  const isAllowed = (itemLabel: string, sectionTitle: string) => {
+    if (!userRole) return false;
+    if (userRole === "SuperAdmin" || userRole === "CEO") return true;
+
+    if (userRole === "Finance") {
+      // Finance can see Orders and Verification
+      return ["HOME", "MANAJEMEN PESANAN", "VERIFIKASI & LAPORAN", ""].includes(sectionTitle);
+    }
+
+    if (userRole === "Marketing" || userRole === "Komisaris") {
+      // Marketing can see Catalog and Orders
+      return ["HOME", "MANAJEMEN KATALOG", "MANAJEMEN PESANAN", ""].includes(sectionTitle);
+    }
+
+    return ["HOME", ""].includes(sectionTitle);
   };
 
   const onConfirmLogout = async () => {
@@ -177,37 +200,43 @@ export default function Sidebar() {
 
         {/* Scrollable Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {sidebarSections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="mb-6">
-              {section.title && (
-                <h3 className="px-3 py-2 text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
-                  {section.title}
-                </h3>
-              )}
-              <ul className="space-y-1">
-                {section.items.map((item) => {
-                  const isActive = pathname === item.href || (item.href !== "/admin" && pathname?.startsWith(item.href));
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                          ? "bg-white/20 text-white shadow-md"
-                          : "text-white/90 hover:bg-white/10 hover:text-white"
-                          }`}
-                      >
-                        <span className={`flex-shrink-0 ${isActive ? "text-white" : "text-white/80"}`}>
-                          {item.icon}
-                        </span>
-                        <span className="flex-1">{item.label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+          {sidebarSections.map((section, sectionIndex) => {
+            const visibleItems = section.items.filter(item => isAllowed(item.label, section.title));
+            if (visibleItems.length === 0) return null;
+
+            return (
+              <div key={sectionIndex} className="mb-6">
+                {section.title && (
+                  <h3 className="px-3 py-2 text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
+                    {section.title}
+                  </h3>
+                )}
+                <ul className="space-y-1">
+                  {visibleItems.map((item) => {
+                    const isActive = pathname === item.href || (item.href !== "/admin" && pathname?.startsWith(item.href));
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
+                            ? "bg-white/20 text-white shadow-md"
+                            : "text-white/90 hover:bg-white/10 hover:text-white"
+                            }`}
+                        >
+                          <span className={`flex-shrink-0 ${isActive ? "text-white" : "text-white/80"}`}>
+                            {item.icon}
+                          </span>
+                          <span className="flex-1">{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
         </nav>
+
 
         {/* Footer - Logout */}
         <div className="p-4 border-t border-[#2a9d5f] flex-shrink-0">
