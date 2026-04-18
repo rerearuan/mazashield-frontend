@@ -7,7 +7,6 @@ import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import PaymentUpdateModal from "@/features/payment/components/PaymentUpdateModal";
 
-
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +21,6 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
   const [catatan, setCatatan] = useState(order.catatan || "");
   const [submitting, setSubmitting] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
   const [role, setRole] = useState("");
 
   useEffect(() => {
@@ -45,11 +43,11 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
 
     setSubmitting(true);
     try {
-      await orderService.updateMazdagingOrder(order.id_pesanan, {
+      await orderService.updateInvestOrder(order.id_pesanan, {
         status_pesanan: statusPesanan,
         catatan: catatan
       });
-      toast.success("Pesanan daging berhasil diperbarui!");
+      toast.success("Pesanan investasi berhasil diperbarui!");
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -60,7 +58,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Detail Pesanan Daging #${order.id_pesanan}`}>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Detail Pesanan Investasi #${order.id_pesanan}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -129,19 +127,24 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           </div>
         </div>
 
-
         <div>
-          <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-2">Item Daging</label>
+          <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-2">Item Investasi</label>
           <div className="space-y-2 border border-gray-100 rounded-xl overflow-hidden">
-            {order.daftar_item?.map((item: any) => (
-              <div key={item.id_daging} className="flex justify-between items-center bg-white p-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+            {order.daftar_invest?.map((item: any) => (
+              <div key={item.id_invest} className="flex justify-between items-center bg-white p-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                 <div>
-                  <p className="font-bold text-sm text-gray-900">{item.nama}</p>
+                  <p className="font-bold text-sm text-gray-900">{item.nama_paket}</p>
                   <p className="text-[10px] text-gray-400 font-medium italic">
-                    {item.id_daging} — {item.bagian} — {item.berat_pesanan_kg}kg @ Rp {parseFloat(item.harga_per_kg).toLocaleString('id-ID')}/kg
+                    {item.id_invest} — {item.jenis} — {item.berat}kg @ Rp {parseFloat(item.harga_sapi).toLocaleString('id-ID')}
                   </p>
+                  <p className="text-[9px] text-[#1a8245] font-bold">ROI: {item.roi_persen}% — Est. Return: Rp {parseFloat(item.harga_jual).toLocaleString('id-ID')}</p>
                 </div>
-                <p className="font-black text-sm text-gray-900">Rp {parseFloat(item.subtotal_item).toLocaleString('id-ID')}</p>
+                <div className="text-right">
+                  <p className="font-black text-sm text-gray-900">Rp {parseFloat(item.harga_sapi).toLocaleString('id-ID')}</p>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${item.status_investernak === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                    {item.status_investernak}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -161,11 +164,6 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
             <option value="Selesai">Selesai</option>
             <option value="Dibatalkan">Dibatalkan</option>
           </select>
-          {statusPesanan === 'Selesai' && order.status_pesanan !== 'Selesai' && (
-            <p className="text-[10px] text-green-600 mt-2 font-bold uppercase tracking-wider italic">
-              * Jika status Selesai, sistem akan otomatis mencatat tagihan sebagai lunas.
-            </p>
-          )}
         </div>
 
         <div>
@@ -197,7 +195,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         order={order}
-        orderType="pesanandaging"
+        orderType="pesananinvest"
         onSuccess={() => {
           onSuccess();
           setIsPaymentModalOpen(false);
