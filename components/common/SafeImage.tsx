@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Image, { ImageProps } from "next/image";
-import { getRandomCowImage, DEFAULT_COW_IMAGE } from "@/lib/image-utils";
+import { getRandomCowImage, getRandomMeatImage, DEFAULT_COW_IMAGE } from "@/lib/image-utils";
 
 interface SafeImageProps extends Omit<ImageProps, "src" | "alt" | "id"> {
   src: string | null | undefined;
   alt: string;
   fallbackType?: "cow" | "meat" | "general";
+  fallbackSrc?: string;
   id?: string | number;
 }
 
@@ -19,22 +20,18 @@ export default function SafeImage({
   id,
   className,
   ...props 
-}: SafeImageProps & { fallbackSrc?: string }) {
+}: SafeImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(DEFAULT_COW_IMAGE);
   const [isFallback, setIsFallback] = useState(false);
 
+  const getFallback = () => {
+    if (fallbackSrc) return fallbackSrc;
+    return fallbackType === "meat" ? getRandomMeatImage(id) : getRandomCowImage(id);
+  };
+
   const handleError = () => {
     if (!isFallback) {
-      let finalFallback = fallbackSrc;
-      if (!finalFallback) {
-        if (fallbackType === "meat") {
-          const { getRandomMeatImage } = require("@/lib/image-utils");
-          finalFallback = getRandomMeatImage(id);
-        } else {
-          finalFallback = getRandomCowImage(id);
-        }
-      }
-      setImgSrc(finalFallback);
+      setImgSrc(getFallback());
       setIsFallback(true);
     }
   };
@@ -44,16 +41,7 @@ export default function SafeImage({
       setImgSrc(src);
       setIsFallback(false);
     } else {
-      let finalFallback = fallbackSrc;
-      if (!finalFallback) {
-        if (fallbackType === "meat") {
-          const { getRandomMeatImage } = require("@/lib/image-utils");
-          finalFallback = getRandomMeatImage(id);
-        } else {
-          finalFallback = getRandomCowImage(id);
-        }
-      }
-      setImgSrc(finalFallback);
+      setImgSrc(getFallback());
       setIsFallback(true);
     }
   }, [src, id, fallbackSrc, fallbackType]);
