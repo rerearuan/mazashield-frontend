@@ -87,7 +87,7 @@ export default function MazdagingPage() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Filter Section */}
-          <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
+          <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-5 md:p-10 mb-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
             
             {/* Helper functions for currency formatting */}

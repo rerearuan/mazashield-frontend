@@ -27,9 +27,9 @@ export default function CattleFilters({ filters }: CattleFiltersProps) {
     };
 
     return (
-        <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-6 md:p-7 mb-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
-                <div className="lg:col-span-2">
+        <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-5 md:p-7 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="sm:col-span-2 lg:col-span-2">
                     <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Cari Ternak</label>
                     <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -47,38 +47,37 @@ export default function CattleFilters({ filters }: CattleFiltersProps) {
 
                 <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Range Harga</label>
-                    <div className="flex gap-2">
-                        <div className="relative flex-1">
-                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
                                 Rp
                             </span>
                             <input
                                 type="text"
-                                placeholder="5.000.000"
+                                placeholder="Min"
                                 value={formatCurrency(filters.minPrice)}
                                 onChange={(e) => handlePriceChange(e.target.value, filters.setMinPrice)}
-                                className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                                className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                             />
                         </div>
-                        <span className="text-gray-300 self-center font-bold">-</span>
-                        <div className="relative flex-1">
-                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
                                 Rp
                             </span>
                             <input
                                 type="text"
-                                placeholder="25.000.000"
+                                placeholder="Max"
                                 value={formatCurrency(filters.maxPrice)}
                                 onChange={(e) => handlePriceChange(e.target.value, filters.setMaxPrice)}
-                                className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                                className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                             />
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Range Berat (Kg)</label>
-                    <div className="flex gap-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Berat (Kg)</label>
+                    <div className="grid grid-cols-2 gap-2">
                         <input
                             type="number"
                             min="0"
@@ -86,9 +85,8 @@ export default function CattleFilters({ filters }: CattleFiltersProps) {
                             value={filters.minWeight}
                             onChange={(e) => filters.setMinWeight(e.target.value)}
                             onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            className="w-full px-3 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                         />
-                        <span className="text-gray-300 self-center font-bold">-</span>
                         <input
                             type="number"
                             min="0"
@@ -96,7 +94,7 @@ export default function CattleFilters({ filters }: CattleFiltersProps) {
                             value={filters.maxWeight}
                             onChange={(e) => filters.setMaxWeight(e.target.value)}
                             onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            className="w-full px-3 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                         />
                     </div>
                 </div>

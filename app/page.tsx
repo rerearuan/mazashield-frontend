@@ -24,7 +24,7 @@ export default function Home() {
       <Navbar activePage="home" />
 
       {/* Hero Section */}
-      <section id="home" className="relative h-[800px] flex items-center justify-center overflow-hidden">
+      <section id="home" className="relative min-h-[600px] h-[100svh] max-h-[900px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <SafeImage
             src={images.background}
@@ -68,7 +68,7 @@ export default function Home() {
       </section>
 
       {/* About Us Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="flex-1 space-y-8">
@@ -129,7 +129,7 @@ export default function Home() {
       </section>
 
       {/* Solutions Section */}
-      <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-900 overflow-hidden">
+      <section className="relative py-12 md:py-24 px-4 sm:px-6 lg:px-8 bg-gray-900 overflow-hidden">
         <div className="absolute inset-0 bg-[#0f2e28]"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#1a8245]/20 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"></div>
@@ -198,7 +198,7 @@ export default function Home() {
       </section>
 
       {/* CEO Message Section */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
+      <section className="py-12 md:py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
             <div className="relative w-full max-w-[440px] aspect-[4/5] rounded-[48px] overflow-hidden shadow-2xl group">
