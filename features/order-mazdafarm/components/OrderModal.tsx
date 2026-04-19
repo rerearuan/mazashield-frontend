@@ -147,7 +147,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
 
 
             <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Pilih Ternak (Multi-select)</label>
+              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Pilih Ternak (Multi-select) <span className="text-red-500">*</span></label>
               
               {/* Cattle Search - PBI 23 */}
               <div className="relative mb-2">

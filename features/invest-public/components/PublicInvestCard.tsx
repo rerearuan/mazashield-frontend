@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/common/SafeImage";
 import { InvestTernak } from "../useInvestPublic";
 
 interface PublicInvestCardProps {
@@ -19,12 +19,12 @@ export default function PublicInvestCard({ pkg, onInvest }: PublicInvestCardProp
     return (
         <div className="bg-white border border-[#e5e7eb] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="bg-gray-100 h-[240px] relative">
-                <Image
+                <SafeImage
                     src={getImageUrl(pkg.foto)}
                     alt={pkg.nama_paket}
                     fill
                     className="object-cover"
-                    unoptimized
+                    id={pkg.id_invest}
                 />
                 <div className="absolute top-4 left-4">
                     <span className="bg-white/90 backdrop-blur-md text-[#1a8245] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">

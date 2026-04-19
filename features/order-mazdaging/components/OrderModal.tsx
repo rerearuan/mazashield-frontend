@@ -158,7 +158,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
             />
 
             <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-3">Pilih Item Daging</label>
+              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-3">Pilih Item Daging <span className="text-red-500">*</span></label>
               
               <div className="relative mb-3">
                   <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -214,7 +214,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
 
             {selectedItems.length > 0 && (
                 <div className="space-y-3">
-                    <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Atur Berat Pesanan (kg)</label>
+                    <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Atur Berat Pesanan (kg) <span className="text-red-500">*</span></label>
                     <div className="grid gap-3">
                         {selectedItems.map(item => (
                             <div key={item.id_daging} className="flex items-center gap-4 bg-white p-4 border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all">

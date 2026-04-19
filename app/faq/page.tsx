@@ -43,7 +43,7 @@ export default function FAQPage() {
         description="Temukan jawaban untuk pertanyaan yang sering diajukan seputar produk, layanan, dan investasi di Mazashi Semuda Farm."
       />
 
-      <section className="py-24 px-6 lg:px-8 max-w-5xl mx-auto">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <div className="flex flex-wrap gap-3 mb-16 justify-center">
           {categories.map((category) => (
             <button
@@ -64,7 +64,7 @@ export default function FAQPage() {
             <div key={idx} className="bg-white border border-gray-100 rounded-[32px] overflow-hidden transition-all duration-300">
               <button
                 onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                className="w-full flex items-center justify-between p-8 text-left"
+                className="w-full flex items-center justify-between p-5 md:p-8 text-left"
               >
                 <div className="flex-1 pr-6">
                   <span className="text-[#1a8245] font-black text-[9px] uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full mb-3 inline-block">
@@ -79,7 +79,7 @@ export default function FAQPage() {
               <div
                 className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === idx ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
               >
-                <div className="px-8 pb-8 pt-0">
+                <div className="px-5 md:px-8 pb-5 md:pb-8 pt-0">
                   <div className="w-full h-px bg-gray-50 mb-8" />
                   <p className="text-gray-500 font-medium leading-relaxed">{faq.answer}</p>
                 </div>

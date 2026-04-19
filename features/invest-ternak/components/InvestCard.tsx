@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 
-import Image from "next/image";
+import SafeImage from "@/components/common/SafeImage";
 import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
 import { InvestTernak } from "../useInvestCatalog";
-import { getRandomCowImage } from "@/lib/image-utils";
 
 interface InvestCardProps {
     item: InvestTernak;
@@ -56,23 +55,13 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
     return (
         <div className="bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="relative h-56 bg-gray-100">
-                {imageUrl ? (
-                    <Image
-                        src={imageUrl}
-                        alt={item.nama_paket}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                    />
-                ) : (
-                    <Image
-                        src={getRandomCowImage(item.id_invest)}
-                        alt={item.nama_paket}
-                        fill
-                        className="object-cover opacity-80"
-                        unoptimized
-                    />
-                )}
+                <SafeImage
+                    src={imageUrl}
+                    alt={item.nama_paket}
+                    fill
+                    className="object-cover"
+                    id={item.id_invest}
+                />
                 <div className="absolute top-4 right-4">
                     <span
                         className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${item.status_investernak === "Open"

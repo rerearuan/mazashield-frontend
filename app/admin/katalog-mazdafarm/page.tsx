@@ -109,13 +109,13 @@ export default function KatalogMazdafarmPage() {
   };
 
   return (
-    <div className="p-10 relative">
+    <div className="p-4 md:p-10 relative">
       <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Dashboard Ternak
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Katalog <span className="text-[#1a8245]">Mazdafarm</span>
           </h1>
           <p className="text-gray-500 font-medium text-sm">
@@ -150,7 +150,7 @@ export default function KatalogMazdafarmPage() {
               <div className="relative h-56 bg-gray-100">
                 <SafeImage
                   src={getImageUrl(item.foto)}
-                  fallbackSrc={getRandomCowImage(item.id_ternak)}
+                  id={item.id_ternak}
                   alt={item.nama}
                   fill
                   className="object-cover"

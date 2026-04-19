@@ -7,6 +7,18 @@ import Image from "next/image";
 import { authService } from "@/services/auth.service";
 import ConfirmationModal from "../ui/ConfirmationModal";
 
+const HamburgerIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
 const logo = "/images/logoPrimer 1.png";
 
 interface SidebarItem {
@@ -138,11 +150,16 @@ export default function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role);
   }, []);
+
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -184,9 +201,36 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 h-screen w-64 bg-[#1a8245] text-white shadow-xl flex flex-col">
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[#1a8245] flex items-center justify-between px-4 shadow-lg">
+        <Link href="/admin" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <Image src={logo} alt="Logo" width={24} height={24} className="object-contain" unoptimized />
+          </div>
+          <span className="font-bold text-sm text-white">Mazdafarm Admin</span>
+        </Link>
+        <button
+          onClick={() => setIsMobileOpen(true)}
+          className="text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+          aria-label="Buka menu"
+        >
+          <HamburgerIcon />
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed left-0 top-0 h-screen w-64 bg-[#1a8245] text-white shadow-xl flex flex-col z-50 transition-transform duration-300
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         {/* Header */}
-        <div className="p-6 border-b border-[#2a9d5f] flex-shrink-0">
+        <div className="p-6 border-b border-[#2a9d5f] flex-shrink-0 flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
               <Image
@@ -200,6 +244,13 @@ export default function Sidebar() {
             </div>
             <span className="font-bold text-lg text-white">Mazdafarm Admin</span>
           </Link>
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="md:hidden text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Tutup menu"
+          >
+            <CloseIcon />
+          </button>
         </div>
 
         {/* Scrollable Navigation */}
