@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image, { ImageProps } from "next/image";
 import { getRandomCowImage, DEFAULT_COW_IMAGE } from "@/lib/image-utils";
 
-interface SafeImageProps extends Omit<ImageProps, "src" | "alt"> {
+interface SafeImageProps extends Omit<ImageProps, "src" | "alt" | "id"> {
   src: string | null | undefined;
   alt: string;
   fallbackType?: "cow" | "meat" | "general";
@@ -63,6 +63,7 @@ export default function SafeImage({
       {...props}
       src={imgSrc}
       alt={alt}
+      id={id ? String(id) : undefined}
       className={`${className} ${isFallback ? "opacity-90 grayscale-[10%]" : ""}`}
       onError={handleError}
       unoptimized
