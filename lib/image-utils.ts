@@ -20,6 +20,14 @@ export const getRandomCowImage = (id?: number | string) => {
   return COW_IMAGES[getDeterministicIdx(id, COW_IMAGES.length)];
 };
 
+export const MEAT_IMAGES = [
+  "https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1544022613-e87ee75a784a?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1607623814075-e45df19c59bc?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1558032483-e18e388d18f5?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800"
+];
+
 export const getRandomMeatImage = (id?: number | string) => {
-  return COW_IMAGES[getDeterministicIdx(id, COW_IMAGES.length)];
+  return MEAT_IMAGES[getDeterministicIdx(id, MEAT_IMAGES.length)];
 };
