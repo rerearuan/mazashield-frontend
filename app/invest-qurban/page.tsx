@@ -68,23 +68,6 @@ export default function InvestQurbanPage() {
   };
 
 
-  const cattlePrices = [
-    { class: "Patungan 7 orang*", weight: "±345", price: "3.400.000/orang" },
-    { class: "Kelas A", weight: "±300", price: "19.500.000" },
-    { class: "Kelas B", weight: "±345", price: "22.400.000" },
-    { class: "Kelas C", weight: "±380", price: "25.000.000" },
-    { class: "Kelas D", weight: "±435", price: "28.000.000" },
-    { class: "Kelas E", weight: "±500", price: "32.500.000" },
-  ];
-
-  const goatPrices = [
-    { class: "Kelas A", weight: "±25", price: "3.000.000" },
-    { class: "Kelas B", weight: "±30", price: "3.500.000" },
-    { class: "Kelas C", weight: "±35", price: "4.000.000" },
-    { class: "Kelas D", weight: "±45", price: "5.000.000" },
-    { class: "Kelas E", weight: "±55", price: "6.000.000" },
-  ];
-
   const timeline = [
     { date: "Okt 2025 - Jan 2026", task: "MoU Tabungan Qurban & Investernak" },
     { date: "Januari 2026", task: "Seleksi & Belanja Sapi dari Bali" },
@@ -142,77 +125,8 @@ export default function InvestQurbanPage() {
         </div>
       </section>
 
-      {/* Pricelist Section */}
-      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Tabungan Qurban 1447 H</span>
-            <h2 className="text-gray-900 font-extrabold text-3xl lg:text-5xl tracking-tighter mb-4">
-              Pricelist Hewan <span className="text-[#1a8245]">Qurban</span>
-            </h2>
-            <p className="text-gray-500 font-medium">Informasi harga terencana, ringan, dan mudah.</p>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Sapi Table */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                <span className="p-2 bg-[#1a8245]/10 rounded-xl"><Icons.Meat className="w-6 h-6 text-[#1a8245]" /></span>
-                Sapi Bali & Jawa
-              </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-100">
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Pilihan</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Berat (Kg)</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Harga (Rp)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {cattlePrices.map((item, i) => (
-                      <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 font-bold text-gray-900 text-sm">{item.class}</td>
-                        <td className="px-6 py-4 font-medium text-gray-500 text-sm">{item.weight}</td>
-                        <td className="px-6 py-4 font-black text-[#1a8245] text-sm">{item.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Kambing Table */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                <span className="p-2 bg-[#fbbf24]/10 rounded-xl"><Icons.Leaf className="w-6 h-6 text-[#d97706]" /></span>
-                Kambing/Domba
-              </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-100">
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Kelas</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Berat (Kg)</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Harga (Rp)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {goatPrices.map((item, i) => (
-                      <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 font-bold text-gray-900 text-sm">{item.class}</td>
-                        <td className="px-6 py-4 font-medium text-gray-500 text-sm">{item.weight}</td>
-                        <td className="px-6 py-4 font-black text-[#d97706] text-sm">{item.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <p className="mt-8 text-xs text-gray-400 font-medium italic">*Harga Sapi sudah termasuk biaya operasional sembelih Rp 1.500.000/ekor. Harga Kambing belum termasuk biaya jagal.</p>
-        </div>
-      </section>
+      {/* Benefits Section */}
 
       {/* Benefits Section */}
       <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gray-50">
@@ -258,48 +172,33 @@ export default function InvestQurbanPage() {
           </div>
 
           {/* Filter Bar - PBI 22 */}
-          <div className="bg-gray-50/50 border border-gray-100 rounded-[32px] p-8 mb-16 grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Cari Paket</label>
-                    <div className="relative">
-                        <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Nama paket..."
-                            value={filters.searchTerm}
-                            onChange={(e) => filters.setSearchTerm(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm transition-all"
-                        />
+          <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] p-6 shadow-xl shadow-green-900/5 mb-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Rentang Harga</label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">Rp</span>
+                            <input
+                                type="text"
+                                placeholder="Min"
+                                value={formatCurrency(filters.minHarga)}
+                                onChange={(e) => handlePriceChange(e.target.value, filters.setMinHarga)}
+                                className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            />
+                        </div>
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">Rp</span>
+                            <input
+                                type="text"
+                                placeholder="Max"
+                                value={formatCurrency(filters.maxHarga)}
+                                onChange={(e) => handlePriceChange(e.target.value, filters.setMaxHarga)}
+                                className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Jenis</label>
-                    <select
-                        value={filters.jenisFilter}
-                        onChange={(e) => filters.setJenisFilter(e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm appearance-none"
-                    >
-                        <option value="all">Semua Jenis</option>
-                        <option value="Limousin">Limousin</option>
-                        <option value="Simental">Simental</option>
-                        <option value="Brahman">Brahman</option>
-                        <option value="PO">PO</option>
-                        <option value="Bali">Bali</option>
-                    </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Min Harga Sapi</label>
-                    <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1a8245] font-bold text-[10px]">Rp</span>
-                        <input
-                            type="text"
-                            placeholder="Contoh: 15.000.000"
-                            value={formatCurrency(filters.minHarga)}
-                            onChange={(e) => handlePriceChange(e.target.value, filters.setMinHarga)}
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm transition-all"
-                        />
-                    </div>
-                </div>
+
                 <div className="flex items-end">
                     <button
                         onClick={() => {
@@ -308,7 +207,7 @@ export default function InvestQurbanPage() {
                             filters.setMinHarga("");
                             filters.setMaxHarga("");
                         }}
-                        className="w-full py-3 bg-gray-200 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-300 transition-all font-bold"
+                        className="w-full py-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-black text-[10px] uppercase tracking-[0.16em] hover:bg-amber-100 transition-all shadow-sm"
                     >
                         Reset Filter
                     </button>
@@ -334,6 +233,17 @@ export default function InvestQurbanPage() {
                 ))
             )}
           </div>
+
+          {/* Pagination - PBI 22 */}
+          {totalPages > 1 && (
+            <div className="mt-16 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
 
           <p className="mt-12 text-center text-sm text-gray-400 font-medium whitespace-pre-line">
             *Investor cukup membayar biaya sapi yang di-highlight (Modal).*{"\n"}

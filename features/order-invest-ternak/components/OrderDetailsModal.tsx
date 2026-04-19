@@ -114,7 +114,8 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-[10px] font-black text-gray-900">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')}</p>
-                      <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim}</p>
+                      <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim} ({log.nama_pengirim || '-'})</p>
+                      <p className="text-[8px] text-gray-400 font-semibold italic">Input oleh: {log.created_by_name || 'Sistem'}</p>
                     </div>
                     <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full ${
                       log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
@@ -127,10 +128,15 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
                   <p className="text-[9px] text-gray-400 font-medium italic">
                     {new Date(log.created_at).toLocaleDateString('id-ID')} — {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                   </p>
-                  {log.catatan_verifikasi && (
+                  {log.status !== 'Menunggu Verifikasi' && (
                     <div className="pt-2 border-t border-gray-50">
-                      <p className="text-[9px] font-black text-red-600 uppercase tracking-widest mb-1 italic">Finance Feedback:</p>
-                      <p className="text-[10px] text-gray-600 italic leading-relaxed">"{log.catatan_verifikasi}"</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1 italic">
+                        {log.status === 'Diterima' ? 'Verified by:' : 'Rejected by:'} 
+                        <span className="text-[#1a8245] ml-1">{log.verified_by_name || 'Staff Finance'}</span>
+                      </p>
+                      {log.catatan_verifikasi && (
+                        <p className="text-[10px] text-gray-600 italic leading-relaxed">"{log.catatan_verifikasi}"</p>
+                      )}
                     </div>
                   )}
                 </div>

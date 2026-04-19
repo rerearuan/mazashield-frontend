@@ -15,10 +15,12 @@ interface Payment {
     nominal_pembayaran: string | number;
     bank_pengirim: string;
     nomor_rekening_pengirim: string;
+    nama_pengirim: string;
     tanggal_transfer: string;
     waktu_transfer: string;
     catatan: string;
     status: "Menunggu Verifikasi" | "Diterima" | "Ditolak";
+    created_by_name?: string;
 }
 
 const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
@@ -348,11 +350,21 @@ export default function VerifikasiPembayaranPage() {
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">No. Rekening</p>
                                     <p className="font-bold text-gray-900">{selectedPayment.nomor_rekening_pengirim}</p>
                                 </div>
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nama Pengirim</p>
+                                    <p className="font-bold text-gray-900">{selectedPayment.nama_pengirim || "-"}</p>
+                                </div>
                             </div>
 
-                            <div className="p-4 border border-gray-100 rounded-2xl">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
-                                <p className="font-bold text-gray-900">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
+                                    <p className="font-bold text-gray-900 text-xs">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
+                                </div>
+                                <div className="p-4 border border-green-100 rounded-2xl bg-green-50/20">
+                                    <p className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-1">Input Oleh</p>
+                                    <p className="font-bold text-[#1a8245]">{selectedPayment.created_by_name || "Sistem"}</p>
+                                </div>
                             </div>
 
                             {selectedPayment.catatan && (

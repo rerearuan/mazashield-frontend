@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 
-import Image from "next/image";
+import SafeImage from "@/components/common/SafeImage";
 import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
 import { Meat } from "../useMeatCatalog";
-import { getRandomMeatImage } from "@/lib/image-utils";
 
 interface MeatCardProps {
     item: Meat;
@@ -57,23 +56,14 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
     return (
         <div className="group bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="relative h-56 bg-gray-100">
-                {imageUrl ? (
-                    <Image
-                        src={imageUrl}
-                        alt={item.nama}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                    />
-                ) : (
-                    <Image
-                        src={getRandomMeatImage(item.id_daging)}
-                        alt={item.nama}
-                        fill
-                        className="object-cover opacity-80"
-                        unoptimized
-                    />
-                )}
+                <SafeImage
+                    src={imageUrl}
+                    alt={item.nama}
+                    fill
+                    className="object-cover"
+                    id={item.id_daging}
+                    fallbackType="meat"
+                />
                 <div className="absolute top-4 right-4">
                     <span
                         className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${item.status_daging === "Tersedia"

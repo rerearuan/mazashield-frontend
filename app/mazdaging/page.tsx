@@ -87,8 +87,7 @@ export default function MazdagingPage() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Filter Section */}
-          <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-5 md:p-10 mb-16 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+          <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] p-6 shadow-xl shadow-green-900/5 mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             
             {/* Helper functions for currency formatting */}
             {(() => {
@@ -105,65 +104,68 @@ export default function MazdagingPage() {
               };
 
               return (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Produk</label>
+                <>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Cari Produk</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                         <Icons.Search className="w-4 h-4" />
                       </span>
                       <input
                         type="text"
-                        placeholder="Nama daging..."
+                        placeholder="Nama Daging..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                        className="w-full pl-11 pr-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga /kg</label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Rentang Harga /kg</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
                           Rp
                         </span>
                         <input
                           type="text"
-                          placeholder="100.000"
+                          placeholder="Min"
                           value={formatCurrency(minPrice)}
                           onChange={(e) => handlePriceChange(e.target.value, setMinPrice)}
-                          className="w-full pl-10 pr-3.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                          className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                         />
                       </div>
-                      <div className="relative flex-1">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
                           Rp
                         </span>
                         <input
                           type="text"
-                          placeholder="250.000"
+                          placeholder="Max"
                           value={formatCurrency(maxPrice)}
                           onChange={(e) => handlePriceChange(e.target.value, setMaxPrice)}
-                          className="w-full pl-10 pr-3.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                          className="w-full pl-9 pr-2 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Bagian Daging</label>
-                    <select
-                      value={bagian}
-                      onChange={(e) => setBagian(e.target.value)}
-                      className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm appearance-none shadow-sm"
-                    >
-                      <option value="all">Semua Bagian</option>
-                      <option value="Has Dalam">Has Dalam</option>
-                      <option value="Has Luar">Has Luar</option>
-                      <option value="Iga">Iga</option>
-                      <option value="Sirloin">Sirloin</option>
-                      <option value="Tenderloin">Tenderloin</option>
-                    </select>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Bagian Daging</label>
+                    <div className="relative">
+                      <select
+                        value={bagian}
+                        onChange={(e) => setBagian(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-semibold text-sm transition-all text-gray-900 shadow-sm appearance-none"
+                      >
+                        <option value="all">Semua Bagian</option>
+                        <option value="Has Dalam">Has Dalam</option>
+                        <option value="Has Luar">Has Luar</option>
+                        <option value="Iga">Iga</option>
+                        <option value="Sirloin">Sirloin</option>
+                        <option value="Tenderloin">Tenderloin</option>
+                      </select>
+                      <Icons.ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
                   <div className="flex items-end">
                     <button
@@ -174,12 +176,12 @@ export default function MazdagingPage() {
                         setBagian("all");
                         setCurrentPage(1);
                       }}
-                      className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all font-bold"
+                      className="w-full py-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-black text-[10px] uppercase tracking-[0.16em] hover:bg-amber-100 transition-all shadow-sm"
                     >
                       Reset Filter
                     </button>
                   </div>
-                </div>
+                </>
               );
             })()}
           </div>
@@ -214,6 +216,7 @@ export default function MazdagingPage() {
                       code={item.id_daging}
                       stock="Tersedia"
                       price={`Rp ${Number(item.harga_per_kg).toLocaleString("id-ID")} / kg`}
+                      fallbackType="meat"
                       onButtonClick={() => handleOrder(item.nama)}
                     />
                   ))

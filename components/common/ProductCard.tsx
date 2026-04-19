@@ -43,6 +43,7 @@ interface ProductCardProps {
   weight?: string;
   age?: string;
   code?: string;
+  fallbackType?: "cow" | "meat" | "general";
   buttonText?: string;
   buttonColor?: string;
   onButtonClick?: () => void;
@@ -57,6 +58,7 @@ export default function ProductCard({
   weight,
   age,
   code,
+  fallbackType = "cow",
   buttonText = "Pesan Sekarang",
   buttonColor = "#1a8245",
   onButtonClick,
@@ -64,7 +66,14 @@ export default function ProductCard({
   return (
     <div className="bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
       <div className="bg-gray-50 h-[260px] relative overflow-hidden">
-        <SafeImage src={image} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
+        <SafeImage 
+           src={image} 
+           alt={title} 
+           fill 
+           className="object-cover group-hover:scale-110 transition-transform duration-700" 
+           id={code} 
+           fallbackType={fallbackType}
+        />
         {code && (
             <div className="absolute top-4 left-4">
                 <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-gray-800 shadow-lg border border-white/20 uppercase">
