@@ -52,18 +52,22 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         status_pesanan: statusPesanan,
         catatan: catatan
       });
-      toast.success("Pesanan berhasil diperbarui!");
+      toast.success("Pesanan Ternak berhasil diperbarui!");
       onSuccess();
       onClose();
     } catch (error: any) {
-      toast.error(error.message || "Gagal memperbarui pesanan.");
+      toast.error(error.message || "Gagal memperbarui Pesanan Ternak.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Detail Pesanan #${order.id_pesanan}`}>
+    <Modal size="lg" isOpen={isOpen} onClose={onClose} title={`Detail Pesanan Ternak #${order.id_pesanan}`}>
+
+
+
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -109,25 +113,35 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
               )}
 
               {order.log_pembayaran && order.log_pembayaran.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200 space-y-2 max-h-32 overflow-y-auto">
-                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Riwayat (Log) Pembayaran</label>
+                <div className="mt-4 pt-4 border-t border-gray-200 space-y-3 max-h-48 overflow-y-auto pr-1">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Log Pembayaran</label>
                   {order.log_pembayaran.map((log: any) => (
-                    <div key={log.id} className="bg-white p-2 rounded-lg border border-gray-100 flex justify-between items-center shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-bold text-gray-800">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')} <span className="text-gray-400 font-medium">via {log.bank_pengirim}</span></p>
-                        <p className="text-[9px] text-gray-400">{new Date(log.created_at).toLocaleDateString('id-ID')} - {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                    <div key={log.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-[10px] font-black text-gray-900">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')}</p>
+                          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim}</p>
+                        </div>
+                        <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full ${
+                          log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
+                          log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
+                          'bg-amber-100 text-amber-700'
+                        }`}>
+                          {log.status === 'Menunggu Verifikasi' ? 'WAITING' : log.status}
+                        </span>
                       </div>
-                      <span className={`text-[9px] font-black uppercase px-2 py-1 rounded ${
-                        log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
-                        log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
-                        'bg-amber-100 text-amber-700'
-                      }`}>
-                        {log.status === 'Menunggu Verifikasi' ? 'MENUNGGU' : log.status}
-                      </span>
+                      <p className="text-[9px] text-gray-400 font-medium italic">{new Date(log.created_at).toLocaleDateString('id-ID')} - {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                      {log.catatan_verifikasi && (
+                        <div className="pt-2 border-t border-gray-50">
+                          <p className="text-[9px] font-black text-red-600 uppercase tracking-widest mb-1 italic">Finance Feedback:</p>
+                          <p className="text-[10px] text-gray-600 italic leading-relaxed">"{log.catatan_verifikasi}"</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
+
             </div>
           </div>
         </div>
@@ -197,7 +211,10 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         order={order}
-        orderType="pesanan"
+        orderType="pesananternak"
+
+
+
         onSuccess={() => {
           onSuccess();
           setIsPaymentModalOpen(false);

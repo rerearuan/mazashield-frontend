@@ -107,19 +107,22 @@ const sidebarSections: SidebarSection[] = [
   {
     title: "MANAJEMEN KATALOG",
     items: [
-      { href: "/admin/katalog-mazdafarm", label: "Katalog Mazdafarm", icon: <BoxIcon /> },
-      { href: "/admin/katalog-mazdaging", label: "Katalog Mazdaging", icon: <MeatIcon /> },
-      { href: "/admin/katalog-invest-ternak", label: "Katalog Invest Ternak", icon: <ChartIcon /> },
+      { href: "/admin/katalog-mazdafarm", label: "Katalog Ternak", icon: <BoxIcon /> },
+      { href: "/admin/katalog-mazdaging", label: "Katalog Daging", icon: <MeatIcon /> },
+      { href: "/admin/katalog-invest-ternak", label: "Katalog Invest", icon: <ChartIcon /> },
     ],
   },
   {
     title: "MANAJEMEN PESANAN",
     items: [
-      { href: "/admin/manajemen-pesanan-mazdafarm", label: "Pesanan Mazdafarm", icon: <ShoppingCartIcon /> },
-      { href: "/admin/manajemen-invest-ternak", label: "Pesanan Investernak", icon: <ShoppingCartIcon /> },
-      { href: "/admin/manajemen-pesanan-mazdaging", label: "Pesanan Mazdaging", icon: <ShoppingCartIcon /> },
+      { href: "/admin/manajemen-pesanan-mazdafarm", label: "Pesanan Ternak", icon: <ShoppingCartIcon /> },
+      { href: "/admin/manajemen-invest-ternak", label: "Pesanan Invest", icon: <ShoppingCartIcon /> },
+      { href: "/admin/manajemen-pesanan-mazdaging", label: "Pesanan Daging", icon: <ShoppingCartIcon /> },
     ],
   },
+
+
+
   {
     title: "VERIFIKASI & LAPORAN",
     items: [
@@ -150,9 +153,10 @@ export default function Sidebar() {
     if (userRole === "SuperAdmin" || userRole === "CEO") return true;
 
     if (userRole === "Finance") {
-      // Finance can see Orders and Verification
-      return ["HOME", "MANAJEMEN PESANAN", "VERIFIKASI & LAPORAN", ""].includes(sectionTitle);
+      // Finance can see Home and Verification
+      return ["HOME", "VERIFIKASI & LAPORAN", ""].includes(sectionTitle);
     }
+
 
     if (userRole === "Marketing" || userRole === "Komisaris") {
       // Marketing can see Catalog and Orders

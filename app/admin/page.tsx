@@ -13,19 +13,20 @@ const adminHomeCards = [
     color: "bg-blue-500",
   },
   {
-    title: "Katalog Mazdafarm",
-    description: "Kelola data ternak sapi dan kambing Mazdafarm.",
+    title: "Katalog Ternak",
+    description: "Kelola data ternak sapi dan kambing.",
     href: "/admin/katalog-mazdafarm",
     icon: <Icons.Meat className="w-8 h-8" />,
     color: "bg-[#1a8245]",
   },
   {
-    title: "Invest Ternak",
+    title: "Katalog Invest",
     description: "Manajemen paket investasi penggemukan sapi.",
     href: "/admin/katalog-invest-ternak",
     icon: <Icons.Leaf className="w-8 h-8" />,
     color: "bg-amber-500",
   },
+
   {
     title: "Manajemen Akun",
     description: "Kontrol akses user internal, marketing, dan external.",

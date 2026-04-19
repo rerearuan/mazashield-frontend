@@ -8,8 +8,6 @@ interface InvestFiltersProps {
 }
 
 export default function InvestFilters({ filters }: InvestFiltersProps) {
-<<<<<<< HEAD
-=======
     const formatCurrency = (value: string) => {
         if (!value) return "";
         const cleanValue = value.replace(/\D/g, "");
@@ -22,7 +20,6 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
         setter(cleanValue);
     };
 
->>>>>>> 2897cfe10f206950c5ffb74356ed6687fd216894
     const preventInvalidNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (["-", "+", "e", "E"].includes(e.key)) {
             e.preventDefault();
@@ -51,29 +48,6 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
 
                 {/* Harga Sapi Range */}
                 <div>
-<<<<<<< HEAD
-                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Harga Sapi (Rp)</label>
-                    <div className="flex gap-2">
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Min"
-                            value={filters.minHargaSapi}
-                            onChange={(e) => filters.setMinHargaSapi(e.target.value)}
-                            onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
-                        />
-                        <span className="text-gray-300 self-center font-bold">-</span>
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Max"
-                            value={filters.maxHargaSapi}
-                            onChange={(e) => filters.setMaxHargaSapi(e.target.value)}
-                            onKeyDown={preventInvalidNumberInput}
-                            className="w-full px-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
-                        />
-=======
                     <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Harga Sapi</label>
                     <div className="flex gap-2">
                         <div className="relative flex-1">
@@ -82,7 +56,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                             </span>
                             <input
                                 type="text"
-                                placeholder="1.000.000"
+                                placeholder="Min"
                                 value={formatCurrency(filters.minHargaSapi)}
                                 onChange={(e) => handlePriceChange(e.target.value, filters.setMinHargaSapi)}
                                 className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
@@ -95,14 +69,30 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                             </span>
                             <input
                                 type="text"
-                                placeholder="10.000.000"
+                                placeholder="Max"
                                 value={formatCurrency(filters.maxHargaSapi)}
                                 onChange={(e) => handlePriceChange(e.target.value, filters.setMaxHargaSapi)}
                                 className="w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
                             />
                         </div>
->>>>>>> 2897cfe10f206950c5ffb74356ed6687fd216894
                     </div>
+                </div>
+
+                {/* Jenis Filter - PBI 22 */}
+                <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Jenis</label>
+                    <select
+                        value={filters.jenisFilter || ""}
+                        onChange={(e) => filters.setJenisFilter(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-semibold text-sm transition-all text-gray-900 shadow-sm appearance-none"
+                    >
+                        <option value="">Semua Jenis</option>
+                        <option value="Limousin">Limousin</option>
+                        <option value="Simental">Simental</option>
+                        <option value="Brahman">Brahman</option>
+                        <option value="PO">PO</option>
+                        <option value="Bali">Bali</option>
+                    </select>
                 </div>
 
                 {/* Status */}
@@ -119,6 +109,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                         <option value="Closed">Closed</option>
                     </select>
                 </div>
+
 
                 {/* Reset */}
                 <div className="flex items-end">
