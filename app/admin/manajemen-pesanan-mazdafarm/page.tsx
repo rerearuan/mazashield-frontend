@@ -168,10 +168,16 @@ export default function ManajemenPesananMazdafarmPage() {
 
           </div>
           <div className="flex items-end">
-            <Button 
-                variant="secondary" 
-                onClick={() => {setStartDate(""); setEndDate(""); setStatusFilter("all");}}
-                className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest py-3"
+            <Button
+              variant="secondary"
+              size="md"
+              fullWidth
+              onClick={() => {
+                setStartDate("");
+                setEndDate("");
+                setStatusFilter("all");
+              }}
+              className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm"
             >
               Reset Filter
             </Button>

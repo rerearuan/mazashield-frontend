@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Button from "@/components/button/Button";
+import { Button } from "@/components/button";
 import { useInvestOrder, PesananInvest } from "@/features/invest-order/useInvestOrder";
 import OrderDetailsModal from "@/features/order-invest-ternak/components/OrderDetailsModal";
 import OrderModal from "@/features/order-invest-ternak/components/OrderModal";
-import { Icons } from "@/components/common/Icons";
 
 
 const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
@@ -90,10 +89,16 @@ export default function ManajemenInvestTernakPage() {
 
                 </div>
                 {canManage && (
-                    <Button variant="primary" onClick={() => setShowCreate(true)}
-                        className="rounded-2xl shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-[10px] tracking-widest px-8 h-14">
-                        + Buat Pesanan Baru
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            onClick={() => setShowCreate(true)}
+                            className="rounded-2xl shadow-xl shadow-green-100/50 hover:-translate-y-1 transition-all duration-300 font-black uppercase text-[10px] tracking-widest px-8 h-14"
+                        >
+                            + Buat Pesanan Baru
+                        </Button>
+                    </div>
                 )}
             </div>
 
@@ -148,8 +153,13 @@ export default function ManajemenInvestTernakPage() {
                         />
                     </div>
                     <div className="md:col-span-1 flex items-end">
-                        <Button variant="secondary" onClick={handleResetFilter}
-                            className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest py-3.5 border border-gray-200 shadow-sm">
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            fullWidth
+                            onClick={handleResetFilter}
+                            className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm"
+                        >
                             Reset Filter
                         </Button>
                     </div>
@@ -226,15 +236,23 @@ export default function ManajemenInvestTernakPage() {
                 )}
 
                 {totalPages > 1 && (
-                    <div className="px-8 py-6 border-t border-gray-100 flex items-center justify-between bg-white">
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total {totalCount} pesanan</p>
-                        <div className="flex gap-1">
+                    <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-xs text-gray-400 font-black uppercase tracking-widest">
+                            Total {totalCount} pesanan
+                        </p>
+                        <div className="flex gap-2 flex-wrap justify-center">
                             {Array.from({ length: totalPages }).map((_, i) => (
                                 <button
                                     key={i}
-                                    onClick={(e) => { e.stopPropagation(); setCurrentPage(i + 1); }}
-                                    className={`min-w-[36px] h-9 rounded-xl text-sm font-bold transition-all ${
-                                        currentPage === i + 1 ? "bg-[#1a8245] text-white shadow" : "text-gray-400 hover:bg-gray-100"
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentPage(i + 1);
+                                    }}
+                                    className={`min-w-[40px] h-10 rounded-xl font-black text-xs transition-all ${
+                                        currentPage === i + 1
+                                            ? "bg-[#1a8245] text-white shadow-lg shadow-green-200"
+                                            : "text-gray-400 hover:bg-white hover:text-gray-900"
                                     }`}
                                 >
                                     {i + 1}

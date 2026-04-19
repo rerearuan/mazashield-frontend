@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
-import Button from "@/components/button/Button";
+import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
 
 interface Payment {
@@ -201,8 +201,13 @@ export default function VerifikasiPembayaranPage() {
                         </div>
                     </div>
                     <div className="md:col-span-1 flex items-end">
-                        <Button variant="secondary" onClick={handleResetFilter}
-                            className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest py-3.5 border border-gray-200 shadow-sm">
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            fullWidth
+                            onClick={handleResetFilter}
+                            className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm"
+                        >
                             Reset Filter
                         </Button>
                     </div>
