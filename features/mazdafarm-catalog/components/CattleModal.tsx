@@ -57,6 +57,8 @@ export default function CattleModal({
                 kelas: "A",
                 berat: "",
                 tanggal_lahir: "",
+
+
                 harga: "",
                 deskripsi: "",
                 status_ternak: "Tersedia",
@@ -132,13 +134,15 @@ export default function CattleModal({
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis</label>
                         <select
                             value={formData.jenis}
-                            onChange={(e) => setFormData({ ...formData, jenis: e.target.value as any })}
+                            onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
                             <option value="Sapi">Sapi</option>
                             <option value="Kambing">Kambing</option>
                         </select>
                     </div>
+
+
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Kelas</label>
                         <select

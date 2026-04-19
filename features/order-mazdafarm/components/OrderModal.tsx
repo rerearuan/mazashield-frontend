@@ -9,6 +9,8 @@ import { userService } from "@/services/user.service";
 import { catalogService } from "@/services/catalog.service";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
+import SearchableSelect from "@/components/common/SearchableSelect";
+
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -25,6 +27,10 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedCattleIds, setSelectedCattleIds] = useState<string[]>([]);
   const [catatan, setCatatan] = useState("");
+
+  // Search states - PBI 23
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [cattleSearch, setCattleSearch] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -50,6 +56,17 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
     }
   };
 
+  // Filtered lists for search - PBI 23
+  const filteredCustomers = customers.filter(c => 
+    c.nama.toLowerCase().includes(customerSearch.toLowerCase()) || 
+    c.email.toLowerCase().includes(customerSearch.toLowerCase())
+  );
+
+  const filteredCattle = availableCattle.filter(c => 
+    c.nama.toLowerCase().includes(cattleSearch.toLowerCase()) || 
+    c.id_ternak.toLowerCase().includes(cattleSearch.toLowerCase())
+  );
+
   const totalTagihan = selectedCattleIds.reduce((sum, id) => {
     const cattle = availableCattle.find(c => c.id_ternak === id);
     return sum + (cattle ? parseFloat(cattle.harga) : 0);
@@ -69,15 +86,20 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
         daftar_id_ternak: selectedCattleIds,
         catatan: catatan
       });
-      toast.success("Pesanan berhasil dibuat!");
+      toast.success("Pesanan Ternak berhasil dibuat!");
       onSuccess();
       onClose();
       // Reset form
       setSelectedCustomerId("");
       setSelectedCattleIds([]);
       setCatatan("");
+      setCustomerSearch("");
+      setCattleSearch("");
     } catch (error: any) {
-      toast.error(error.message || "Gagal membuat pesanan.");
+      toast.error(error.message || "Gagal membuat Pesanan Ternak.");
+
+
+
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +112,11 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Buat Pesanan Mazdafarm Baru">
+    <Modal size="lg" isOpen={isOpen} onClose={onClose} title="Buat Pesanan Ternak Baru">
+
+
+
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {loading ? (
           <div className="flex justify-center py-10">
@@ -98,28 +124,47 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
           </div>
         ) : (
           <>
-            <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Customer</label>
-              <select
-                value={selectedCustomerId}
-                onChange={(e) => setSelectedCustomerId(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all"
-                required
-              >
-                <option value="">Pilih Customer</option>
-                {customers.map(c => (
-                  <option key={c.id} value={c.id}>{c.nama} ({c.email})</option>
-                ))}
-              </select>
-            </div>
+            <SearchableSelect
+              label="Customer"
+              placeholder="Cari nama atau email customer..."
+              items={customers}
+              selectedItem={customers.find(c => c.id.toString() === selectedCustomerId)}
+              onSelect={(item: any) => setSelectedCustomerId(item.id.toString())}
+              displayValue={(item: any) => `${item.nama} (${item.email})`}
+              filterFn={(item: any, query: string) => 
+                item.nama.toLowerCase().includes(query.toLowerCase()) || 
+                item.email.toLowerCase().includes(query.toLowerCase())
+              }
+              renderItem={(item: any) => (
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">{item.nama}</span>
+                  <span className="text-[10px] text-gray-400">{item.email}</span>
+                </div>
+              )}
+              required
+            />
+
+
 
             <div>
               <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Pilih Ternak (Multi-select)</label>
+              
+              {/* Cattle Search - PBI 23 */}
+              <div className="relative mb-2">
+                <input
+                    type="text"
+                    placeholder="Cari ID atau nama ternak..."
+                    value={cattleSearch}
+                    onChange={(e) => setCattleSearch(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none text-xs font-bold transition-all"
+                />
+              </div>
+
               <div className="max-h-48 overflow-y-auto border border-gray-100 rounded-xl p-2 space-y-2 bg-gray-50/50">
-                {availableCattle.length === 0 ? (
-                  <p className="text-center py-4 text-gray-400 text-sm font-medium">Tidak ada ternak yang tersedia.</p>
+                {filteredCattle.length === 0 ? (
+                  <p className="text-center py-4 text-gray-400 text-sm font-medium">Tidak ada ternak yang cocok.</p>
                 ) : (
-                  availableCattle.map(c => (
+                  filteredCattle.map(c => (
                     <div 
                       key={c.id_ternak}
                       onClick={() => toggleCattle(c.id_ternak)}
@@ -141,6 +186,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
                 )}
               </div>
             </div>
+
 
             <div>
               <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Catatan (Opsional)</label>

@@ -7,6 +7,8 @@ import { userService } from "@/services/user.service";
 import { catalogService } from "@/services/catalog.service";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
+import SearchableSelect from "@/components/common/SearchableSelect";
+import { Icons } from "@/components/common/Icons";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [catatan, setCatatan] = useState("");
+  const [meatSearch, setMeatSearch] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -45,7 +48,6 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
         catalogService.getDagingInternal()
       ]);
       setCustomers((userRes as any).results || (Array.isArray(userRes) ? userRes : []));
-      // Filter meat that are 'Tersedia' or 'Pre Order' and not deleted
       const meatList = (meatRes as any).results || (Array.isArray(meatRes) ? meatRes : []);
       setAvailableMeat(meatList.filter((m: any) => 
         (m.status_daging === 'Tersedia' || m.status_daging === 'Pre Order') && !m.deleted_at
@@ -77,7 +79,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
     ));
   };
 
-  const totalTagihan = selectedItems.reduce((sum, item) => {
+  const totalTagihan = selectedItems.reduce((sum: number, item: any) => {
     const weight = parseFloat(item.berat_pesanan_kg) || 0;
     const price = parseFloat(item.harga_per_kg) || 0;
     return sum + (weight * price);
@@ -90,7 +92,6 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
       return;
     }
 
-    // Validate weights
     for (const item of selectedItems) {
         if (parseFloat(item.berat_pesanan_kg) <= 0) {
             toast.error(`Berat untuk ${item.nama} harus lebih dari 0.`);
@@ -108,22 +109,27 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
         })),
         catatan: catatan
       });
-      toast.success("Pesanan daging berhasil dibuat!");
+      toast.success("Pesanan Daging berhasil dibuat!");
       onSuccess();
       onClose();
-      // Reset form
       setSelectedCustomerId("");
       setSelectedItems([]);
       setCatatan("");
+      setMeatSearch("");
     } catch (error: any) {
-      toast.error(error.message || "Gagal membuat pesanan.");
+      toast.error(error.message || "Gagal membuat Pesanan Daging.");
+
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Buat Pesanan Mazdaging Baru">
+    <Modal size="lg" isOpen={isOpen} onClose={onClose} title="Buat Pesanan Daging Baru">
+
+
+
+
       <form onSubmit={handleSubmit} className="space-y-6 max-h-[80vh] overflow-y-auto px-1">
         {loading ? (
           <div className="flex justify-center py-10">
@@ -131,49 +137,77 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
           </div>
         ) : (
           <>
-            <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Customer</label>
-              <select
-                value={selectedCustomerId}
-                onChange={(e) => setSelectedCustomerId(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all"
-                required
-              >
-                <option value="">Pilih Customer</option>
-                {customers.map(c => (
-                  <option key={c.id} value={c.id}>{c.nama} ({c.email})</option>
-                ))}
-              </select>
-            </div>
+            <SearchableSelect
+              label="Customer"
+              placeholder="Cari nama atau email customer..."
+              items={customers}
+              selectedItem={customers.find(c => c.id.toString() === selectedCustomerId)}
+              onSelect={(item: any) => setSelectedCustomerId(item.id.toString())}
+              displayValue={(item: any) => `${item.nama} (${item.email})`}
+              filterFn={(item: any, query: string) => 
+                item.nama.toLowerCase().includes(query.toLowerCase()) || 
+                item.email.toLowerCase().includes(query.toLowerCase())
+              }
+              renderItem={(item: any) => (
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">{item.nama}</span>
+                  <span className="text-[10px] text-gray-400">{item.email}</span>
+                </div>
+              )}
+              required
+            />
 
             <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Pilih Item Daging</label>
-              <div className="max-h-48 overflow-y-auto border border-gray-100 rounded-xl p-2 space-y-2 bg-gray-50/50 mb-4">
-                {availableMeat.length === 0 ? (
-                  <p className="text-center py-4 text-gray-400 text-sm font-medium">Tidak ada daging yang tersedia.</p>
+              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-3">Pilih Item Daging</label>
+              
+              <div className="relative mb-3">
+                  <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input 
+                      type="text"
+                      placeholder="Cari bagian atau ID daging..."
+                      className="w-full pl-10 pr-4 py-3 text-sm bg-gray-50 border border-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-[#1a8245]/20 font-semibold transition-all"
+                      value={meatSearch}
+                      onChange={(e) => setMeatSearch(e.target.value)}
+                  />
+              </div>
+
+              <div className="max-h-60 overflow-y-auto border border-gray-100 rounded-xl p-3 space-y-2 bg-gray-50/50 mb-4 transition-all">
+                {availableMeat.filter(m => 
+                    m.nama.toLowerCase().includes(meatSearch.toLowerCase()) || 
+                    m.id_daging.toLowerCase().includes(meatSearch.toLowerCase())
+                ).length === 0 ? (
+                  <p className="text-center py-6 text-gray-400 text-sm font-medium italic">Produk tidak ditemukan.</p>
                 ) : (
-                  availableMeat.map(m => {
-                    const isSelected = selectedItems.some(item => item.id_daging === m.id_daging);
-                    return (
-                        <div 
-                          key={m.id_daging}
-                          onClick={() => toggleMeat(m)}
-                          className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-all ${
-                            isSelected 
-                            ? 'bg-[#1a8245] text-white shadow-md' 
-                            : 'bg-white hover:bg-gray-100 border border-gray-100'
-                          }`}
-                        >
-                          <div>
-                            <p className="font-bold text-sm">{m.nama}</p>
-                            <p className={`text-[10px] ${isSelected ? 'text-white/80' : 'text-gray-400'}`}>
-                              {m.id_daging} — {m.bagian} — {m.status_daging}
-                            </p>
-                          </div>
-                          <p className="font-black text-xs">Rp {parseFloat(m.harga_per_kg).toLocaleString('id-ID')}/kg</p>
-                        </div>
-                    );
-                  })
+                  availableMeat
+                    .filter(m => 
+                        m.nama.toLowerCase().includes(meatSearch.toLowerCase()) || 
+                        m.id_daging.toLowerCase().includes(meatSearch.toLowerCase())
+                    )
+                    .map(m => {
+                        const isSelected = selectedItems.some(item => item.id_daging === m.id_daging);
+                        return (
+                            <div 
+                              key={m.id_daging}
+                              onClick={() => toggleMeat(m)}
+                              className={`flex justify-between items-center p-4 rounded-xl cursor-pointer transition-all ${
+                                isSelected 
+                                ? 'bg-[#1a8245] text-white shadow-lg scale-[1.01]' 
+                                : 'bg-white hover:bg-gray-100 border border-transparent shadow-sm'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                  <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white animate-pulse' : 'bg-green-500'}`} />
+                                  <div>
+                                    <p className="font-black text-sm">{m.nama}</p>
+                                    <p className={`text-[10px] font-bold uppercase tracking-widest ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                                      {m.id_daging} — {m.bagian}
+                                    </p>
+                                  </div>
+                              </div>
+                              <p className="font-black text-xs">Rp {parseFloat(m.harga_per_kg).toLocaleString('id-ID')}/kg</p>
+                            </div>
+                        );
+                    })
                 )}
               </div>
             </div>
@@ -181,25 +215,28 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
             {selectedItems.length > 0 && (
                 <div className="space-y-3">
                     <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Atur Berat Pesanan (kg)</label>
-                    {selectedItems.map(item => (
-                        <div key={item.id_daging} className="flex items-center gap-4 bg-white p-3 border border-gray-100 rounded-xl shadow-sm">
-                            <div className="flex-1">
-                                <p className="font-bold text-sm text-gray-900">{item.nama}</p>
-                                <p className="text-[10px] text-gray-400">Rp {parseFloat(item.harga_per_kg).toLocaleString('id-ID')}/kg</p>
+                    <div className="grid gap-3">
+                        {selectedItems.map(item => (
+                            <div key={item.id_daging} className="flex items-center gap-4 bg-white p-4 border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                                <div className="flex-1">
+                                    <p className="font-black text-sm text-gray-900">{item.nama}</p>
+                                    <p className="text-[10px] font-bold text-[#1a8245] uppercase tracking-tighter">Rp {parseFloat(item.harga_per_kg).toLocaleString('id-ID')}/kg</p>
+                                </div>
+                                <div className="relative w-32">
+                                    <input 
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        value={item.berat_pesanan_kg}
+                                        onChange={(e) => updateWeight(item.id_daging, e.target.value)}
+                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none font-black text-sm focus:ring-2 focus:ring-[#1a8245] text-center"
+                                        required
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-gray-400 uppercase">KG</span>
+                                </div>
                             </div>
-                            <div className="w-32">
-                                <input 
-                                    type="number"
-                                    step="0.01"
-                                    min="0.01"
-                                    value={item.berat_pesanan_kg}
-                                    onChange={(e) => updateWeight(item.id_daging, e.target.value)}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none font-bold text-sm focus:ring-2 focus:ring-[#1a8245]"
-                                    required
-                                />
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -208,27 +245,32 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
               <textarea
                 value={catatan}
                 onChange={(e) => setCatatan(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all h-24 resize-none"
+                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all h-28 resize-none shadow-inner"
                 placeholder="Tambahkan catatan jika ada..."
               />
             </div>
 
-            <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
-              <div className="flex justify-between items-center mb-1">
-                 <span className="text-xs font-black text-green-800 uppercase tracking-widest">Total Item</span>
-                 <span className="font-black text-green-900">{selectedItems.length} Produk</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-black text-green-800 uppercase tracking-widest">Total Tagihan</span>
-                <span className="text-lg font-black text-green-900">Rp {totalTagihan.toLocaleString('id-ID')}</span>
+            <div className="p-5 bg-gradient-to-br from-green-50 to-[#1a8245]/5 rounded-[24px] border border-green-100 shadow-sm relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="flex justify-between items-center mb-2">
+                   <span className="text-[10px] font-black text-green-800 uppercase tracking-widest opacity-70">Total Item</span>
+                   <span className="font-black text-green-900 text-sm tracking-tight">{selectedItems.length} Produk</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-[#1a8245]/10">
+                  <span className="text-[10px] font-black text-green-800 uppercase tracking-widest">Total Tagihan</span>
+                  <span className="text-2xl font-black text-green-900 tracking-tighter leading-none">
+                    <span className="text-xs mr-1">Rp</span>
+                    {totalTagihan.toLocaleString('id-ID')}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-3 mt-8">
-              <Button type="button" variant="secondary" onClick={onClose} disabled={submitting}>
+              <Button type="button" variant="secondary" onClick={onClose} disabled={submitting} className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8">
                 Batal
               </Button>
-              <Button type="submit" variant="primary" disabled={submitting}>
+              <Button type="submit" variant="primary" disabled={submitting} className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 shadow-lg shadow-green-100">
                 {submitting ? "Memproses..." : "Buat Pesanan"}
               </Button>
             </div>
@@ -238,4 +280,3 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
     </Modal>
   );
 }
-
