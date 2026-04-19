@@ -52,7 +52,7 @@ export default function ManajemenInvestTernakPage() {
 
     const canManage = userRole === "SuperAdmin" || userRole === "Marketing";
     const countByStatus = (s: string) => orders.filter((o) => o.status_pesanan === s).length;
-    const totalTagihanVal = orders.reduce((sum, o) => sum + Number(o.tagihan), 0);
+    const totalTagihanVal = orders.filter((o) => o.status_pesanan !== "Dibatalkan").reduce((sum, o) => sum + Number(o.tagihan), 0);
 
     const handleOpenDetail = useCallback((order: PesananInvest) => {
         setSelected(order);
@@ -105,7 +105,7 @@ export default function ManajemenInvestTernakPage() {
             <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0 mb-8">
                 <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
                     {[
-                        { label: "Total Tagihan", value: formatRupiah(totalTagihanVal), color: "text-gray-900" },
+                        { label: "Total Sisa Tagihan", value: formatRupiah(totalTagihanVal), color: "text-gray-900" },
                         { label: "Diproses", value: countByStatus("Diproses"), color: "text-amber-500" },
                         { label: "Selesai", value: countByStatus("Selesai"), color: "text-[#1a8245]" },
                         { label: "Dibatalkan", value: countByStatus("Dibatalkan"), color: "text-red-500" },
@@ -178,7 +178,7 @@ export default function ManajemenInvestTernakPage() {
                         <table className="w-full text-left border-collapse min-w-[700px]">
                             <thead>
                                 <tr className="bg-[#fcfdfc] border-b border-gray-100">
-                                    {["ID", "Customer", "Investasi", "Status", "Tagihan", "Dibayar", "Dibuat", "Aksi"].map((h) => (
+                                    {["ID", "Customer", "Investasi", "Status", "SISA TAGIHAN", "Dibayar", "Dibuat", "Aksi"].map((h) => (
                                         <th key={h} className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                             {h}
                                         </th>

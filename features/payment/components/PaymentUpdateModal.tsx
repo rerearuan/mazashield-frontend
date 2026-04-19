@@ -22,6 +22,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
     nominal_pembayaran: "",
     bank_pengirim: "",
     nomor_rekening_pengirim: "",
+    nama_pengirim: "",
     tanggal_transfer: "",
     waktu_transfer: "",
     catatan: "",
@@ -86,6 +87,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
         nominal_pembayaran: "",
         bank_pengirim: "",
         nomor_rekening_pengirim: "",
+        nama_pengirim: "",
         tanggal_transfer: "",
         waktu_transfer: "",
         catatan: "",
@@ -155,6 +157,19 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1a8245] font-semibold text-sm transition-all"
               placeholder="Contoh: 1234567890"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-2">Nama Pengirim (Sesuai Rekening)</label>
+            <input
+              type="text"
+              name="nama_pengirim"
+              value={formData.nama_pengirim}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1a8245] font-semibold text-sm transition-all"
+              placeholder="Contoh: Budi Santoso"
               required
             />
           </div>

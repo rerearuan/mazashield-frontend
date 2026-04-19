@@ -131,7 +131,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
             />
 
             <div>
-              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-3">Pilih Investasi (Status Open)</label>
+                <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-3">Pilih Investasi (Status Open) <span className="text-red-500">*</span></label>
               
               <div className="relative mb-3">
                   <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

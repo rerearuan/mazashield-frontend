@@ -197,6 +197,91 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricelist Section */}
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Tabungan Qurban 1447 H</span>
+            <h2 className="text-gray-900 font-extrabold text-3xl lg:text-5xl tracking-tighter mb-4">
+              Pricelist Hewan <span className="text-[#1a8245]">Qurban</span>
+            </h2>
+            <p className="text-gray-500 font-medium">Informasi harga terencana, ringan, dan mudah.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Sapi Table */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
+                <span className="p-2 bg-[#1a8245]/10 rounded-xl"><Icons.Meat className="w-6 h-6 text-[#1a8245]" /></span>
+                Sapi Bali & Jawa
+              </h3>
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-100">
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Pilihan</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Berat (Kg)</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Harga (Rp)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {[
+                      { class: "Patungan 7 orang*", weight: "±345", price: "3.400.000/orang" },
+                      { class: "Kelas A", weight: "±300", price: "19.500.000" },
+                      { class: "Kelas B", weight: "±345", price: "22.400.000" },
+                      { class: "Kelas C", weight: "±380", price: "25.000.000" },
+                      { class: "Kelas D", weight: "±435", price: "28.000.000" },
+                      { class: "Kelas E", weight: "±500", price: "32.500.000" },
+                    ].map((item, i) => (
+                      <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 font-bold text-gray-900 text-sm">{item.class}</td>
+                        <td className="px-6 py-4 font-medium text-gray-500 text-sm">{item.weight}</td>
+                        <td className="px-6 py-4 font-black text-[#1a8245] text-sm">{item.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Kambing Table */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
+                <span className="p-2 bg-[#fbbf24]/10 rounded-xl"><Icons.Leaf className="w-6 h-6 text-[#d97706]" /></span>
+                Kambing/Domba
+              </h3>
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-100">
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Kelas</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Berat (Kg)</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#d97706]">Harga (Rp)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {[
+                      { class: "Kelas A", weight: "±25", price: "3.000.000" },
+                      { class: "Kelas B", weight: "±30", price: "3.500.000" },
+                      { class: "Kelas C", weight: "±35", price: "4.000.000" },
+                      { class: "Kelas D", weight: "±45", price: "5.000.000" },
+                      { class: "Kelas E", weight: "±55", price: "6.000.000" },
+                    ].map((item, i) => (
+                      <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 font-bold text-gray-900 text-sm">{item.class}</td>
+                        <td className="px-6 py-4 font-medium text-gray-500 text-sm">{item.weight}</td>
+                        <td className="px-6 py-4 font-black text-[#d97706] text-sm">{item.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <p className="mt-8 text-xs text-gray-400 font-medium italic">*Harga Sapi sudah termasuk biaya operasional sembelih Rp 1.500.000/ekor. Harga Kambing belum termasuk biaya jagal.</p>
+        </div>
+      </section>
+
       {/* CEO Message Section */}
       <section className="py-12 md:py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">

@@ -101,8 +101,8 @@ export default function ManajemenPesananMazdagingPage() {
         <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
           {[
             { 
-              label: "Total Tagihan", 
-              value: `Rp ${orders.reduce((sum, o) => sum + Number(o.tagihan), 0).toLocaleString('id-ID')}`, 
+              label: "Total Sisa Tagihan", 
+              value: `Rp ${orders.filter(o => o.status_pesanan !== 'Dibatalkan').reduce((sum, o) => sum + Number(o.tagihan), 0).toLocaleString('id-ID')}`, 
               color: "text-gray-900" 
             },
             { 
@@ -194,7 +194,7 @@ export default function ManajemenPesananMazdagingPage() {
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Customer</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Jumlah</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Tagihan</th>
+                <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">SISA TAGIHAN</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibayar</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibuat</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Aksi</th>

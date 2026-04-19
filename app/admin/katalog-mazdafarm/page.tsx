@@ -150,7 +150,7 @@ export default function KatalogMazdafarmPage() {
               <div className="relative h-56 bg-gray-100">
                 <SafeImage
                   src={getImageUrl(item.foto)}
-                  fallbackSrc={getRandomCowImage(item.id_ternak)}
+                  id={item.id_ternak}
                   alt={item.nama}
                   fill
                   className="object-cover"
