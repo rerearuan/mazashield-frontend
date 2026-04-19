@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/button";
 
 interface InvestmentReport {
   id: string;
@@ -20,6 +21,13 @@ export default function LaporanInvestasiPage() {
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setFilterStatus("all");
+    setDateRange({ start: "", end: "" });
+    setCurrentPage(1);
+  };
 
   // Mock data
   const [reports] = useState<InvestmentReport[]>([
@@ -65,50 +73,50 @@ export default function LaporanInvestasiPage() {
   const totalProfit = filteredReports.reduce((sum, r) => sum + r.profit, 0);
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Laporan Investasi</h1>
         <p className="text-gray-600">Laporan lengkap investasi ternak</p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Investasi</p>
-          <p className="text-2xl font-bold text-gray-900">Rp {totalInvestment.toLocaleString("id-ID")}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Return</p>
-          <p className="text-2xl font-bold text-blue-600">Rp {totalReturn.toLocaleString("id-ID")}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Profit</p>
-          <p className="text-2xl font-bold text-green-600">Rp {totalProfit.toLocaleString("id-ID")}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">ROI</p>
-          <p className="text-2xl font-bold text-purple-600">
-            {totalInvestment > 0 ? ((totalProfit / totalInvestment) * 100).toFixed(2) : 0}%
-          </p>
+      <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0 mb-6">
+        <div className="flex md:grid md:grid-cols-4 gap-4 md:gap-6 min-w-max md:min-w-0">
+          <div className="min-w-[160px] md:min-w-0 bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 flex-shrink-0">
+            <p className="text-sm text-gray-600 mb-1">Total Investasi</p>
+            <p className="text-lg md:text-2xl font-bold text-gray-900">Rp {totalInvestment.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="min-w-[160px] md:min-w-0 bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 flex-shrink-0">
+            <p className="text-sm text-gray-600 mb-1">Total Return</p>
+            <p className="text-lg md:text-2xl font-bold text-blue-600">Rp {totalReturn.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="min-w-[160px] md:min-w-0 bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 flex-shrink-0">
+            <p className="text-sm text-gray-600 mb-1">Total Profit</p>
+            <p className="text-lg md:text-2xl font-bold text-green-600">Rp {totalProfit.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="min-w-[160px] md:min-w-0 bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 flex-shrink-0">
+            <p className="text-sm text-gray-600 mb-1">ROI</p>
+            <p className="text-lg md:text-2xl font-bold text-purple-600">
+              {totalInvestment > 0 ? ((totalProfit / totalInvestment) * 100).toFixed(2) : 0}%
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Cari ID atau nama investor..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-            />
-          </div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <input
+            type="text"
+            placeholder="Cari ID atau nama investor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="sm:col-span-2 lg:col-span-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
+          />
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
           >
             <option value="all">Semua Status</option>
             <option value="Aktif">Aktif</option>
@@ -118,17 +126,29 @@ export default function LaporanInvestasiPage() {
             type="date"
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-            placeholder="Dari Tanggal"
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
           />
           <input
             type="date"
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-            placeholder="Sampai Tanggal"
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
           />
-          <button className="bg-[#1a8245] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#22ad5c] transition-colors whitespace-nowrap">
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="md"
+            type="button"
+            onClick={handleResetFilters}
+            className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm"
+          >
+            Reset Filter
+          </Button>
+          <button
+            type="button"
+            className="bg-[#1a8245] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#22ad5c] transition-colors whitespace-nowrap h-[42px] text-sm"
+          >
             Export Excel
           </button>
         </div>

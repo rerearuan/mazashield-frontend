@@ -7,13 +7,13 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] relative overflow-hidden">
+    <div className="flex min-h-screen bg-[#f8fafc] relative">
       {/* Premium Background Elements */}
       <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#1a8245]/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-10%] left-[10%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
 
       <Sidebar />
-      <main className="flex-1 ml-64 relative z-10">
+      <main className="flex-1 min-w-0 md:ml-64 relative z-10 pt-14 md:pt-0">
         <div className="max-w-[1600px] mx-auto min-h-screen">
           {children}
         </div>

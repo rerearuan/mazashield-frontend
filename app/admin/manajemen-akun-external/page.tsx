@@ -61,13 +61,13 @@ export default function ManajemenAkunExternalPage() {
   const paginatedUsers = users.slice((filters.currentPage - 1) * itemsPerPage, filters.currentPage * itemsPerPage);
 
   return (
-    <div className="p-10 relative font-primary">
+    <div className="p-4 md:p-10 relative font-primary">
       <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 text-center sm:text-left">
         <div>
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Client Relations
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2">
             Akun <span className="text-[#1a8245]">External</span>
           </h1>
           <p className="text-gray-500 font-medium text-sm">
@@ -135,12 +135,12 @@ export default function ManajemenAkunExternalPage() {
       {/* Content */}
       <div className="bg-white/80 backdrop-blur-xl rounded-[40px] shadow-xl shadow-gray-200/50 border border-white/20 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama & Kontak</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Tipe / Role</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Bergabung Pada</th>
+                <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama & Kontak</th>
+                <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Tipe / Role</th>
+                <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Bergabung Pada</th>
                 {userRole !== "Marketing" && (
                   <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Aksi</th>
                 )}
@@ -163,7 +163,7 @@ export default function ManajemenAkunExternalPage() {
               ) : (
                 paginatedUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="px-8 py-6">
+                    <td className="px-4 md:px-8 py-4 md:py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-2xl bg-[#1a8245]/10 flex items-center justify-center font-black text-[#1a8245] text-xs">
                           {user.nama.substring(0, 2).toUpperCase()}
@@ -174,7 +174,7 @@ export default function ManajemenAkunExternalPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-4 md:px-8 py-4 md:py-6">
                       <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-teal-50 text-teal-600">
                         {user.role}
                       </span>
@@ -185,7 +185,7 @@ export default function ManajemenAkunExternalPage() {
                       </span>
                     </td>
                     {userRole !== "Marketing" && (
-                      <td className="px-8 py-6">
+                      <td className="px-4 md:px-8 py-4 md:py-6">
                         <div className="flex justify-end gap-2">
                           {user.is_active ? (
                             <>

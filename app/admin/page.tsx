@@ -46,26 +46,26 @@ export default function AdminHomePage() {
   }, []);
 
   return (
-    <div className="p-10 font-primary">
+    <div className="p-4 md:p-10 font-primary">
       <div className="mb-12">
         <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
           Control Center
         </span>
-        <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
           Selamat Datang, <span className="text-[#1a8245]">{userInfo.name}</span>
-          <span className="block text-xl sm:text-2xl text-gray-400 mt-2 font-black uppercase tracking-widest">{userInfo.role} Mode</span>
+          <span className="block text-lg sm:text-xl md:text-2xl text-gray-400 mt-2 font-black uppercase tracking-widest">{userInfo.role} Mode</span>
         </h1>
         <p className="text-gray-500 font-medium text-lg max-w-2xl">
           Gunakan panel ini untuk mengelola seluruh ekosistem peternakan Mazdafarm secara efisien dan terintegrasi.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
         {adminHomeCards.map((card, idx) => (
           <Link
             key={idx}
             href={card.href}
-            className="group bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+            className="group bg-white p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
           >
             <div className={`${card.color} w-16 h-16 rounded-[24px] flex items-center justify-center mb-8 text-white group-hover:scale-110 transition-transform duration-500 shadow-lg`}>
               {card.icon}

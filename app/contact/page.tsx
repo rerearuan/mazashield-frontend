@@ -81,11 +81,11 @@ export default function ContactPage() {
         description="Punya pertanyaan atau tertarik menjalin kemitraan? Tim ahli kami siap membantu Anda mewujudkan visi peternakan modern."
       />
 
-      <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 md:mb-24">
           {contactInfo.map((info, idx) => (
-            <div key={idx} className="group p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+            <div key={idx} className="group p-6 md:p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
               <div className={`w-16 h-16 rounded-[24px] ${info.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
                 {info.icon}
               </div>
@@ -98,7 +98,7 @@ export default function ContactPage() {
 
         <div className="flex flex-col lg:flex-row gap-16">
           {/* Form */}
-          <div className="flex-1 bg-gray-50 rounded-[48px] p-10 md:p-16 border border-gray-100">
+          <div className="flex-1 bg-gray-50 rounded-[32px] md:rounded-[48px] p-6 md:p-10 lg:p-16 border border-gray-100">
             <div className="mb-12">
               <h2 className="text-gray-900 font-black text-3xl lg:text-4xl tracking-tighter mb-4">
                 Kirim <span className="text-[#1a8245]">Pesan</span>

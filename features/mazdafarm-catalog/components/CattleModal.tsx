@@ -120,7 +120,7 @@ export default function CattleModal({
                         </div>
                     )}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Ternak</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Ternak <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             required
@@ -131,7 +131,7 @@ export default function CattleModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis <span className="text-red-500">*</span></label>
                         <select
                             value={formData.jenis}
                             onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}
@@ -144,7 +144,7 @@ export default function CattleModal({
 
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Kelas</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Kelas <span className="text-red-500">*</span></label>
                         <select
                             value={formData.kelas}
                             onChange={(e) => setFormData({ ...formData, kelas: e.target.value as any })}
@@ -159,7 +159,7 @@ export default function CattleModal({
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Berat (Kg)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Berat (Kg) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             required
@@ -170,7 +170,7 @@ export default function CattleModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Tanggal Lahir</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Tanggal Lahir <span className="text-red-500">*</span></label>
                         <input
                             type="date"
                             required
@@ -181,7 +181,7 @@ export default function CattleModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga (Rp) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             required
@@ -192,7 +192,7 @@ export default function CattleModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status <span className="text-red-500">*</span></label>
                         <select
                             value={formData.status_ternak}
                             onChange={(e) => setFormData({ ...formData, status_ternak: e.target.value as any })}

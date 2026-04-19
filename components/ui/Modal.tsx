@@ -62,10 +62,10 @@ export default function Modal({
             />
 
             {/* Modal Content */}
-            <div className={`relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-[32px] shadow-2xl overflow-hidden w-full ${sizeClasses[size]} animate-in fade-in zoom-in duration-300`}>
+            <div className={`relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-[24px] md:rounded-[32px] shadow-2xl overflow-hidden w-full ${sizeClasses[size]} animate-in fade-in zoom-in duration-300 max-h-[90dvh] flex flex-col`}>
                 {/* Header */}
-                <div className="p-8 pb-4 flex items-center justify-between">
-                    <h2 className={`text-2xl font-black tracking-tight ${typeHeaderClasses[type]}`}>
+                <div className="p-5 md:p-8 pb-3 md:pb-4 flex items-center justify-between flex-shrink-0">
+                    <h2 className={`text-xl md:text-2xl font-black tracking-tight ${typeHeaderClasses[type]}`}>
                         {title}
                     </h2>
                     <button
@@ -77,13 +77,13 @@ export default function Modal({
                 </div>
 
                 {/* Body */}
-                <div className="p-8 pt-2 overflow-y-auto max-h-[70vh]">
+                <div className="p-5 md:p-8 pt-2 overflow-y-auto flex-1">
                     {children}
                 </div>
 
                 {/* Footer */}
                 {footer && (
-                    <div className="p-8 pt-4 border-t border-gray-100 flex gap-4">
+                    <div className="p-5 md:p-8 pt-4 border-t border-gray-100 flex flex-wrap gap-3 flex-shrink-0">
                         {footer}
                     </div>
                 )}
