@@ -44,6 +44,27 @@ export default function InvestModal({
     const [uploadFile, setUploadFile] = useState<File | null>(null);
 
     useEffect(() => {
+        const hs = parseFloat(formData.harga_sapi) || 0;
+        const bp = parseFloat(formData.biaya_pemeliharaan) || 0;
+        const vv = parseFloat(formData.vaksin_vitamin) || 0;
+        const fm = parseFloat(formData.fee_marketing) || 0;
+        const totalModal = hs + bp + vv + fm;
+
+        const hj = parseFloat(formData.harga_jual) || 0;
+        const keuntungan = hj - totalModal;
+        const hasilInvestor = 0.5 * keuntungan;
+        const roi = totalModal > 0 ? (hasilInvestor / totalModal) * 100 : 0;
+
+        setFormData(prev => ({
+            ...prev,
+            total_modal: totalModal.toString(),
+            keuntungan: keuntungan.toString(),
+            hasil_investor: hasilInvestor.toString(),
+            roi_persen: roi.toFixed(2),
+        }));
+    }, [formData.harga_sapi, formData.biaya_pemeliharaan, formData.vaksin_vitamin, formData.fee_marketing, formData.harga_jual]);
+
+    useEffect(() => {
         if (isEditing && selectedItem) {
             setFormData({
                 id_invest: selectedItem.id_invest,
@@ -176,7 +197,7 @@ export default function InvestModal({
                         </div>
                     )}
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Paket</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Paket <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             required
@@ -188,7 +209,7 @@ export default function InvestModal({
                     </div>
                     
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Jenis <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             required
@@ -207,7 +228,7 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Durasi (Hari)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Durasi (Hari) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             required
@@ -218,7 +239,7 @@ export default function InvestModal({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Sapi (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Sapi (Rp) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             required
@@ -256,7 +277,7 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Modal (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Modal (Rp) <span className="text-green-600">(Auto)</span></label>
                         <input
                             type="number"
                             value={formData.total_modal}
@@ -265,7 +286,7 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Jual (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Jual (Rp) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             value={formData.harga_jual}
@@ -275,7 +296,7 @@ export default function InvestModal({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Keuntungan (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Keuntungan (Rp) <span className="text-green-600">(Auto)</span></label>
                         <input
                             type="number"
                             value={formData.keuntungan}
@@ -284,7 +305,7 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hasil Investor (50%)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hasil Investor (50%) <span className="text-green-600">(Auto)</span></label>
                         <input
                             type="number"
                             value={formData.hasil_investor}
@@ -293,7 +314,7 @@ export default function InvestModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ROI (%)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">ROI (%) <span className="text-green-600">(Auto)</span></label>
                         <input
                             type="text"
                             value={formData.roi_persen}
@@ -303,7 +324,7 @@ export default function InvestModal({
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Invest</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Invest <span className="text-red-500">*</span></label>
                         <select
                             required
                             value={formData.status_investernak}

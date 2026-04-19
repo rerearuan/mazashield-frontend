@@ -18,6 +18,7 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -58,17 +59,19 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[80px]">
+        <div className="flex items-center justify-between h-[70px] md:h-[80px]">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <SafeImage
               src={logo}
               alt="PT Mazashi Semuda Farm Logo"
-              width={56}
-              height={56}
+              width={48}
+              height={48}
               className="object-contain"
               unoptimized
             />
           </Link>
+
+          {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-[40px]">
             {navItems.map((item) => (
               <Link
@@ -83,7 +86,9 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
               </Link>
             ))}
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Desktop auth buttons */}
+          <div className="hidden lg:flex items-center gap-3">
             {isLoggedIn ? (
               <>
                 <Link
@@ -116,8 +121,81 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
               </>
             )}
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile dropdown menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1 shadow-lg">
+          {navItems.map((item) => (
+            <Link
+              key={item.key}
+              href={item.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all ${activePage === item.key
+                ? "bg-[#1a8245]/10 text-[#1a8245]"
+                : "text-gray-500 hover:bg-gray-50 hover:text-[#1a8245]"
+                }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin/profile" : "/profile"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] text-gray-700 hover:bg-gray-50"
+                >
+                  Profil
+                </Link>
+                <button
+                  onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}
+                  className="w-full text-left px-4 py-3 rounded-xl bg-red-50 text-red-600 font-black uppercase tracking-widest text-[11px]"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] text-[#1a8245] hover:bg-green-50"
+                >
+                  Daftar
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-3 rounded-xl bg-[#1a8245] text-white font-black uppercase tracking-widest text-[11px] text-center"
+                >
+                  Login
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <ConfirmationModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}

@@ -109,7 +109,7 @@ export default function MeatModal({
                         </div>
                     )}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Produk</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Produk <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             required
@@ -120,7 +120,7 @@ export default function MeatModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Bagian Daging</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Bagian Daging <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             required
@@ -131,7 +131,7 @@ export default function MeatModal({
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Per Kg (Rp)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Per Kg (Rp) <span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             required
@@ -142,7 +142,7 @@ export default function MeatModal({
                         />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Produk</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Produk <span className="text-red-500">*</span></label>
                         <select
                             required
                             value={formData.status_daging}

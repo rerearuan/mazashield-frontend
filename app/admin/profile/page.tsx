@@ -58,7 +58,7 @@ export default function AdminProfilePage() {
 
     if (loading) {
         return (
-            <div className="p-10 flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="p-4 md:p-10 flex flex-col items-center justify-center min-h-[60vh]">
                 <div className="w-12 h-12 border-4 border-[#1a8245]/20 border-t-[#1a8245] rounded-full animate-spin mb-4"></div>
                 <p className="text-gray-400 font-black uppercase tracking-widest text-xs">Memuat Profil...</p>
             </div>
@@ -66,7 +66,7 @@ export default function AdminProfilePage() {
     }
 
     return (
-        <div className="p-10 relative font-primary">
+        <div className="p-4 md:p-10 relative font-primary">
             <div className="mb-12 relative z-10">
                 <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
                     Pengaturan Akun

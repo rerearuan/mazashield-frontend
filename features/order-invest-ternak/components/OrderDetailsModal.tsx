@@ -64,81 +64,85 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
 
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-1">Customer</label>
-              <p className="font-bold text-gray-900">{order.data_customer?.nama}</p>
-              <p className="text-xs text-gray-500">{order.data_customer?.email}</p>
-              <p className="text-xs text-gray-500">{order.data_customer?.no_telp}</p>
+        {/* Customer + Tanggal */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 space-y-1">
+            <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-1">Customer</label>
+            <p className="font-bold text-gray-900">{order.data_customer?.nama}</p>
+            <p className="text-xs text-gray-500">{order.data_customer?.email}</p>
+            <p className="text-xs text-gray-500">{order.data_customer?.no_telp}</p>
+          </div>
+          <div className="flex-1 space-y-1">
+            <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-1">Tanggal Pesanan</label>
+            <p className="font-bold text-gray-900">
+              {new Date(order.created_at).toLocaleDateString('id-ID', { 
+                day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+              })}
+            </p>
+          </div>
+        </div>
+
+        {/* Ringkasan Pembayaran — full width, below tanggal */}
+        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3">
+          <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em]">Ringkasan Pembayaran</label>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-xl p-3 border border-gray-100">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Tagihan</p>
+              <p className="text-sm font-black text-gray-900">Rp {parseFloat(order.tagihan).toLocaleString('id-ID')}</p>
             </div>
-            <div>
-              <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-1">Tanggal Pesanan</label>
-              <p className="font-bold text-gray-900">
-                {new Date(order.created_at).toLocaleDateString('id-ID', { 
-                  day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' 
-                })}
-              </p>
+            <div className="bg-white rounded-xl p-3 border border-gray-100">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Menunggu</p>
+              <p className="text-sm font-black text-amber-600">Rp {parseFloat(order.menunggu_persetujuan).toLocaleString('id-ID')}</p>
+            </div>
+            <div className="bg-white rounded-xl p-3 border border-gray-100">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Dibayar</p>
+              <p className="text-sm font-black text-green-600">Rp {parseFloat(order.sudah_dibayar).toLocaleString('id-ID')}</p>
             </div>
           </div>
-          <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-            <div>
-              <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-1">Ringkasan Pembayaran</label>
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">Tagihan:</span>
-                  <span className="font-black text-gray-900">Rp {parseFloat(order.tagihan).toLocaleString('id-ID')}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">Menunggu:</span>
-                  <span className="font-black text-amber-600">Rp {parseFloat(order.menunggu_persetujuan).toLocaleString('id-ID')}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">Dibayar:</span>
-                  <span className="font-black text-green-600">Rp {parseFloat(order.sudah_dibayar).toLocaleString('id-ID')}</span>
-                </div>
-              </div>
-              
-              {(role === 'Marketing' || role === 'SuperAdmin' || role === 'CEO') && !isCompletedOrCancelled && parseFloat(order.tagihan) > 0 && (
-                <div className="mt-4">
-                  <Button type="button" variant="secondary" onClick={() => setIsPaymentModalOpen(true)} className="w-full text-xs py-2">
-                    + Input Pembayaran
-                  </Button>
-                </div>
-              )}
 
-              {order.log_pembayaran && order.log_pembayaran.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200 space-y-3 max-h-48 overflow-y-auto pr-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Log Pembayaran</label>
-                  {order.log_pembayaran.map((log: any) => (
-                    <div key={log.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-[10px] font-black text-gray-900">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')}</p>
-                          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim}</p>
-                        </div>
-                        <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full ${
-                          log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
-                          log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
-                          'bg-amber-100 text-amber-700'
-                        }`}>
-                          {log.status === 'Menunggu Verifikasi' ? 'WAITING' : log.status}
-                        </span>
-                      </div>
-                      <p className="text-[9px] text-gray-400 font-medium italic">{new Date(log.created_at).toLocaleDateString('id-ID')} - {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+          {(role === 'Marketing' || role === 'SuperAdmin' || role === 'CEO') && !isCompletedOrCancelled && parseFloat(order.tagihan) > 0 && (
+            <Button type="button" variant="secondary" onClick={() => setIsPaymentModalOpen(true)} className="w-full text-xs py-2">
+              + Input Pembayaran
+            </Button>
+          )}
+
+          {order.log_pembayaran && order.log_pembayaran.length > 0 && (
+            <div className="pt-3 border-t border-gray-200 space-y-2 max-h-48 overflow-y-auto pr-1">
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Log Pembayaran</label>
+              {order.log_pembayaran.map((log: any) => (
+                <div key={log.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-1">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-black text-gray-900">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')}</p>
+                      <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim} ({log.nama_pengirim || '-'})</p>
+                      <p className="text-[8px] text-gray-400 font-semibold italic">Input oleh: {log.created_by_name || 'Sistem'}</p>
+                    </div>
+                    <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full ${
+                      log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
+                      log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
+                      'bg-amber-100 text-amber-700'
+                    }`}>
+                      {log.status === 'Menunggu Verifikasi' ? 'WAITING' : log.status}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-gray-400 font-medium italic">
+                    {new Date(log.created_at).toLocaleDateString('id-ID')} — {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                  {log.status !== 'Menunggu Verifikasi' && (
+                    <div className="pt-2 border-t border-gray-50">
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1 italic">
+                        {log.status === 'Diterima' ? 'Verified by:' : 'Rejected by:'} 
+                        <span className="text-[#1a8245] ml-1">{log.verified_by_name || 'Staff Finance'}</span>
+                      </p>
                       {log.catatan_verifikasi && (
-                        <div className="pt-2 border-t border-gray-50">
-                          <p className="text-[9px] font-black text-red-600 uppercase tracking-widest mb-1 italic">Finance Feedback:</p>
-                          <p className="text-[10px] text-gray-600 italic leading-relaxed">"{log.catatan_verifikasi}"</p>
-                        </div>
+                        <p className="text-[10px] text-gray-600 italic leading-relaxed">"{log.catatan_verifikasi}"</p>
                       )}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-
+              ))}
             </div>
-          </div>
+          )}
         </div>
 
         <div>

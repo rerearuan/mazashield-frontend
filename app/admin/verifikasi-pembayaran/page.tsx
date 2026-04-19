@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
-import Button from "@/components/button/Button";
+import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
 
 interface Payment {
@@ -15,10 +15,12 @@ interface Payment {
     nominal_pembayaran: string | number;
     bank_pengirim: string;
     nomor_rekening_pengirim: string;
+    nama_pengirim: string;
     tanggal_transfer: string;
     waktu_transfer: string;
     catatan: string;
     status: "Menunggu Verifikasi" | "Diterima" | "Ditolak";
+    created_by_name?: string;
 }
 
 const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
@@ -126,13 +128,13 @@ export default function VerifikasiPembayaranPage() {
     const totalPending = payments.filter((p) => p.status === "Menunggu Verifikasi").length;
 
     return (
-        <div className="p-10 relative font-primary bg-[#f8fafc] min-h-screen">
+        <div className="p-4 md:p-10 relative font-primary bg-[#f8fafc] min-h-screen">
             <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
                 <div>
                     <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
                         Keuangan & Verifikasi
                     </span>
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2">
                         Verifikasi <span className="text-[#1a8245]">Pembayaran</span>
                     </h1>
                     <p className="text-gray-500 font-medium text-sm">
@@ -141,18 +143,20 @@ export default function VerifikasiPembayaranPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {[
-                    { label: "Total Dana Masuk", value: formatRupiah(totalPembayaran), color: "text-[#1a8245]" },
-                    { label: "Menunggu Verifikasi", value: totalPending, color: "text-amber-500" },
-                    { label: "Diterima", value: payments.filter(p => p.status === 'Diterima').length, color: "text-[#1a8245]" },
-                    { label: "Ditolak", value: payments.filter(p => p.status === 'Ditolak').length, color: "text-red-500" },
-                ].map(({ label, value, color }) => (
-                    <div key={label} className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
-                        <p className={`text-xl font-black ${color}`}>{value}</p>
-                    </div>
-                ))}
+            <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0 mb-8">
+                <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
+                    {[
+                        { label: "Total Dana Masuk", value: formatRupiah(totalPembayaran), color: "text-[#1a8245]" },
+                        { label: "Menunggu Verifikasi", value: totalPending, color: "text-amber-500" },
+                        { label: "Diterima", value: payments.filter(p => p.status === 'Diterima').length, color: "text-[#1a8245]" },
+                        { label: "Ditolak", value: payments.filter(p => p.status === 'Ditolak').length, color: "text-red-500" },
+                    ].map(({ label, value, color }) => (
+                        <div key={label} className="min-w-[160px] md:min-w-0 bg-white rounded-[24px] shadow-sm border border-gray-100 p-4 md:p-6 flex-shrink-0">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
+                            <p className={`text-base md:text-xl font-black ${color}`}>{value}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Filters */}
@@ -201,8 +205,13 @@ export default function VerifikasiPembayaranPage() {
                         </div>
                     </div>
                     <div className="md:col-span-1 flex items-end">
-                        <Button variant="secondary" onClick={handleResetFilter}
-                            className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest py-3.5 border border-gray-200 shadow-sm">
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            fullWidth
+                            onClick={handleResetFilter}
+                            className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm"
+                        >
                             Reset Filter
                         </Button>
                     </div>
@@ -216,11 +225,11 @@ export default function VerifikasiPembayaranPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse min-w-[650px]">
                             <thead>
                                 <tr className="bg-[#fcfdfc] border-b border-gray-100">
-                                    {["ID Pemb.", "Tipe / Order", "Customer", "Jumlah / Bank / Tgl", "Status", "Aksi"].map((h) => (
-                                        <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    {["ID", "Tipe / Order", "Customer", "Jumlah / Bank", "Status", "Aksi"].map((h) => (
+                                        <th key={h} className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                             {h}
                                         </th>
                                     ))}
@@ -236,36 +245,36 @@ export default function VerifikasiPembayaranPage() {
                                 ) : (
                                     currentPayments.map((payment) => (
                                         <tr key={payment.id} className="hover:bg-green-50/30 transition-colors group cursor-pointer" onClick={() => setSelectedPayment(payment)}>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg group-hover:bg-[#1a8245] group-hover:text-white transition-all text-xs">
                                                     #{payment.id}
                                                 </span>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors">{ORDER_TYPE_LABELS[payment.order_type] || payment.order_type}</span>
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">ID Order: #{payment.order_id}</span>
+                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors text-sm">{ORDER_TYPE_LABELS[payment.order_type] || payment.order_type}</span>
+                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">#{payment.order_id}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <span className="font-black text-gray-900">{payment.customer_name || "-"}</span>
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
+                                                <span className="font-black text-gray-900 text-sm">{payment.customer_name || "-"}</span>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-[#1a8245]">{formatRupiah(payment.nominal_pembayaran)}</span>
-                                                    <span className="text-[10px] text-gray-500 font-medium uppercase tracking-tighter">{payment.bank_pengirim} — {payment.nomor_rekening_pengirim}</span>
-                                                    <span className="text-[10px] text-gray-400 font-semibold uppercase">{payment.tanggal_transfer} {payment.waktu_transfer}</span>
+                                                    <span className="text-sm font-black text-[#1a8245] whitespace-nowrap">{formatRupiah(payment.nominal_pembayaran)}</span>
+                                                    <span className="text-[10px] text-gray-500 font-medium uppercase">{payment.bank_pengirim}</span>
+                                                    <span className="text-[10px] text-gray-400 font-semibold">{payment.tanggal_transfer}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${STATUS_COLORS[payment.status]}`}>
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
+                                                <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${STATUS_COLORS[payment.status]}`}>
                                                     {payment.status}
                                                 </span>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); setSelectedPayment(payment); }}
-                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100"
+                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100 whitespace-nowrap"
                                                 >
                                                     Detail
                                                 </button>
@@ -341,11 +350,21 @@ export default function VerifikasiPembayaranPage() {
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">No. Rekening</p>
                                     <p className="font-bold text-gray-900">{selectedPayment.nomor_rekening_pengirim}</p>
                                 </div>
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nama Pengirim</p>
+                                    <p className="font-bold text-gray-900">{selectedPayment.nama_pengirim || "-"}</p>
+                                </div>
                             </div>
 
-                            <div className="p-4 border border-gray-100 rounded-2xl">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
-                                <p className="font-bold text-gray-900">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
+                                    <p className="font-bold text-gray-900 text-xs">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
+                                </div>
+                                <div className="p-4 border border-green-100 rounded-2xl bg-green-50/20">
+                                    <p className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-1">Input Oleh</p>
+                                    <p className="font-bold text-[#1a8245]">{selectedPayment.created_by_name || "Sistem"}</p>
+                                </div>
                             </div>
 
                             {selectedPayment.catatan && (
