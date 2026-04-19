@@ -105,7 +105,7 @@ export default function InvestQurbanPage() {
       />
 
       {/* Timeline Section */}
-      <section className="py-24 px-6 lg:px-8 bg-white overflow-hidden">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="lg:w-1/3">
@@ -143,7 +143,7 @@ export default function InvestQurbanPage() {
       </section>
 
       {/* Pricelist Section */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Tabungan Qurban 1447 H</span>
@@ -215,7 +215,7 @@ export default function InvestQurbanPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 px-6 lg:px-8 relative overflow-hidden bg-gray-50">
+      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gray-50">
         <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-green-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
@@ -239,7 +239,7 @@ export default function InvestQurbanPage() {
       </section>
 
       {/* Investment Packages Section - PBI 22 Dynamic */}
-      <section className="py-32 px-6 lg:px-8 bg-white relative">
+      <section className="py-12 md:py-32 px-4 sm:px-6 lg:px-8 bg-white relative">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8 text-center sm:text-left">
             <div className="max-w-2xl">

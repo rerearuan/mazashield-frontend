@@ -72,13 +72,13 @@ export default function ManajemenInvestTernakPage() {
     }, []);
 
     return (
-        <div className="p-10 relative font-primary bg-[#f8fafc] min-h-screen">
+        <div className="p-4 md:p-10 relative font-primary bg-[#f8fafc] min-h-screen">
             <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
                 <div>
                     <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
                         Manajemen Penjualan
                     </span>
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2 text-[#1a8245]">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2 text-[#1a8245]">
                         Pesanan Invest
                     </h1>
                     <p className="text-gray-500 font-medium text-sm">
@@ -102,18 +102,20 @@ export default function ManajemenInvestTernakPage() {
                 )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {[
-                    { label: "Total Tagihan", value: formatRupiah(totalTagihanVal), color: "text-gray-900" },
-                    { label: "Diproses", value: countByStatus("Diproses"), color: "text-amber-500" },
-                    { label: "Selesai", value: countByStatus("Selesai"), color: "text-[#1a8245]" },
-                    { label: "Dibatalkan", value: countByStatus("Dibatalkan"), color: "text-red-500" },
-                ].map(({ label, value, color }) => (
-                    <div key={label} className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
-                        <p className={`text-xl font-black ${color}`}>{value}</p>
-                    </div>
-                ))}
+            <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0 mb-8">
+                <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
+                    {[
+                        { label: "Total Tagihan", value: formatRupiah(totalTagihanVal), color: "text-gray-900" },
+                        { label: "Diproses", value: countByStatus("Diproses"), color: "text-amber-500" },
+                        { label: "Selesai", value: countByStatus("Selesai"), color: "text-[#1a8245]" },
+                        { label: "Dibatalkan", value: countByStatus("Dibatalkan"), color: "text-red-500" },
+                    ].map(({ label, value, color }) => (
+                        <div key={label} className="min-w-[160px] md:min-w-0 bg-white rounded-[24px] shadow-sm border border-gray-100 p-4 md:p-6 flex-shrink-0">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
+                            <p className={`text-base md:text-xl font-black ${color}`}>{value}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Filters */}
@@ -173,11 +175,11 @@ export default function ManajemenInvestTernakPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse min-w-[700px]">
                             <thead>
                                 <tr className="bg-[#fcfdfc] border-b border-gray-100">
-                                    {["ID Pesanan", "Customer", "Investasi", "Status", "Tagihan", "Dibayar", "Dibuat", "Aksi"].map((h) => (
-                                        <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    {["ID", "Customer", "Investasi", "Status", "Tagihan", "Dibayar", "Dibuat", "Aksi"].map((h) => (
+                                        <th key={h} className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                             {h}
                                         </th>
                                     ))}
@@ -193,36 +195,36 @@ export default function ManajemenInvestTernakPage() {
                                 ) : (
                                     orders.map((order) => (
                                         <tr key={order.id_pesanan} className="hover:bg-green-50/30 transition-colors group cursor-pointer" onClick={() => handleOpenDetail(order)}>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg group-hover:bg-[#1a8245] group-hover:text-white transition-all text-xs">
                                                     #{order.id_pesanan}
                                                 </span>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors">{order.data_customer.nama}</span>
+                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors text-sm">{order.data_customer.nama}</span>
                                                     <span className="text-[10px] text-gray-400 font-medium">{order.data_customer.email}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <span className="text-xs font-bold text-gray-700">{order.total_item} Paket</span>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <Badge status={order.status_pesanan} />
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-xs font-black text-gray-900">{formatRupiah(order.tagihan)}</p>
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
+                                                <p className="text-xs font-black text-gray-900 whitespace-nowrap">{formatRupiah(order.tagihan)}</p>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-xs font-black text-[#1a8245]">{formatRupiah(order.sudah_dibayar)}</p>
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
+                                                <p className="text-xs font-black text-[#1a8245] whitespace-nowrap">{formatRupiah(order.sudah_dibayar)}</p>
                                             </td>
-                                            <td className="px-8 py-6 font-semibold text-gray-500 text-xs">
+                                            <td className="px-4 md:px-8 py-4 md:py-6 font-semibold text-gray-500 text-xs whitespace-nowrap">
                                                 {new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleOpenDetail(order); }}
-                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100"
+                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100 whitespace-nowrap"
                                                 >
                                                     Detail
                                                 </button>

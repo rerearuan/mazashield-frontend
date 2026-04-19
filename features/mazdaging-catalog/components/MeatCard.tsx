@@ -93,7 +93,7 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                 </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-5 md:p-8">
                 <div className="mb-4">
                     <h3 className="font-black text-2xl text-gray-900 tracking-tight leading-none mb-1">{item.nama}</h3>
                     <p className="text-[#1a8245] font-black text-[10px] uppercase tracking-[0.2em]">{item.bagian}</p>
