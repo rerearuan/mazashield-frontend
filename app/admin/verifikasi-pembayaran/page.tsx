@@ -1,330 +1,400 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
+import { useRouter } from "next/navigation";
+import { orderService } from "@/services/order.service";
+import { toast } from "react-hot-toast";
+import Button from "@/components/button/Button";
+import { Icons } from "@/components/common/Icons";
 
 interface Payment {
-  id: string;
-  orderId: string;
-  orderType: "Invest Ternak" | "Qurban" | "Daging Potong";
-  customerName: string;
-  amount: number;
-  paymentMethod: string;
-  paymentDate: string;
-  proofImage: string;
-  status: "Pending" | "Diverifikasi" | "Ditolak";
+    id: string;
+    order_id: string;
+    order_type: string;
+    customer_name: string;
+    nominal_pembayaran: string | number;
+    bank_pengirim: string;
+    nomor_rekening_pengirim: string;
+    tanggal_transfer: string;
+    waktu_transfer: string;
+    catatan: string;
+    status: "Menunggu Verifikasi" | "Diterima" | "Ditolak";
 }
 
+const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
+
+const STATUS_COLORS: Record<string, string> = {
+    "Menunggu Verifikasi": "bg-amber-100 text-amber-800",
+    "Diterima": "bg-[#1a8245]/10 text-[#1a8245]",
+    "Ditolak": "bg-red-100 text-red-800",
+};
+
+const ORDER_TYPE_LABELS: Record<string, string> = {
+    "pesananternak": "Pesanan Ternak",
+    "pesananinvest": "Pesanan Invest",
+    "pesanandaging": "Pesanan Daging",
+    "pesanan": "Pesanan Ternak",
+};
+
+
+
+
+
+
 export default function VerifikasiPembayaranPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "Pending" | "Diverifikasi" | "Ditolak">("all");
-  const [filterOrderType, setFilterOrderType] = useState<"all" | "Invest Ternak" | "Qurban" | "Daging Potong">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
-  const itemsPerPage = 10;
+    const router = useRouter();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState<"all" | "Menunggu Verifikasi" | "Diterima" | "Ditolak">("all");
+    const [filterOrderType, setFilterOrderType] = useState<string>("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+    const [payments, setPayments] = useState<Payment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [verifying, setVerifying] = useState(false);
+    const [catatanVerifikasi, setCatatanVerifikasi] = useState("");
+    const itemsPerPage = 10;
 
-  // Mock data
-  const [payments] = useState<Payment[]>([
-    {
-      id: "PAY-001",
-      orderId: "INV-001",
-      orderType: "Invest Ternak",
-      customerName: "John Doe",
-      amount: 10000000,
-      paymentMethod: "Bank Transfer",
-      paymentDate: "2024-03-15",
-      proofImage: "/images/payment-proof.jpg",
-      status: "Pending",
-    },
-    {
-      id: "PAY-002",
-      orderId: "QUR-001",
-      orderType: "Qurban",
-      customerName: "Ahmad Hidayat",
-      amount: 25000000,
-      paymentMethod: "Bank Transfer",
-      paymentDate: "2024-03-14",
-      proofImage: "/images/payment-proof.jpg",
-      status: "Pending",
-    },
-  ]);
+    useEffect(() => {
+        fetchPayments();
+    }, [filterStatus]);
 
-  const filteredPayments = payments.filter((payment) => {
-    const matchesSearch =
-      payment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.customerName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || payment.status === filterStatus;
-    const matchesOrderType = filterOrderType === "all" || payment.orderType === filterOrderType;
-    return matchesSearch && matchesStatus && matchesOrderType;
-  });
+    const fetchPayments = async () => {
+        try {
+            setLoading(true);
+            const params: any = {};
+            if (filterStatus !== "all") {
+                params.status = filterStatus;
+            }
 
-  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentPayments = filteredPayments.slice(startIndex, startIndex + itemsPerPage);
+            const response = await orderService.getPaymentHistory(params);
+            const data = response.results ? response.results : response;
+            setPayments(Array.isArray(data) ? data : []);
+        } catch (error: any) {
+            toast.error(error.message || "Gagal mengambil daftar pembayaran");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Diverifikasi":
-        return "bg-green-100 text-green-800";
-      case "Ditolak":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-yellow-100 text-yellow-800";
-    }
-  };
+    const handleResetFilter = useCallback(() => {
+        setFilterStatus("all");
+        setFilterOrderType("all");
+        setSearchTerm("");
+        setCurrentPage(1);
+    }, []);
 
-  const handleVerify = (paymentId: string, approved: boolean) => {
-    // TODO: Implement verification logic
-    console.log(`Verifying payment ${paymentId}: ${approved ? "Approved" : "Rejected"}`);
-  };
+    const filteredPayments = payments.filter((payment) => {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch =
+            payment.id.toString().includes(term) ||
+            payment.order_id.toString().includes(term) ||
+            (payment.customer_name || "").toLowerCase().includes(term);
+        const matchesOrderType = filterOrderType === "all" || 
+            (filterOrderType === "pesananternak" 
+                ? (payment.order_type === "pesananternak" || payment.order_type === "pesanan") 
+                : payment.order_type === filterOrderType);
+        return matchesSearch && matchesOrderType;
 
-  return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Verifikasi Pembayaran</h1>
-        <p className="text-gray-600">Verifikasi bukti pembayaran dari customer</p>
-      </div>
+    });
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Pembayaran</p>
-          <p className="text-2xl font-bold text-gray-900">Rp 125.000.000</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">18</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Diverifikasi</p>
-          <p className="text-2xl font-bold text-green-600">42</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-600 mb-1">Ditolak</p>
-          <p className="text-2xl font-bold text-red-600">5</p>
-        </div>
-      </div>
+    const totalPages = Math.max(1, Math.ceil(filteredPayments.length / itemsPerPage));
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentPayments = filteredPayments.slice(startIndex, startIndex + itemsPerPage);
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Cari ID pembayaran, ID pesanan, atau nama customer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-            />
-          </div>
-          <select
-            value={filterOrderType}
-            onChange={(e) => setFilterOrderType(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-          >
-            <option value="all">Semua Tipe</option>
-            <option value="Invest Ternak">Invest Ternak</option>
-            <option value="Qurban">Qurban</option>
-            <option value="Daging Potong">Daging Potong</option>
-          </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a8245] focus:border-transparent outline-none"
-          >
-            <option value="all">Semua Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Diverifikasi">Diverifikasi</option>
-            <option value="Ditolak">Ditolak</option>
-          </select>
-        </div>
-      </div>
+    const handleVerify = async (paymentId: string, approved: boolean) => {
+        setVerifying(true);
+        try {
+            await orderService.verifyPayment(paymentId, {
+                keputusan: approved ? "Diterima" : "Ditolak",
+                catatan_verifikasi: catatanVerifikasi
+            });
+            toast.success(`Pembayaran berhasil ${approved ? "Diterima" : "Ditolak"}!`);
+            setSelectedPayment(null);
+            setCatatanVerifikasi("");
+            fetchPayments();
+        } catch (error: any) {
+            toast.error(error.message || "Gagal memverifikasi pembayaran");
+        } finally {
+            setVerifying(false);
+        }
+    };
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  ID Pembayaran
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  ID Pesanan
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Tipe Pesanan
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Jumlah
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Metode
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Tanggal
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentPayments.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
-                    Tidak ada data ditemukan
-                  </td>
-                </tr>
-              ) : (
-                currentPayments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {payment.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {payment.orderId}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {payment.orderType}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {payment.customerName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      Rp {payment.amount.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {payment.paymentMethod}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {payment.paymentDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(payment.status)}`}>
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setSelectedPayment(payment)}
-                          className="text-[#1a8245] hover:text-[#22ad5c] font-medium"
+    // Stats
+    const totalPembayaran = payments
+        .filter(p => p.status === 'Diterima')
+        .reduce((acc, p) => acc + parseFloat(p.nominal_pembayaran as string), 0);
+    const totalPending = payments.filter((p) => p.status === "Menunggu Verifikasi").length;
+
+    return (
+        <div className="p-10 relative font-primary bg-[#f8fafc] min-h-screen">
+            <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+                <div>
+                    <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
+                        Keuangan & Verifikasi
+                    </span>
+                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
+                        Verifikasi <span className="text-[#1a8245]">Pembayaran</span>
+                    </h1>
+                    <p className="text-gray-500 font-medium text-sm">
+                        Proses bukti transfer dan verifikasi dana masuk dari customer.
+                    </p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {[
+                    { label: "Total Dana Masuk", value: formatRupiah(totalPembayaran), color: "text-[#1a8245]" },
+                    { label: "Menunggu Verifikasi", value: totalPending, color: "text-amber-500" },
+                    { label: "Diterima", value: payments.filter(p => p.status === 'Diterima').length, color: "text-[#1a8245]" },
+                    { label: "Ditolak", value: payments.filter(p => p.status === 'Ditolak').length, color: "text-red-500" },
+                ].map(({ label, value, color }) => (
+                    <div key={label} className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
+                        <p className={`text-xl font-black ${color}`}>{value}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-6 md:p-7 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-5">
+                    <div className="md:col-span-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Status Verifikasi</label>
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => { setFilterStatus(e.target.value as any); setCurrentPage(1); }}
+                            className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
                         >
-                          Lihat Bukti
-                        </button>
-                        {payment.status === "Pending" && (
-                          <>
+                            <option value="all">Semua Status</option>
+                            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                            <option value="Diterima">Diterima</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    <div className="md:col-span-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Tipe Pesanan</label>
+                        <select
+                            value={filterOrderType}
+                            onChange={(e) => { setFilterOrderType(e.target.value); setCurrentPage(1); }}
+                            className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
+                        >
+                            <option value="all">Semua Tipe</option>
+                            <option value="pesananternak">Pesanan Ternak</option>
+                            <option value="pesananinvest">Pesanan Invest</option>
+                            <option value="pesanandaging">Pesanan Daging</option>
+
+
+                        </select>
+
+                    </div>
+                    <div className="md:col-span-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Cari Pembayaran</label>
+                        <div className="relative">
+                            <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Cari ID, Nama..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
+                            />
+                        </div>
+                    </div>
+                    <div className="md:col-span-1 flex items-end">
+                        <Button variant="secondary" onClick={handleResetFilter}
+                            className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest py-3.5 border border-gray-200 shadow-sm">
+                            Reset Filter
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white/85 backdrop-blur-xl rounded-[32px] border border-white/50 shadow-xl shadow-green-900/5 overflow-hidden">
+                {loading ? (
+                    <div className="flex items-center justify-center py-24">
+                        <div className="w-10 h-10 border-4 border-[#1a8245]/20 border-t-[#1a8245] rounded-full animate-spin" />
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-[#fcfdfc] border-b border-gray-100">
+                                    {["ID Pemb.", "Tipe / Order", "Customer", "Jumlah / Bank / Tgl", "Status", "Aksi"].map((h) => (
+                                        <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                            {h}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50 bg-white">
+                                {currentPayments.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="py-24 text-center text-gray-400 text-sm font-medium italic">
+                                            Belum ada data pembayaran.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    currentPayments.map((payment) => (
+                                        <tr key={payment.id} className="hover:bg-green-50/30 transition-colors group cursor-pointer" onClick={() => setSelectedPayment(payment)}>
+                                            <td className="px-8 py-6">
+                                                <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg group-hover:bg-[#1a8245] group-hover:text-white transition-all text-xs">
+                                                    #{payment.id}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors">{ORDER_TYPE_LABELS[payment.order_type] || payment.order_type}</span>
+                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">ID Order: #{payment.order_id}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <span className="font-black text-gray-900">{payment.customer_name || "-"}</span>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-black text-[#1a8245]">{formatRupiah(payment.nominal_pembayaran)}</span>
+                                                    <span className="text-[10px] text-gray-500 font-medium uppercase tracking-tighter">{payment.bank_pengirim} — {payment.nomor_rekening_pengirim}</span>
+                                                    <span className="text-[10px] text-gray-400 font-semibold uppercase">{payment.tanggal_transfer} {payment.waktu_transfer}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${STATUS_COLORS[payment.status]}`}>
+                                                    {payment.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedPayment(payment); }}
+                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100"
+                                                >
+                                                    Detail
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {totalPages > 1 && (
+                    <div className="px-8 py-6 border-t border-gray-100 flex items-center justify-between bg-white">
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total {filteredPayments.length} Pembayaran</p>
+                        <div className="flex gap-1">
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={(e) => { e.stopPropagation(); setCurrentPage(i + 1); }}
+                                    className={`min-w-[36px] h-9 rounded-xl text-sm font-bold transition-all ${
+                                        currentPage === i + 1 ? "bg-[#1a8245] text-white shadow" : "text-gray-400 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Proof Modal */}
+            {selectedPayment && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-white/90 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div className="flex justify-between items-center mb-8">
+                            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Detail Pembayaran #{selectedPayment.id}</h2>
                             <button
-                              onClick={() => handleVerify(payment.id, true)}
-                              className="text-green-600 hover:text-green-700 font-medium"
+                                onClick={() => { setSelectedPayment(null); setCatatanVerifikasi(""); }}
+                                className="text-gray-400 hover:text-gray-900 bg-gray-100/50 hover:bg-gray-200 rounded-full p-2 transition-all w-10 h-10 flex items-center justify-center"
+                                disabled={verifying}
                             >
-                              Terima
+                                <Icons.X className="w-5 h-5" />
                             </button>
-                            <button
-                              onClick={() => handleVerify(payment.id, false)}
-                              className="text-red-600 hover:text-red-700 font-medium"
-                            >
-                              Tolak
-                            </button>
-                          </>
+                        </div>
+                        
+                        <div className="space-y-5 mb-8">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer</p>
+                                    <p className="font-bold text-gray-900">{selectedPayment.customer_name || "-"}</p>
+                                </div>
+                                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tipe / Order</p>
+                                    <p className="font-bold text-gray-900">{ORDER_TYPE_LABELS[selectedPayment.order_type] || selectedPayment.order_type} #{selectedPayment.order_id}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-[#1a8245]/5 p-5 rounded-2xl border border-[#1a8245]/10 flex items-center justify-between">
+                                <div>
+                                    <p className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-1">Nominal Pembayaran</p>
+                                    <p className="text-3xl font-black text-[#1a8245]">{formatRupiah(selectedPayment.nominal_pembayaran)}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Bank Pengirim</p>
+                                    <p className="font-bold text-gray-900">{selectedPayment.bank_pengirim}</p>
+                                </div>
+                                <div className="p-4 border border-gray-100 rounded-2xl">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">No. Rekening</p>
+                                    <p className="font-bold text-gray-900">{selectedPayment.nomor_rekening_pengirim}</p>
+                                </div>
+                            </div>
+
+                            <div className="p-4 border border-gray-100 rounded-2xl">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
+                                <p className="font-bold text-gray-900">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
+                            </div>
+
+                            {selectedPayment.catatan && (
+                                <div className="p-4 border border-amber-100 rounded-2xl bg-amber-50/30">
+                                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Catatan Customer</p>
+                                    <p className="text-sm text-gray-700 italic font-medium">"{selectedPayment.catatan}"</p>
+                                </div>
+                            )}
+
+                            {selectedPayment.status === "Menunggu Verifikasi" && (
+                                <div className="pt-2">
+                                    <label className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-2 block">Catatan Verifikasi (Feedback)</label>
+                                    <textarea
+                                        value={catatanVerifikasi}
+                                        onChange={(e) => setCatatanVerifikasi(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-semibold text-sm transition-all h-20 resize-none focus:ring-2 focus:ring-[#1a8245]/20 focus:border-[#1a8245]"
+                                        placeholder="Berikan alasan jika ditolak atau catatan tambahan..."
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {selectedPayment.status === "Menunggu Verifikasi" ? (
+                            <div className="flex gap-4">
+                                <button
+                                    disabled={verifying}
+                                    onClick={() => handleVerify(selectedPayment.id, true)}
+                                    className="flex-1 h-14 bg-[#1a8245] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#146636] transition-all shadow-xl shadow-green-100 disabled:opacity-50"
+                                >
+                                    {verifying ? "Memproses..." : "Terima Pembayaran"}
+                                </button>
+                                <button
+                                    disabled={verifying}
+                                    onClick={() => handleVerify(selectedPayment.id, false)}
+                                    className="flex-1 h-14 bg-white text-red-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-50 transition-all border border-red-100 disabled:opacity-50"
+                                >
+                                    Tolak
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="pt-4 flex justify-center">
+                                <span className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest ${STATUS_COLORS[selectedPayment.status]}`}>
+                                    {selectedPayment.status}
+                                </span>
+                            </div>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Menampilkan {startIndex + 1} - {Math.min(startIndex + itemsPerPage, filteredPayments.length)} dari {filteredPayments.length} pembayaran
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Sebelumnya
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Selanjutnya
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Proof Image Modal */}
-      {selectedPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Bukti Pembayaran</h2>
-              <button
-                onClick={() => setSelectedPayment(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">
-                <strong>ID Pembayaran:</strong> {selectedPayment.id}
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
-                <strong>Customer:</strong> {selectedPayment.customerName}
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
-                <strong>Jumlah:</strong> Rp {selectedPayment.amount.toLocaleString("id-ID")}
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
-              <p className="text-sm text-gray-500 text-center">Preview Bukti Transfer</p>
-              <p className="text-xs text-gray-400 text-center mt-2">(Gambar akan ditampilkan di sini)</p>
-            </div>
-            {selectedPayment.status === "Pending" && (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    handleVerify(selectedPayment.id, true);
-                    setSelectedPayment(null);
-                  }}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700"
-                >
-                  Terima Pembayaran
-                </button>
-                <button
-                  onClick={() => {
-                    handleVerify(selectedPayment.id, false);
-                    setSelectedPayment(null);
-                  }}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700"
-                >
-                  Tolak Pembayaran
-                </button>
-              </div>
+                    </div>
+                </div>
             )}
-          </div>
         </div>
-      )}
-    </div>
-  );
+    );
 }

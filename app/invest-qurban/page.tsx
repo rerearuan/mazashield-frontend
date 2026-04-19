@@ -49,11 +49,24 @@ const steps = [
 ];
 
 export default function InvestQurbanPage() {
-  const { packages, loading, currentPage, setCurrentPage, totalPages } = useInvestPublic(6);
+  const { packages, loading, currentPage, setCurrentPage, totalPages, totalCount, filters } = useInvestPublic(6);
 
   const handleInvest = (packageTitle: string) => {
     window.open(`https://wa.me/6285819051216?text=Halo, saya tertarik dengan ${packageTitle}`, "_blank");
   };
+
+  const formatCurrency = (value: string) => {
+      if (!value) return "";
+      const cleanValue = value.replace(/\D/g, "");
+      if (!cleanValue) return "";
+      return parseInt(cleanValue).toLocaleString("id-ID");
+  };
+
+  const handlePriceChange = (value: string, setter: (val: string) => void) => {
+      const cleanValue = value.replace(/\D/g, "");
+      setter(cleanValue);
+  };
+
 
   const cattlePrices = [
     { class: "Patungan 7 orang*", weight: "±345", price: "3.400.000/orang" },
@@ -225,7 +238,7 @@ export default function InvestQurbanPage() {
         </div>
       </section>
 
-      {/* Investment Packages Section */}
+      {/* Investment Packages Section - PBI 22 Dynamic */}
       <section className="py-32 px-6 lg:px-8 bg-white relative">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8 text-center sm:text-left">
@@ -244,92 +257,84 @@ export default function InvestQurbanPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Bali B */}
-            <div className="bg-white rounded-[48px] border border-gray-100 p-8 shadow-sm hover:shadow-2xl transition-all duration-500">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">Paket Bali B</h3>
-                  <span className="text-[#1a8245] font-black uppercase tracking-widest text-[10px]">120 Hari Maintenance</span>
+          {/* Filter Bar - PBI 22 */}
+          <div className="bg-gray-50/50 border border-gray-100 rounded-[32px] p-8 mb-16 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Cari Paket</label>
+                    <div className="relative">
+                        <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Nama paket..."
+                            value={filters.searchTerm}
+                            onChange={(e) => filters.setSearchTerm(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm transition-all"
+                        />
+                    </div>
                 </div>
-                <div className="bg-[#1a8245]/10 px-4 py-2 rounded-2xl">
-                  <span className="text-[#1a8245] font-black text-lg">ROI 6.83%</span>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Jenis</label>
+                    <select
+                        value={filters.jenisFilter}
+                        onChange={(e) => filters.setJenisFilter(e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm appearance-none"
+                    >
+                        <option value="all">Semua Jenis</option>
+                        <option value="Limousin">Limousin</option>
+                        <option value="Simental">Simental</option>
+                        <option value="Brahman">Brahman</option>
+                        <option value="PO">PO</option>
+                        <option value="Bali">Bali</option>
+                    </select>
                 </div>
-              </div>
-              <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center py-3 border-b border-gray-50">
-                  <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Modal Per Ekor</span>
-                  <span className="text-gray-900 font-black">Rp 20.350.000</span>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Min Harga Sapi</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1a8245] font-bold text-[10px]">Rp</span>
+                        <input
+                            type="text"
+                            placeholder="Contoh: 15.000.000"
+                            value={formatCurrency(filters.minHarga)}
+                            onChange={(e) => handlePriceChange(e.target.value, filters.setMinHarga)}
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-bold text-sm shadow-sm transition-all"
+                        />
+                    </div>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-gray-50">
-                  <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Estimasi Jual</span>
-                  <span className="text-gray-900 font-black">Rp 22.400.000</span>
+                <div className="flex items-end">
+                    <button
+                        onClick={() => {
+                            filters.setSearchTerm("");
+                            filters.setJenisFilter("all");
+                            filters.setMinHarga("");
+                            filters.setMaxHarga("");
+                        }}
+                        className="w-full py-3 bg-gray-200 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-300 transition-all font-bold"
+                    >
+                        Reset Filter
+                    </button>
                 </div>
-                <div className="flex justify-between items-center py-3 bg-green-50/50 px-4 rounded-xl">
-                  <span className="text-[#1a8245] font-black text-xs uppercase tracking-widest">Hasil Investor (50%)</span>
-                  <span className="text-[#1a8245] font-black text-lg">Rp 1.025.000</span>
-                </div>
-              </div>
-              <button onClick={() => handleInvest("Bali B")} className="w-full py-4 bg-[#1a8245] text-white rounded-[24px] font-black uppercase tracking-widest text-[10px] shadow-lg shadow-green-100 hover:-translate-y-1 transition-all">Join Invest Sekarang</button>
-            </div>
-
-            {/* Bali C */}
-            <div className="bg-white rounded-[48px] border border-gray-100 p-8 shadow-sm hover:shadow-2xl transition-all duration-500">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">Paket Bali C</h3>
-                  <span className="text-[#1a8245] font-black uppercase tracking-widest text-[10px]">120 Hari Maintenance</span>
-                </div>
-                <div className="bg-[#1a8245]/10 px-4 py-2 rounded-2xl">
-                  <span className="text-[#1a8245] font-black text-lg">ROI 7.35%</span>
-                </div>
-              </div>
-              <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center py-3 border-b border-gray-50">
-                  <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Modal Per Ekor</span>
-                  <span className="text-gray-900 font-black">Rp 22.500.000</span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b border-gray-50">
-                  <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Estimasi Jual</span>
-                  <span className="text-gray-900 font-black">Rp 25.000.000</span>
-                </div>
-                <div className="flex justify-between items-center py-3 bg-green-50/50 px-4 rounded-xl">
-                  <span className="text-[#1a8245] font-black text-xs uppercase tracking-widest">Hasil Investor (50%)</span>
-                  <span className="text-[#1a8245] font-black text-lg">Rp 1.250.000</span>
-                </div>
-              </div>
-              <button onClick={() => handleInvest("Bali C")} className="w-full py-4 bg-[#1a8245] text-white rounded-[24px] font-black uppercase tracking-widest text-[10px] shadow-lg shadow-green-100 hover:-translate-y-1 transition-all">Join Invest Sekarang</button>
-            </div>
-
-            {/* Super */}
-            <div className="bg-gray-900 rounded-[48px] p-8 shadow-2xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#1a8245]/20 rounded-full blur-2xl" />
-              <div className="flex justify-between items-start mb-8 relative z-10">
-                <div>
-                  <h3 className="text-2xl font-black text-white tracking-tight">Paket Super</h3>
-                  <span className="text-[#fbbf24] font-black uppercase tracking-widest text-[10px]">210 Hari Maintenance</span>
-                </div>
-                <div className="bg-[#fbbf24] px-4 py-2 rounded-2xl shadow-xl shadow-amber-500/20">
-                  <span className="text-gray-900 font-black text-lg">ROI 8.38%</span>
-                </div>
-              </div>
-              <div className="space-y-4 mb-8 relative z-10">
-                <div className="flex justify-between items-center py-3 border-b border-white/5">
-                  <span className="text-gray-500 font-bold text-xs uppercase tracking-widest">Modal Per Ekor</span>
-                  <span className="text-white font-black">Rp 28.650.000</span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b border-white/5">
-                  <span className="text-gray-500 font-bold text-xs uppercase tracking-widest">Estimasi Jual</span>
-                  <span className="text-white font-black">Rp 32.000.000</span>
-                </div>
-                <div className="flex justify-between items-center py-3 bg-[#1a8245] px-4 rounded-xl shadow-lg shadow-green-900/40">
-                  <span className="text-white font-black text-xs uppercase tracking-widest">Hasil Investor (50%)</span>
-                  <span className="text-white font-black text-lg">Rp 1.675.000</span>
-                </div>
-              </div>
-              <button onClick={() => handleInvest("Super")} className="w-full py-4 bg-[#fbbf24] text-gray-900 rounded-[24px] font-black uppercase tracking-widest text-[10px] shadow-xl shadow-amber-900/20 hover:bg-white transition-all">Join Invest Sekarang</button>
-            </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-[400px] bg-gray-50 animate-pulse rounded-[48px]" />
+                ))
+            ) : packages.length === 0 ? (
+                <div className="col-span-full py-24 text-center bg-gray-50 rounded-[48px] border-2 border-dashed border-gray-200">
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Tidak ada paket yang ditemukan.</p>
+                </div>
+            ) : (
+                packages.map((pkg) => (
+                    <PublicInvestCard
+                        key={pkg.id_invest}
+                        pkg={pkg}
+                        onInvest={() => handleInvest(pkg.nama_paket)}
+                    />
+                ))
+            )}
+          </div>
+
           <p className="mt-12 text-center text-sm text-gray-400 font-medium whitespace-pre-line">
             *Investor cukup membayar biaya sapi yang di-highlight (Modal).*{"\n"}
             Pakan diberikan berupa konsentrat, ampas kedelai, dan hijauan. Biaya pemeliharaan sudah termasuk pakan dan operasional.
@@ -355,21 +360,18 @@ export default function InvestQurbanPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {[
-                    { name: "Bali B", price: "15.000.000", care: "4.200.000", med: "300.000", fee: "850.000", total: "20.350.000", roi: "6.83%" },
-                    { name: "Bali C", price: "17.000.000", care: "4.200.000", med: "300.000", fee: "1.000.000", total: "22.500.000", roi: "7.35%" },
-                    { name: "Super", price: "20.000.000", care: "7.350.000", med: "300.000", fee: "1.000.000", total: "28.650.000", roi: "8.38%" },
-                  ].map((row, i) => (
+                  {packages.map((pkg, i) => (
                     <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-8 py-6 font-black text-gray-900">{row.name}</td>
-                      <td className="px-8 py-6 font-black text-[#1a8245]">Rp {row.price}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {row.care}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {row.med}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {row.fee}</td>
-                      <td className="px-8 py-6 font-black text-gray-900">Rp {row.total}</td>
-                      <td className="px-8 py-6 font-black text-[#1a8245]">{row.roi}</td>
+                      <td className="px-8 py-6 font-black text-gray-900">{pkg.nama_paket}</td>
+                      <td className="px-8 py-6 font-black text-[#1a8245]">Rp {Number(pkg.harga_sapi).toLocaleString("id-ID")}</td>
+                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.biaya_pemeliharaan).toLocaleString("id-ID")}</td>
+                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.vaksin_vitamin).toLocaleString("id-ID")}</td>
+                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.fee_marketing).toLocaleString("id-ID")}</td>
+                      <td className="px-8 py-6 font-black text-gray-900">Rp {Number(pkg.total_modal).toLocaleString("id-ID")}</td>
+                      <td className="px-8 py-6 font-black text-[#1a8245]">{pkg.roi_persen}%</td>
                     </tr>
                   ))}
+
                 </tbody>
               </table>
             </div>

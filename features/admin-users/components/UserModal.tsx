@@ -72,6 +72,7 @@ export default function UserModal({
 
     const inputClasses = "w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] focus:bg-white outline-none transition-all font-bold placeholder:text-gray-300";
     const labelClasses = "text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block";
+    const normalizePhone = (value: string) => value.replace(/\D/g, "");
 
     if (generatedPassword) {
         return (
@@ -126,10 +127,18 @@ export default function UserModal({
                     <div>
                         <label className={labelClasses}>Nomor Telepon</label>
                         <input
-                            type="text"
+                            type="tel"
                             required
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={13}
                             value={formData.nomor_telepon}
-                            onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
+                            onChange={(e) => {
+                                const value = normalizePhone(e.target.value);
+                                if (value.length <= 13) {
+                                    setFormData({ ...formData, nomor_telepon: value });
+                                }
+                            }}
                             placeholder="08xxxxxxxxxx"
                             className={inputClasses}
                         />

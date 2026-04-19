@@ -5,19 +5,20 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
-import { InvestTernak } from "../useInvestCatalog";
-import { getRandomCowImage } from "@/lib/image-utils";
+import { Meat } from "../useMeatCatalog";
+import { getRandomMeatImage } from "@/lib/image-utils";
 
-interface InvestCardProps {
-    item: InvestTernak;
+interface MeatCardProps {
+    item: Meat;
     userRole: string | null;
-    onEdit: (item: InvestTernak) => void;
+    onEdit: (item: Meat) => void;
     onDelete: (id: number) => void;
 }
 
 function DescriptionToggle({ text }: { text: string }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const isLong = text.length > 80;
+
 
     if (!isLong) return <p className="bg-gray-50/50 p-3 rounded-xl border border-gray-100/50">{text}</p>;
 
@@ -42,7 +43,7 @@ function DescriptionToggle({ text }: { text: string }) {
     );
 }
 
-export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestCardProps) {
+export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardProps) {
 
     const getImageUrl = (foto: string | null) => {
         if (!foto) return null;
@@ -54,20 +55,20 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
     const imageUrl = getImageUrl(item.foto);
 
     return (
-        <div className="bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div className="group bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="relative h-56 bg-gray-100">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
-                        alt={item.nama_paket}
+                        alt={item.nama}
                         fill
                         className="object-cover"
                         unoptimized
                     />
                 ) : (
                     <Image
-                        src={getRandomCowImage(item.id_invest)}
-                        alt={item.nama_paket}
+                        src={getRandomMeatImage(item.id_daging)}
+                        alt={item.nama}
                         fill
                         className="object-cover opacity-80"
                         unoptimized
@@ -75,62 +76,59 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
                 )}
                 <div className="absolute top-4 right-4">
                     <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${item.status_investernak === "Open"
+                        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${item.status_daging === "Tersedia"
                                 ? "bg-green-500 text-white"
-                                : item.status_investernak === "Ongoing"
-                                    ? "bg-amber-500 text-white"
-                                    : "bg-gray-500 text-white"
+                                : item.status_daging === "Terjual"
+                                    ? "bg-red-500 text-white"
+                                    : "bg-blue-500 text-white"
                             }`}
                     >
-                        {item.status_investernak}
+                        {item.status_daging}
                     </span>
                 </div>
                 <div className="absolute top-4 left-4">
                     <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-gray-800 shadow-lg border border-white/20 uppercase">
-                        {item.id_invest}
+                        {item.id_daging}
                     </span>
                 </div>
             </div>
 
-            <div className="p-6">
-                <h3 className="font-black text-xl text-gray-900 mb-4 line-clamp-1">{item.nama_paket}</h3>
-
-                <div className="space-y-2 text-sm text-gray-600 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
-                    <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-400 uppercase text-[10px] tracking-widest">Jenis & Berat</span>
-                        <span className="font-bold text-gray-900">{item.jenis} · {item.berat}kg</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-400 uppercase text-[10px] tracking-widest">Durasi</span>
-                        <span className="font-bold text-gray-900">{item.durasi_hari} Hari</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-400 uppercase text-[10px] tracking-widest">Harga Sapi</span>
-                        <span className="font-bold text-gray-900 italic">Rp {Number(item.harga_sapi).toLocaleString("id-ID")}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-400 uppercase text-[10px] tracking-widest">Harga Jual</span>
-                        <span className="font-bold text-[#1a8245] leading-none">Rp {Number(item.harga_jual).toLocaleString("id-ID")}</span>
-                    </div>
-                    <div className="flex justify-between items-center border-t border-gray-200/50 mt-2 pt-2">
-                        <span className="text-[#1a8245] font-black uppercase text-[10px] tracking-widest">📊 ROI Paket</span>
-                        <span className="text-[#1a8245] font-black text-lg">{item.roi_persen}%</span>
-                    </div>
+            <div className="p-8">
+                <div className="mb-4">
+                    <h3 className="font-black text-2xl text-gray-900 tracking-tight leading-none mb-1">{item.nama}</h3>
+                    <p className="text-[#1a8245] font-black text-[10px] uppercase tracking-[0.2em]">{item.bagian}</p>
                 </div>
 
                 {/* Description - Progressive Disclosure Implementation */}
                 <div className="mb-6">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1a8245] mb-2 opacity-70">Deskripsi Paket</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1a8245] mb-2 opacity-70">Deskripsi Produk</p>
                     <div className="text-xs text-gray-600 font-medium leading-relaxed">
                         {item.deskripsi ? (
                             <DescriptionToggle text={item.deskripsi} />
                         ) : (
-                            <p className="text-gray-400 italic">Tidak ada deskripsi paket.</p>
+                            <p className="text-gray-400 italic">Tidak ada deskripsi produk.</p>
                         )}
                     </div>
                 </div>
 
 
+                {/* Price Section - Premium Design */}
+                <div className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm mb-6 group-hover:shadow-md group-hover:border-[#1a8245]/30 transition-all duration-300">
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Harga Per Kg</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-sm font-black text-[#1a8245] leading-none mb-0.5">Rp</span>
+                                <span className="text-2xl font-black text-gray-900 tracking-tighter leading-none">
+                                    {Number(item.harga_per_kg).toLocaleString("id-ID")}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                             <span className="text-[10px] font-black text-[#1a8245] bg-[#1a8245]/10 px-3 py-1 rounded-full uppercase tracking-wider">/ KG</span>
+                        </div>
+                    </div>
+                </div>
 
                 {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
                     <div className="flex gap-2">
@@ -139,12 +137,12 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
                             variant="primary"
                             className="flex-1 rounded-[20px] font-black uppercase text-[10px] tracking-[0.15em] h-12 shadow-lg shadow-green-100/50"
                         >
-                            Edit Paket
+                            Edit Item
                         </Button>
                         <button
                             onClick={() => onDelete(item.id)}
                             className="w-12 h-12 rounded-[20px] bg-red-50 text-red-600 border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all shadow-sm"
-                            title="Hapus Paket"
+                            title="Hapus Item"
                         >
                             <Icons.Trash className="w-5 h-5" />
                         </button>

@@ -142,10 +142,18 @@ export default function RegisterPage() {
                             <div>
                                 <label className={labelClasses}>Telepon</label>
                                 <input
-                                    type="text"
+                                    type="tel"
                                     required
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    maxLength={13}
                                     value={formData.nomor_telepon}
-                                    onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, "");
+                                        if (value.length <= 13) {
+                                            setFormData({ ...formData, nomor_telepon: value });
+                                        }
+                                    }}
                                     placeholder="0812xxxx"
                                     className={`${inputClasses} ${errors.nomor_telepon ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
                                 />

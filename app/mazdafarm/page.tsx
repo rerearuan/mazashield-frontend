@@ -1,3 +1,7 @@
+
+
+
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -17,18 +21,20 @@ interface Sapi {
   id_ternak: string;
   nama: string;
   jenis: string;
+  kelas: string;
   berat: string;
-  usia: string;
+  umur: number;
   harga: string;
-  status_sapi: string;
+  status_ternak: string;
   deskripsi: string;
   foto: string | null;
 }
-
 export default function MazdafarmPage() {
   const [cattle, setCattle] = useState<Sapi[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+
+
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -36,26 +42,35 @@ export default function MazdafarmPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [jenisSapi, setJenisSapi] = useState("all");
+  const [minWeight, setMinWeight] = useState("");
+  const [maxWeight, setMaxWeight] = useState("");
+
+
+
 
   const itemsPerPage = 3;
 
+
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, searchTerm, minPrice, maxPrice, jenisSapi]);
+  }, [currentPage, searchTerm, minPrice, maxPrice, minWeight, maxWeight]);
+
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const params: any = {
         page: currentPage.toString(),
-        status_sapi: "Tersedia",
+        status_ternak: "Tersedia",
       };
+
 
       if (searchTerm) params.nama = searchTerm;
       if (minPrice) params.min_harga = minPrice;
       if (maxPrice) params.max_harga = maxPrice;
-      if (jenisSapi !== "all") params.jenis = jenisSapi;
+      if (minWeight) params.min_berat = minWeight;
+      if (maxWeight) params.max_berat = maxWeight;
+
 
       const data: any = await catalogService.getTernakPublic(params);
 
@@ -73,6 +88,7 @@ export default function MazdafarmPage() {
       setLoading(false);
     }
   };
+
 
   const handleOrder = (productTitle: string) => {
     window.open(`https://wa.me/6285819051216?text=Halo, saya tertarik dengan ${productTitle}`, "_blank");
@@ -107,71 +123,87 @@ export default function MazdafarmPage() {
           {/* Filter Section */}
           <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Sapi</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                    <Icons.Search className="w-4 h-4" />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Nama sapi..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
+            
+            {/* Helper functions for currency formatting */}
+            {(() => {
+              const formatCurrency = (value: string) => {
+                if (!value) return "";
+                const cleanValue = value.replace(/\D/g, "");
+                if (!cleanValue) return "";
+                return parseInt(cleanValue).toLocaleString("id-ID");
+              };
+
+              const handlePriceChange = (value: string, setter: (val: string) => void) => {
+                const cleanValue = value.replace(/\D/g, "");
+                setter(cleanValue);
+              };
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Cari Sapi</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Icons.Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Nama sapi..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga</label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                          Rp
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Min"
+                          value={formatCurrency(minPrice)}
+                          onChange={(e) => handlePriceChange(e.target.value, setMinPrice)}
+                          className="w-full pl-10 pr-1.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs shadow-sm"
+                        />
+                      </div>
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#1a8245] text-[10px] font-bold pointer-events-none">
+                          Rp
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Max"
+                          value={formatCurrency(maxPrice)}
+                          onChange={(e) => handlePriceChange(e.target.value, setMaxPrice)}
+                          className="w-full pl-10 pr-1.5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-xs shadow-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setMinPrice("");
+                        setMaxPrice("");
+                        setMinWeight("");
+                        setMaxWeight("");
+                        setCurrentPage(1);
+                      }}
+                      className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all font-bold"
+                    >
+                      Reset Filter
+                    </button>
+                  </div>
+
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Rentang Harga (Rp)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm shadow-sm"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#1a8245]">Jenis Sapi</label>
-                <select
-                  value={jenisSapi}
-                  onChange={(e) => setJenisSapi(e.target.value)}
-                  className="w-full px-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-bold text-sm appearance-none shadow-sm"
-                >
-                  <option value="all">Semua Jenis</option>
-                  <option value="Limousin">Limousin</option>
-                  <option value="Simental">Simental</option>
-                  <option value="Brahman">Brahman</option>
-                  <option value="PO">PO (Peranakan Ongole)</option>
-                  <option value="Bali">Bali</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setMinPrice("");
-                    setMaxPrice("");
-                    setJenisSapi("all");
-                    setCurrentPage(1);
-                  }}
-                  className="w-full py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all font-bold"
-                >
-                  Reset Filter
-                </button>
-              </div>
-            </div>
+              );
+            })()}
           </div>
 
           <div className="mb-10">
@@ -200,17 +232,18 @@ export default function MazdafarmPage() {
                       key={item.id}
                       image={item.foto ? (item.foto.startsWith('http') ? item.foto : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${item.foto}`) : getRandomCowImage(item.id_ternak)}
                       title={item.nama}
-                      description={item.deskripsi || `${item.jenis} berkualitas tinggi.`}
+                      description={item.deskripsi || `${item.jenis} Kelas ${item.kelas} berkualitas tinggi.`}
                       code={item.id_ternak}
                       weight={`${Number(item.berat).toLocaleString()} kg`}
-                      age={item.usia}
-                      stock="Tersedia"
+                      age={`${item.umur} Bulan`}
+                      stock={item.status_ternak}
                       price={`Rp ${Number(item.harga).toLocaleString("id-ID")}`}
                       buttonColor="#1a8245"
                       onButtonClick={() => handleOrder(item.nama)}
                     />
                   ))
                 )}
+
               </div>
 
               {totalPages > 1 && (

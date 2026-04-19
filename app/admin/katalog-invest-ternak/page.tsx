@@ -81,7 +81,7 @@ export default function KatalogInvestTernakPage() {
             Manajemen paket investasi ternak secara efektif dan transparan.
           </p>
         </div>
-        {(userRole === "SuperAdmin" || userRole === "CEO") && (
+        {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
           <Button
             onClick={handleOpenAddModal}
             variant="primary"
