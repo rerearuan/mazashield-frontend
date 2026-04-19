@@ -5,7 +5,9 @@ import { Button } from "@/components/button";
 import { orderService } from "@/services/order.service";
 import OrderModal from "@/features/order-mazdaging/components/OrderModal";
 import OrderDetailsModal from "@/features/order-mazdaging/components/OrderDetailsModal";
+import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+
 
 export default function ManajemenPesananMazdagingPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -20,6 +22,9 @@ export default function ManajemenPesananMazdagingPage() {
   const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const router = useRouter();
+
 
   const fetchOrders = React.useCallback(async () => {
     setLoading(true);
@@ -48,8 +53,14 @@ export default function ManajemenPesananMazdagingPage() {
   }, [page, statusFilter, startDate, endDate]);
 
   useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    setUserRole(role);
+    if (role === "Finance") {
+      router.push("/admin");
+    }
     fetchOrders();
-  }, [fetchOrders]);
+  }, [fetchOrders, router]);
+
 
   const handleOpenDetail = (order: any) => {
     setSelectedOrder(order);
@@ -63,12 +74,15 @@ export default function ManajemenPesananMazdagingPage() {
           <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-2 block">
             Manajemen Penjualan
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2">
-            Pesanan <span className="text-[#1a8245]">Mazdaging</span>
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter mb-2 text-[#1a8245]">
+            Pesanan Daging
           </h1>
           <p className="text-gray-500 font-medium text-sm">
-            Monitor dan proses transaksi daging Mazdaging.
+            Monitor dan proses transaksi Pesanan Daging.
           </p>
+
+
+
         </div>
         <div className="flex gap-3">
           <Button
@@ -80,6 +94,37 @@ export default function ManajemenPesananMazdagingPage() {
             + Buat Pesanan Baru
           </Button>
         </div>
+      </div>
+
+      {/* Stats Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[
+          { 
+            label: "Total Tagihan", 
+            value: `Rp ${orders.reduce((sum, o) => sum + Number(o.tagihan), 0).toLocaleString('id-ID')}`, 
+            color: "text-gray-900" 
+          },
+          { 
+            label: "Diproses", 
+            value: orders.filter(o => o.status_pesanan === 'Diproses').length, 
+            color: "text-amber-500" 
+          },
+          { 
+            label: "Selesai", 
+            value: orders.filter(o => o.status_pesanan === 'Selesai').length, 
+            color: "text-[#1a8245]" 
+          },
+          { 
+            label: "Dibatalkan", 
+            value: orders.filter(o => o.status_pesanan === 'Dibatalkan').length, 
+            color: "text-red-500" 
+          },
+        ].map((stat, idx) => (
+          <div key={idx} className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
+            <p className={`text-xl font-black ${stat.color}`}>{stat.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}
@@ -103,6 +148,7 @@ export default function ManajemenPesananMazdagingPage() {
             <input
               type="date"
               value={startDate}
+              max={new Date().toISOString().split("T")[0]}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
             />
@@ -112,9 +158,11 @@ export default function ManajemenPesananMazdagingPage() {
             <input
               type="date"
               value={endDate}
+              max={new Date().toISOString().split("T")[0]}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
             />
+
           </div>
           <div className="flex items-end">
             <Button 
@@ -141,22 +189,26 @@ export default function ManajemenPesananMazdagingPage() {
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Tagihan</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibayar</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibuat</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Aksi</th>
               </tr>
+
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-8 py-20 text-center">
+                  <td colSpan={8} className="px-8 py-20 text-center">
                     <div className="w-10 h-10 border-4 border-[#1a8245]/20 border-t-[#1a8245] rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Memuat pesanan...</p>
                   </td>
                 </tr>
+
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-8 py-20 text-center">
+                  <td colSpan={8} className="px-8 py-20 text-center">
                     <p className="text-gray-400 font-bold text-lg">Tidak ada pesanan ditemukan.</p>
                   </td>
                 </tr>
+
               ) : (
                 orders.map((order) => (
                   <tr 
@@ -172,9 +224,10 @@ export default function ManajemenPesananMazdagingPage() {
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
                         <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors">{order.data_customer?.nama}</span>
-                        <span className="text-[10px] text-gray-400 font-medium">{order.data_customer?.no_telp || "-"}</span>
+                        <span className="text-[10px] text-gray-400 font-medium">{order.data_customer?.email || "-"}</span>
                       </div>
                     </td>
+
                     <td className="px-8 py-6">
                       <span className="text-xs font-bold text-gray-700">{order.total_item} Item</span>
                     </td>
@@ -198,7 +251,16 @@ export default function ManajemenPesananMazdagingPage() {
                         {new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </p>
                     </td>
+                    <td className="px-8 py-6">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleOpenDetail(order); }}
+                        className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100"
+                      >
+                        Detail
+                      </button>
+                    </td>
                   </tr>
+
                 ))
               )}
             </tbody>

@@ -1,5 +1,7 @@
 "use client";
 
+import React, { useState } from "react";
+
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { Icons } from "@/components/common/Icons";
@@ -13,7 +15,36 @@ interface MeatCardProps {
     onDelete: (id: number) => void;
 }
 
+function DescriptionToggle({ text }: { text: string }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const isLong = text.length > 80;
+
+
+    if (!isLong) return <p className="bg-gray-50/50 p-3 rounded-xl border border-gray-100/50">{text}</p>;
+
+    return (
+        <div className="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 group-hover:bg-white group-hover:border-[#1a8245]/20 transition-all duration-300 overflow-hidden">
+            <p className={`break-words ${!isExpanded ? 'line-clamp-2' : ''} transition-all duration-300 text-gray-600`}>
+                {text}
+            </p>
+
+            <button
+
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 text-[#1a8245] font-black uppercase text-[8px] tracking-widest hover:underline flex items-center gap-1"
+            >
+                {isExpanded ? (
+                    <>Show Less <Icons.ChevronUp className="w-2.5 h-2.5" /></>
+                ) : (
+                    <>Read More <Icons.ChevronDown className="w-2.5 h-2.5" /></>
+                )}
+            </button>
+        </div>
+    );
+}
+
 export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardProps) {
+
     const getImageUrl = (foto: string | null) => {
         if (!foto) return null;
         if (foto.startsWith("http")) return foto;
@@ -68,35 +99,58 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                     <p className="text-[#1a8245] font-black text-[10px] uppercase tracking-[0.2em]">{item.bagian}</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-[20px] border border-gray-200/80 shadow-sm transition-colors group-hover:border-[#1a8245]/20 group-hover:shadow-md">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Harga per Kg</p>
-                    <p className="text-gray-900 font-black text-xl tracking-tight flex items-end">
-                        <span className="text-[10px] mr-1 font-bold text-[#1a8245] uppercase tracking-widest mb-1">Rp</span>
-                        {Number(item.harga_per_kg).toLocaleString("id-ID")}
-                        <span className="text-[10px] font-bold text-gray-400 ml-1.5 mb-1">/ KG</span>
-                    </p>
+                {/* Description - Progressive Disclosure Implementation */}
+                <div className="mb-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1a8245] mb-2 opacity-70">Deskripsi Produk</p>
+                    <div className="text-xs text-gray-600 font-medium leading-relaxed">
+                        {item.deskripsi ? (
+                            <DescriptionToggle text={item.deskripsi} />
+                        ) : (
+                            <p className="text-gray-400 italic">Tidak ada deskripsi produk.</p>
+                        )}
+                    </div>
+                </div>
+
+
+                {/* Price Section - Premium Design */}
+                <div className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm mb-6 group-hover:shadow-md group-hover:border-[#1a8245]/30 transition-all duration-300">
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Harga Per Kg</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-sm font-black text-[#1a8245] leading-none mb-0.5">Rp</span>
+                                <span className="text-2xl font-black text-gray-900 tracking-tighter leading-none">
+                                    {Number(item.harga_per_kg).toLocaleString("id-ID")}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                             <span className="text-[10px] font-black text-[#1a8245] bg-[#1a8245]/10 px-3 py-1 rounded-full uppercase tracking-wider">/ KG</span>
+                        </div>
+                    </div>
                 </div>
 
                 {(userRole === "SuperAdmin" || userRole === "CEO" || userRole === "Marketing" || userRole === "Komisaris") && (
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <Button
                             onClick={() => onEdit(item)}
                             variant="primary"
-                            size="sm"
-                            className="flex-1 rounded-2xl font-bold"
+                            className="flex-1 rounded-[20px] font-black uppercase text-[10px] tracking-[0.15em] h-12 shadow-lg shadow-green-100/50"
                         >
-                            Edit
+                            Edit Item
                         </Button>
-                        <Button
+                        <button
                             onClick={() => onDelete(item.id)}
-                            variant="danger"
-                            size="sm"
-                            className="rounded-2xl p-2.5"
+                            className="w-12 h-12 rounded-[20px] bg-red-50 text-red-600 border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all shadow-sm"
+                            title="Hapus Item"
                         >
-                            <Icons.Trash className="w-4 h-4" />
-                        </Button>
+                            <Icons.Trash className="w-5 h-5" />
+                        </button>
+
+
                     </div>
                 )}
+
             </div>
         </div>
     );

@@ -10,7 +10,10 @@ interface PaymentUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: any;
-  orderType: "pesanan" | "pesanandaging" | "pesananinvest";
+  orderType: "pesananternak" | "pesanandaging" | "pesananinvest";
+
+
+
   onSuccess: () => void;
 }
 
@@ -30,13 +33,29 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
   if (!order) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Sanitization: Only numbers for bank account number
+    if (name === "nomor_rekening_pengirim") {
+      const sanitizedValue = value.replace(/[^0-9]/g, "");
+      setFormData({ ...formData, [name]: sanitizedValue });
+      return;
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (order.status_pesanan === 'Dibatalkan') {
       toast.error("Pesanan sudah dibatalkan, tidak dapat menerima pembayaran.");
+      return;
+    }
+
+    // Validation: Date cannot be future
+    const today = new Date().toISOString().split("T")[0];
+    if (formData.tanggal_transfer > today) {
+      toast.error("Tanggal transfer tidak boleh melebihi hari ini.");
       return;
     }
 
@@ -81,7 +100,8 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Input Pembayaran #${order.id_pesanan || order.id}`}>
+    <Modal size="lg" isOpen={isOpen} onClose={onClose} title={`Input Pembayaran #${order.id_pesanan || order.id}`}>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-100 flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
@@ -145,10 +165,12 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
               type="date"
               name="tanggal_transfer"
               value={formData.tanggal_transfer}
+              max={new Date().toISOString().split("T")[0]}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1a8245] font-semibold text-sm transition-all"
               required
             />
+
           </div>
 
           <div>
