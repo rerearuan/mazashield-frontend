@@ -1,7 +1,38 @@
 "use client";
 
+import React, { useState } from "react";
+
 import SafeImage from "./SafeImage";
 import { Icons } from "./Icons";
+
+function DescriptionToggle({ text }: { text: string }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const isLong = text.length > 120; // Increased for public view
+
+    if (!isLong) return <p className="text-gray-500 text-sm leading-relaxed font-medium break-words">{text}</p>;
+
+    return (
+        <div className="overflow-hidden">
+            <p className={`text-gray-500 text-sm leading-relaxed font-medium break-words ${!isExpanded ? 'line-clamp-3' : ''} transition-all duration-300`}>
+                {text}
+            </p>
+
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsExpanded(!isExpanded);
+                }}
+                className="mt-2 text-[#1a8245] font-black uppercase text-[9px] tracking-widest hover:underline flex items-center gap-1"
+            >
+                {isExpanded ? (
+                    <>Show Less <Icons.ChevronUp className="w-3 h-3" /></>
+                ) : (
+                    <>Read More <Icons.ChevronDown className="w-3 h-3" /></>
+                )}
+            </button>
+        </div>
+    );
+}
 
 interface ProductCardProps {
   image: string;
@@ -45,8 +76,9 @@ export default function ProductCard({
       <div className="p-8 space-y-7">
         <div className="min-h-[100px]">
           <h3 className="text-gray-900 font-black text-2xl mb-2 tracking-tight line-clamp-1">{title}</h3>
-          <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-3">{description}</p>
+          <DescriptionToggle text={description} />
         </div>
+
 
         {(weight || age) && (
           <div className="bg-gray-50/80 p-5 rounded-[24px] grid grid-cols-2 gap-4 border border-gray-100/50 shadow-inner">

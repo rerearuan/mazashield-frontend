@@ -6,7 +6,7 @@ export interface Cattle {
     id: number;
     id_ternak: string;
     nama: string;
-    jenis: "Sapi" | "Kambing";
+    jenis: string;
     kelas: "A" | "B" | "C" | "D" | "E" | "Patungan";
     berat: string;
     tanggal_penimbangan: string;
@@ -20,6 +20,7 @@ export interface Cattle {
     created_at: string;
     updated_at: string;
 }
+
 
 export function useCattleCatalog() {
     const [cattle, setCattle] = useState<Cattle[]>([]);
