@@ -50,7 +50,7 @@ export function useInvestCatalog() {
             setLoading(true);
             const params: any = { page: currentPage.toString() };
 
-            if (searchTerm) params.nama_paket = searchTerm;
+            if (searchTerm) params.search = searchTerm;
             if (minHargaSapi) params.min_harga_sapi = minHargaSapi;
             if (maxHargaSapi) params.max_harga_sapi = maxHargaSapi;
             if (minHargaJual) params.min_harga_jual = minHargaJual;

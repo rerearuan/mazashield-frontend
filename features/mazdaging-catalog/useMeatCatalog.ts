@@ -32,7 +32,7 @@ export function useMeatCatalog() {
             setLoading(true);
             const params: any = { page: currentPage.toString() };
 
-            if (searchTerm) params.nama = searchTerm;
+            if (searchTerm) params.search = searchTerm;
             if (filterStatus !== "all") params.status_daging = filterStatus;
             if (minPrice) params.min_harga = minPrice;
             if (maxPrice) params.max_harga = maxPrice;
