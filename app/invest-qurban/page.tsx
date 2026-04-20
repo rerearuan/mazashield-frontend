@@ -172,7 +172,23 @@ export default function InvestQurbanPage() {
           </div>
 
           {/* Filter Bar - PBI 22 */}
-          <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] p-6 shadow-xl shadow-green-900/5 mb-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] p-6 shadow-xl shadow-green-900/5 mb-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Cari Paket</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <Icons.Search className="w-4 h-4" />
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Cari nama atau ID..."
+                            value={filters.searchTerm}
+                            onChange={(e) => filters.setSearchTerm(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm"
+                        />
+                    </div>
+                </div>
+
                 <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Rentang Harga</label>
                     <div className="grid grid-cols-2 gap-2">

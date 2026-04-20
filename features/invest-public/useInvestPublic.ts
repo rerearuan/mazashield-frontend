@@ -46,7 +46,7 @@ export function useInvestPublic(itemsPerPage: number = 6) {
                 page: currentPage.toString(),
             };
 
-            if (searchTerm) params.nama_paket = searchTerm;
+            if (searchTerm) params.search = searchTerm;
             if (jenisFilter && jenisFilter !== "all") params.jenis = jenisFilter;
             if (minHarga) params.min_harga_sapi = minHarga;
             if (maxHarga) params.max_harga_sapi = maxHarga;
