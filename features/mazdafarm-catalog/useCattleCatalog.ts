@@ -41,7 +41,7 @@ export function useCattleCatalog() {
             setLoading(true);
             const params: any = { page: currentPage.toString() };
 
-            if (searchTerm) params.nama = searchTerm;
+            if (searchTerm) params.search = searchTerm;
             if (minPrice) params.min_harga = minPrice;
             if (maxPrice) params.max_harga = maxPrice;
             if (minWeight) params.min_berat = minWeight;
