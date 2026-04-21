@@ -51,7 +51,7 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
     { href: "/", label: "Home", key: "home" },
     { href: "/mazdaging", label: "Mazdaging", key: "mazdaging" },
     { href: "/mazdafarm", label: "Mazdafarm", key: "mazdafarm" },
-    { href: "/invest-qurban", label: "Invest Qurban", key: "invest-qurban" },
+    { href: "/invest-qurban", label: "Invest Ternak", key: "invest-qurban" },
     { href: "/faq", label: "FAQ", key: "faq" },
     { href: "/contact", label: "Contact", key: "contact" },
   ];
