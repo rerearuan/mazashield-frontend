@@ -184,10 +184,10 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Syariah Invest</span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter">Invest Qurban</h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter">Invest Ternak</h3>
                 </div>
               </div>
-              <p className="text-gray-400 font-medium text-sm sm:text-base mb-8">Investasi sapi qurban dengan skema syariah yang transparan dan amanah.</p>
+              <p className="text-gray-400 font-medium text-sm sm:text-base mb-8">Investasi ternak dengan skema syariah yang transparan dan amanah.</p>
               <Link href="/invest-qurban" className="inline-flex items-center gap-3 text-gray-900 font-black uppercase tracking-widest text-[10px] bg-[#fbbf24] px-6 py-4 rounded-2xl w-full justify-center group-hover:shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all">
                 Paket Investasi
                 <Icons.ArrowRight className="w-3.5 h-3.5" />

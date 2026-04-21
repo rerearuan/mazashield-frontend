@@ -27,7 +27,7 @@ export default function Footer() {
               <li><Link href="/" className="hover:text-[#1a8245] transition-colors">Beranda</Link></li>
               <li><Link href="/mazdaging" className="hover:text-[#1a8245] transition-colors">Katalog Mazdaging</Link></li>
               <li><Link href="/mazdafarm" className="hover:text-[#1a8245] transition-colors">Marketplace Mazdafarm</Link></li>
-              <li><Link href="/invest-qurban" className="hover:text-[#1a8245] transition-colors">Invest Qurban</Link></li>
+              <li><Link href="/invest-qurban" className="hover:text-[#1a8245] transition-colors">Invest Ternak</Link></li>
             </ul>
           </div>
 

@@ -83,8 +83,8 @@ export default function InvestQurbanPage() {
       <Navbar activePage="invest-qurban" />
 
       <PageHeader
-        title="Invest Qurban"
-        description="Gabungkan nilai ibadah dengan pertumbuhan finansial. Investasi qurban transparan dengan sistem bagi hasil yang kompetitif dan aman."
+        title="Invest Ternak"
+        description="Gabungkan nilai ibadah dengan pertumbuhan finansial. Investasi ternak transparan dengan sistem bagi hasil yang kompetitif dan aman."
       />
 
       {/* Timeline Section */}
@@ -94,7 +94,7 @@ export default function InvestQurbanPage() {
             <div className="lg:w-1/3">
               <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Our Roadmap</span>
               <h2 className="text-gray-900 font-extrabold text-4xl lg:text-5xl tracking-tighter mb-8 leading-tight">
-                Timeline Operasional <span className="text-[#1a8245]">2026</span>
+                Timeline Invest Ternak <span className="text-[#1a8245]">2026</span>
               </h2>
               <p className="text-gray-500 font-medium text-lg leading-relaxed mb-6">
                 Kami berkomitmen pada transparansi waktu untuk memastikan setiap tahapan berjalan sesuai rencana, dari MoU hingga hari raya.
