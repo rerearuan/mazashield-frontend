@@ -109,7 +109,6 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                     </select>
                 </div>
 
-
                 {/* Reset */}
                 <div className="flex items-end sm:col-span-2 lg:col-span-1">
                     <Button
