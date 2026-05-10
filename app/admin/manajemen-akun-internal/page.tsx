@@ -75,7 +75,7 @@ export default function ManajemenAkunInternalPage() {
           </p>
         </div>
         <div className="flex gap-3 justify-center">
-          {/* Export CSV: only SuperAdmin can export internal accounts */}
+          {/* Export CSbqV: only SuperAdmin can export internal accounts */}
           {userRole === "SuperAdmin" && (
             <Button
               onClick={actions.exportData}

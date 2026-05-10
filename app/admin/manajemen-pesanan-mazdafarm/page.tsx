@@ -202,7 +202,6 @@ export default function ManajemenPesananMazdafarmPage() {
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibuat</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Aksi</th>
               </tr>
-
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
@@ -218,7 +217,6 @@ export default function ManajemenPesananMazdafarmPage() {
                     <p className="text-gray-400 font-bold text-lg">Tidak ada pesanan ditemukan.</p>
                   </td>
                 </tr>
-
               ) : (
                 orders.map((order) => (
                   <tr 
@@ -236,7 +234,6 @@ export default function ManajemenPesananMazdafarmPage() {
                         <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors text-sm">{order.data_customer?.nama}</span>
                         <span className="text-[10px] text-gray-400 font-medium">{order.data_customer?.email || "-"}</span>
                       </div>
-
                     </td>
                     <td className="px-4 md:px-8 py-4 md:py-6">
                       <span className="text-xs font-bold text-gray-700">{order.total_item} Ternak</span>
@@ -270,8 +267,6 @@ export default function ManajemenPesananMazdafarmPage() {
                       </button>
                     </td>
                   </tr>
-
-
                 ))
               )}
             </tbody>

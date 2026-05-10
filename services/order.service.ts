@@ -41,6 +41,21 @@ export const orderService = {
     deleteInvestOrder: (id: number | string) =>
         apiFetch(`/sales/order/invest/${id}/`, { method: "DELETE" }),
 
+    // ── Customer External (Read-Only) ─────────────────────────────────────────
+    // PBI-External-1: Read Order Mazdafarm untuk Customer yang login
+    getCustomerMazdafarmOrders: (params?: Record<string, string>) =>
+        apiFetch("/order/mazdafarm/", { method: "GET", params }),
+
+    getCustomerMazdafarmOrderDetail: (id: number | string) =>
+        apiFetch(`/order/mazdafarm/${id}/`, { method: "GET" }),
+
+    // PBI-External-2: Read Order Mazdaging untuk Customer yang login
+    getCustomerMazdagingOrders: (params?: Record<string, string>) =>
+        apiFetch("/order/mazdaging/", { method: "GET", params }),
+
+    getCustomerMazdagingOrderDetail: (id: number | string) =>
+        apiFetch(`/order/mazdaging/${id}/`, { method: "GET" }),
+
     // Payment (PBI-35)
     updatePayment: (id_pesanan: number | string, data: any) =>
         apiFetch(`/sales/payment/${id_pesanan}/update`, { method: "PUT", body: JSON.stringify(data) }),
