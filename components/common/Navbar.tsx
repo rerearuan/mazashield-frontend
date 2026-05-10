@@ -91,30 +91,13 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
           <div className="hidden lg:flex items-center gap-3">
             {isLoggedIn ? (
               <>
-                {/* Pesanan Saya — hanya untuk Customer */}
                 {userRole === "Customer" && (
-                  <div className="relative group">
-                    <button className="text-gray-900 px-4 py-2 font-black uppercase tracking-widest text-[11px] hover:text-[#1a8245] transition-colors flex items-center gap-1">
-                      Pesanan Saya
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                      <Link
-                        href="/pesanan-saya/mazdafarm"
-                        className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:text-[#1a8245] rounded-t-xl transition-colors"
-                      >
-                        🐄 Pesanan Mazdafarm
-                      </Link>
-                      <Link
-                        href="/pesanan-saya/mazdaging"
-                        className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-b-xl transition-colors"
-                      >
-                        🥩 Order Mazdaging
-                      </Link>
-                    </div>
-                  </div>
+                  <Link
+                    href="/invest-qurban/pesanan"
+                    className="text-gray-900 px-4 py-2 font-black uppercase tracking-widest text-[11px] hover:text-[#1a8245] transition-colors"
+                  >
+                    Pesanan Saya
+                  </Link>
                 )}
                 <Link
                   href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin/profile" : "/profile"}
@@ -185,24 +168,14 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             {isLoggedIn ? (
               <>
-                {/* Pesanan Saya — hanya untuk Customer (mobile) */}
                 {userRole === "Customer" && (
-                  <>
-                    <Link
-                      href="/pesanan-saya/mazdafarm"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-3 rounded-xl font-semibold text-sm text-[#1a8245] hover:bg-green-50"
-                    >
-                      🐄 Pesanan Mazdafarm
-                    </Link>
-                    <Link
-                      href="/pesanan-saya/mazdaging"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-3 rounded-xl font-semibold text-sm text-red-700 hover:bg-red-50"
-                    >
-                      🥩 Order Mazdaging
-                    </Link>
-                  </>
+                  <Link
+                    href="/invest-qurban/pesanan"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] text-[#1a8245] hover:bg-green-50"
+                  >
+                    Pesanan Saya
+                  </Link>
                 )}
                 <Link
                   href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin/profile" : "/profile"}
