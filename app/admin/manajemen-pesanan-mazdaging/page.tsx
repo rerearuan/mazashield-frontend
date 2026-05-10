@@ -199,7 +199,6 @@ export default function ManajemenPesananMazdagingPage() {
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Dibuat</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Aksi</th>
               </tr>
-
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
@@ -209,14 +208,12 @@ export default function ManajemenPesananMazdagingPage() {
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Memuat pesanan...</p>
                   </td>
                 </tr>
-
               ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-8 py-20 text-center">
                     <p className="text-gray-400 font-bold text-lg">Tidak ada pesanan ditemukan.</p>
                   </td>
                 </tr>
-
               ) : (
                 orders.map((order) => (
                   <tr 

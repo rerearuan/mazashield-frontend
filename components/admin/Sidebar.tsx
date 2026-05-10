@@ -298,7 +298,6 @@ export default function Sidebar() {
           })}
         </nav>
 
-
         {/* Footer - Logout */}
         <div className="p-4 border-t border-[#2a9d5f] flex-shrink-0">
           <button
