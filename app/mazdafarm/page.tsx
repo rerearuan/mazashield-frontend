@@ -42,19 +42,16 @@ export default function MazdafarmPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [jenisSapi, setJenisSapi] = useState("all");
   const [minWeight, setMinWeight] = useState("");
   const [maxWeight, setMaxWeight] = useState("");
-
-
-
 
   const itemsPerPage = 3;
 
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, searchTerm, minPrice, maxPrice, minWeight, maxWeight]);
-
+  }, [currentPage, searchTerm, minPrice, maxPrice, jenisSapi, minWeight, maxWeight]);
 
   const fetchProducts = async () => {
     try {
@@ -64,13 +61,12 @@ export default function MazdafarmPage() {
         status_ternak: "Tersedia",
       };
 
-
       if (searchTerm) params.nama = searchTerm;
       if (minPrice) params.min_harga = minPrice;
       if (maxPrice) params.max_harga = maxPrice;
+      if (jenisSapi !== "all") params.jenis = jenisSapi;
       if (minWeight) params.min_berat = minWeight;
       if (maxWeight) params.max_berat = maxWeight;
-
 
       const data: any = await catalogService.getTernakPublic(params);
 
@@ -121,10 +117,12 @@ export default function MazdafarmPage() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Filter Section */}
-          <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] p-6 shadow-xl shadow-green-900/5 mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-[32px] shadow-xl shadow-green-900/5 border border-gray-100 p-10 mb-16 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
             
-            {/* Helper functions for currency formatting */}
-            {(() => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 relative z-10">
+              {/* Helper functions for currency formatting */}
+              {(() => {
               const formatCurrency = (value: string) => {
                 if (!value) return "";
                 const cleanValue = value.replace(/\D/g, "");
@@ -212,6 +210,21 @@ export default function MazdafarmPage() {
                         />
                     </div>
                   </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Jenis Sapi</label>
+                    <select
+                      value={jenisSapi}
+                      onChange={(e) => setJenisSapi(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm appearance-none"
+                    >
+                      <option value="all">Semua Jenis</option>
+                      <option value="Sapi Limosin">Sapi Limosin</option>
+                      <option value="Sapi Simental">Sapi Simental</option>
+                      <option value="Sapi Brahman">Sapi Brahman</option>
+                      <option value="Sapi PO">Sapi PO</option>
+                      <option value="Sapi Bali">Sapi Bali</option>
+                    </select>
+                  </div>
                   <div className="flex items-end">
                     <button
                       onClick={() => {
@@ -220,6 +233,7 @@ export default function MazdafarmPage() {
                         setMaxPrice("");
                         setMinWeight("");
                         setMaxWeight("");
+                        setJenisSapi("all");
                         setCurrentPage(1);
                       }}
                       className="w-full py-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-black text-[10px] uppercase tracking-[0.16em] hover:bg-amber-100 transition-all shadow-sm"
@@ -230,6 +244,7 @@ export default function MazdafarmPage() {
                 </>
               );
             })()}
+            </div>
           </div>
 
           <div className="mb-10">
