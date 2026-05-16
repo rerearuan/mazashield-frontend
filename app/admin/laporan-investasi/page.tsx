@@ -150,7 +150,7 @@ export default function LaporanInvestasiPage() {
       <div className="mb-7">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-1 h-5 rounded-full bg-emerald-500" />
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">PBI-37</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Investasi</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-black text-gray-900">Laporan Hasil Investasi</h1>
         <p className="text-sm text-gray-400 mt-0.5">Input berat mingguan &amp; perhitungan akhir per pesanan invest ternak</p>
@@ -324,6 +324,7 @@ export default function LaporanInvestasiPage() {
                       <div key={f.key} className="col-span-2 sm:col-span-1">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
                         <input type={f.type} step={f.type === "number" ? "0.01" : undefined} className={inp} placeholder={f.ph}
+                          max={f.type === "date" ? new Date().toISOString().split("T")[0] : undefined}
                           value={(beratForm as any)[f.key]} onChange={e => setBeratForm(p => ({ ...p, [f.key]: e.target.value }))} />
                       </div>
                     ))}
