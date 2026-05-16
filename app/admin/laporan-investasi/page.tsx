@@ -21,7 +21,7 @@ interface OrderRow {
   status_pesanan: string;
   created_at: string;
   daftar_invest: { nama_paket: string }[];
-  tagihan: number; sudah_dibayar: number;
+  tagihan: number; sudah_dibayar: number; menunggu_persetujuan?: number;
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -200,7 +200,8 @@ export default function LaporanInvestasiPage() {
               : filtered.map(o => {
                   const isActive = selectedId === o.id_pesanan;
                   const nama = o.data_customer?.nama ?? "—";
-                  const pct = o.tagihan > 0 ? Math.min((Number(o.sudah_dibayar) / Number(o.tagihan)) * 100, 100) : 0;
+                  const totalHarga = Number(o.sudah_dibayar) + Number(o.tagihan) + Number(o.menunggu_persetujuan || 0);
+                  const pct = totalHarga > 0 ? Math.min((Number(o.sudah_dibayar) / totalHarga) * 100, 100) : 0;
                   return (
                     <button key={o.id_pesanan} onClick={() => handleSelect(o.id_pesanan)}
                       className={`w-full text-left px-4 py-3.5 transition-all hover:bg-emerald-50/70 ${isActive ? "bg-emerald-50 border-l-[3px] border-l-emerald-500" : "border-l-[3px] border-l-transparent"}`}>
