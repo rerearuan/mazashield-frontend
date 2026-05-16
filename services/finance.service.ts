@@ -13,24 +13,17 @@ export interface PiutangDetail {
 }
 
 export interface FinancialDashboardData {
-  tahun: number;
-  total_pendapatan_keseluruhan: number;
-  breakdown_pendapatan: {
-    mazdafarm: number;
-    mazdaging: number;
-    invest_ternak: number;
+  filter_tahun: number;
+  total_penjualan_tahun_aktif: number;
+  total_piutang: {
+    belum_bayar: number;
+    menunggu_verif: number;
   };
-  piutang: {
-    total_tagihan: number;
-    total_menunggu_verifikasi: number;
-    detail: {
-      mazdafarm: PiutangDetail;
-      mazdaging: PiutangDetail;
-      invest_ternak: PiutangDetail;
-    };
-  };
-  data_penjualan_per_bulan: MonthlyData[];
-  data_customer_baru_per_bulan: MonthlyData[];
+  total_customer_baru: number;
+  penjualan_per_bulan: { bulan: string; total: number }[];
+  customer_baru_per_bulan: { bulan: string; jumlah: number }[];
+  breakdown_per_layanan: { layanan: string; total: number; persentase: number }[];
+  piutang_per_layanan: { layanan: string; belum_bayar: number; menunggu_verif: number }[];
 }
 
 export const financeService = {

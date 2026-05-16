@@ -89,26 +89,22 @@ function LineChart({ vals, lbls }: { vals: number[]; lbls: string[] }) {
   );
 }
 
-function BreakdownBar({ mf, mg, iv }: { mf: number; mg: number; iv: number }) {
-  const total = mf + mg + iv || 1;
-  const segs = [
-    { label: "Mazdafarm", value: mf, color: "#10b981", pct: (mf/total)*100 },
-    { label: "Mazdaging", value: mg, color: "#f59e0b", pct: (mg/total)*100 },
-    { label: "Invest Ternak", value: iv, color: "#6366f1", pct: (iv/total)*100 },
-  ];
+function BreakdownBar({ data }: { data: { layanan: string; total: number; persentase: number }[] }) {
+  const bd = data || [];
+  const colorMap: Record<string, string> = { "Mazdafarm": "#10b981", "Mazdaging": "#f59e0b", "Investernak": "#6366f1" };
   return (
     <div>
       <div className="flex w-full h-3 rounded-full overflow-hidden gap-0.5 mb-3">
-        {segs.map(s => <div key={s.label} style={{ width: `${s.pct}%`, background: s.color }} className="first:rounded-l-full last:rounded-r-full" />)}
+        {bd.map(s => <div key={s.layanan} style={{ width: `${s.persentase}%`, background: colorMap[s.layanan] }} className="first:rounded-l-full last:rounded-r-full" />)}
       </div>
       <div className="grid grid-cols-3 gap-2">
-        {segs.map(s => (
-          <div key={s.label} className="flex items-start gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0" style={{ background: s.color }} />
+        {bd.map(s => (
+          <div key={s.layanan} className="flex items-start gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0" style={{ background: colorMap[s.layanan] }} />
             <div>
-              <p className="text-[10px] text-gray-400 font-medium leading-none">{s.label}</p>
-              <p className="text-xs font-bold text-gray-800 mt-0.5">{fmtS(s.value)}</p>
-              <p className="text-[10px] text-gray-400">{s.pct.toFixed(1)}%</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-none">{s.layanan}</p>
+              <p className="text-xs font-bold text-gray-800 mt-0.5">{fmtS(s.total)}</p>
+              <p className="text-[10px] text-gray-400">{s.persentase.toFixed(1)}%</p>
             </div>
           </div>
         ))}
@@ -152,13 +148,11 @@ export default function DashboardKeuanganPage() {
 
   useEffect(() => { load(year); }, [year, load]);
 
-  const bd = data?.breakdown_pendapatan;
-  const pq = data?.piutang;
-  const salesYear = (bd?.mazdafarm ?? 0) + (bd?.mazdaging ?? 0) + (bd?.invest_ternak ?? 0);
-  const custTotal = data?.data_customer_baru_per_bulan.reduce((s, d) => s + (d.jumlah_customer ?? 0), 0) ?? 0;
+  const salesYear = data?.total_penjualan_tahun_aktif ?? 0;
+  const custTotal = data?.total_customer_baru ?? 0;
 
-  const salesVals = Array.from({ length: 12 }, (_, i) => data?.data_penjualan_per_bulan.find(d => d.bulan_ke === i + 1)?.total_penjualan ?? 0);
-  const custVals  = Array.from({ length: 12 }, (_, i) => data?.data_customer_baru_per_bulan.find(d => d.bulan_ke === i + 1)?.jumlah_customer ?? 0);
+  const salesVals = data?.penjualan_per_bulan.map(d => d.total) ?? Array(12).fill(0);
+  const custVals  = data?.customer_baru_per_bulan.map(d => d.jumlah) ?? Array(12).fill(0);
   const lastS = salesVals.map((v, i) => v > 0 ? i : -1).filter(i => i >= 0).pop() ?? -1;
   const lastC = custVals.map((v, i)  => v > 0 ? i : -1).filter(i => i >= 0).pop() ?? -1;
   const tSales = lastS >= 0 ? salesVals.slice(0, lastS + 1) : [];
@@ -199,20 +193,20 @@ export default function DashboardKeuanganPage() {
       {/* KPI row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         {loading ? <><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/></> : <>
-          <KpiCard label="Total Pendapatan (Semua Waktu)" value={data ? fmtS(data.total_pendapatan_keseluruhan) : "—"}
-            sub={data ? fmtF(data.total_pendapatan_keseluruhan) : undefined} color="bg-emerald-500" badge="ALL TIME"
+          <KpiCard label={`Total Penjualan ${year}`} value={data ? fmtS(data.total_penjualan_tahun_aktif) : "—"}
+            sub={data ? fmtF(data.total_penjualan_tahun_aktif) : undefined} color="bg-emerald-500" badge={String(year)}
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round"/></svg>}
           />
-          <KpiCard label={`Penjualan Lunas ${year}`} value={fmtS(salesYear)}
-            sub={`${data?.data_penjualan_per_bulan.length ?? 0} bulan aktif · ${fmtF(salesYear)}`} color="bg-blue-500" badge={String(year)}
+          <KpiCard label="Penjualan Lunas" value={fmtS(salesYear)}
+            sub={`${data?.penjualan_per_bulan.length ?? 0} bulan aktif · ${fmtF(salesYear)}`} color="bg-blue-500" badge={String(year)}
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M3 3v18h18M7 16l4-4 4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg>}
           />
-          <KpiCard label="Total Piutang Aktif" value={fmtS((pq?.total_tagihan ?? 0) + (pq?.total_menunggu_verifikasi ?? 0))}
-            sub={`${fmtS(pq?.total_tagihan??0)} blm bayar · ${fmtS(pq?.total_menunggu_verifikasi??0)} menunggu verif`} color="bg-orange-500"
+          <KpiCard label="Total Piutang Aktif" value={fmtS((data?.total_piutang.belum_bayar ?? 0) + (data?.total_piutang.menunggu_verif ?? 0))}
+            sub={`${fmtS(data?.total_piutang.belum_bayar??0)} blm bayar · ${fmtS(data?.total_piutang.menunggu_verif??0)} menunggu verif`} color="bg-orange-500"
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2"><path d="M9 14l6-6M9 9h.01M15 14h.01M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0" strokeLinecap="round"/></svg>}
           />
           <KpiCard label={`Customer Baru ${year}`} value={`${custTotal} orang`}
-            sub={`${data?.data_customer_baru_per_bulan.length ?? 0} bulan aktif`} color="bg-violet-500"
+            sub={`${data?.customer_baru_per_bulan.length ?? 0} bulan aktif`} color="bg-violet-500"
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round"/></svg>}
           />
         </>}
@@ -250,7 +244,7 @@ export default function DashboardKeuanganPage() {
               </svg>
             </button>
           </div>
-          {loading ? <Sk c="h-32"/> : <BreakdownBar mf={bd?.mazdafarm??0} mg={bd?.mazdaging??0} iv={bd?.invest_ternak??0}/>}
+          {loading ? <Sk c="h-32"/> : <BreakdownBar data={data?.breakdown_per_layanan ?? []}/>}
         </div>
 
         {/* Piutang */}
@@ -259,21 +253,21 @@ export default function DashboardKeuanganPage() {
             <h2 className="font-bold text-gray-800 text-sm">Piutang Aktif (Diproses)</h2>
             <p className="text-xs text-gray-400 mt-0.5">Pesanan aktif yang belum lunas</p>
           </div>
-          {loading ? <Sk c="h-32"/> : pq ? (
+          {loading ? <Sk c="h-32"/> : data?.total_piutang ? (
             <div>
               <div className="flex gap-3 mb-4">
                 <div className="flex-1 bg-orange-50 rounded-xl p-3 text-center">
                   <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wide">Belum Bayar</p>
-                  <p className="text-lg font-black text-orange-600 mt-0.5">{fmtS(pq.total_tagihan)}</p>
+                  <p className="text-lg font-black text-orange-600 mt-0.5">{fmtS(data.total_piutang.belum_bayar)}</p>
                 </div>
                 <div className="flex-1 bg-yellow-50 rounded-xl p-3 text-center">
                   <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-wide">Menunggu Verifikasi</p>
-                  <p className="text-lg font-black text-yellow-600 mt-0.5">{fmtS(pq.total_menunggu_verifikasi)}</p>
+                  <p className="text-lg font-black text-yellow-600 mt-0.5">{fmtS(data.total_piutang.menunggu_verif)}</p>
                 </div>
               </div>
-              <PiutangRow label="Mazdafarm (Ternak)" color="#10b981" tagihan={pq.detail.mazdafarm.tagihan} menunggu={pq.detail.mazdafarm.menunggu_verifikasi}/>
-              <PiutangRow label="Mazdaging (Daging)" color="#f59e0b" tagihan={pq.detail.mazdaging.tagihan} menunggu={pq.detail.mazdaging.menunggu_verifikasi}/>
-              <PiutangRow label="Invest Ternak" color="#6366f1" tagihan={pq.detail.invest_ternak.tagihan} menunggu={pq.detail.invest_ternak.menunggu_verifikasi}/>
+              {data.piutang_per_layanan.map(p => (
+                <PiutangRow key={p.layanan} label={p.layanan} color={p.layanan === "Mazdafarm" ? "#10b981" : p.layanan === "Mazdaging" ? "#f59e0b" : "#6366f1"} tagihan={p.belum_bayar} menunggu={p.menunggu_verif}/>
+              ))}
             </div>
           ) : null}
         </div>
@@ -296,8 +290,8 @@ export default function DashboardKeuanganPage() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {ML.slice(1).map((name, i) => {
-                  const sv = data.data_penjualan_per_bulan.find(d => d.bulan_ke === i+1)?.total_penjualan ?? 0;
-                  const cv = data.data_customer_baru_per_bulan.find(d => d.bulan_ke === i+1)?.jumlah_customer ?? 0;
+                  const sv = data.penjualan_per_bulan[i]?.total ?? 0;
+                  const cv = data.customer_baru_per_bulan[i]?.jumlah ?? 0;
                   return (
                     <tr key={i} className={`hover:bg-gray-50/60 transition-colors ${!sv && !cv ? "opacity-30" : ""}`}>
                       <td className="px-5 py-3 font-semibold text-gray-700">{name}</td>
