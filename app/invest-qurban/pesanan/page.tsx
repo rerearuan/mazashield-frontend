@@ -4,247 +4,373 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import Image from "next/image";
+import Pagination from "@/components/common/Pagination";
+import SafeImage from "@/components/common/SafeImage";
 import { apiFetch } from "@/lib/api-client";
 
-const fmtF = (v: number | string) => "Rp " + Math.round(Number(v)).toLocaleString("id-ID");
-
-interface InvestItem {
-  id_invest: string; nama: string; berat: number | null;
-  umur: number; harga_beli: number; foto: string | null; status_investernak: string;
-}
-interface PesananInvest {
-  id_pesanan: number; status_pesanan: string; created_at: string;
-  daftar_invest: InvestItem[];
-  tagihan: number; sudah_dibayar: number; menunggu_persetujuan: number;
-}
-
-const STATUS_COLORS: Record<string, string> = {
-  Diproses: "bg-amber-100 text-amber-800",
-  Selesai: "bg-[#1a8245]/10 text-[#1a8245]",
-  Dibatalkan: "bg-red-100 text-red-800",
-};
-
-function SkeletonCard() {
-  return (
-    <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-6 animate-pulse">
-      <div className="flex justify-between mb-4"><div className="h-4 bg-gray-100 rounded-full w-32" /><div className="h-6 bg-gray-100 rounded-full w-20" /></div>
-      <div className="flex gap-3 mb-4">{[1,2,3].map(i => <div key={i} className="w-14 h-14 bg-gray-100 rounded-2xl" />)}</div>
-      <div className="h-4 bg-gray-100 rounded-full w-3/4 mb-2" />
-      <div className="h-10 bg-gray-100 rounded-2xl mt-4" />
-    </div>
-  );
+// ── Interfaces ──────────────────────────────────────────────────────────────
+export interface InvestItem {
+    id_invest: string;
+    nama: string;
+    berat: string | null;
+    umur: number;
+    harga_sapi: string;
+    status_investernak: string;
+    foto: string | null;
 }
 
-export default function PesananInvestPage() {
-  const router = useRouter();
-  const [orders, setOrders] = useState<PesananInvest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState("all");
+export interface PesananInvest {
+    id_pesanan: number;
+    status_pesanan: "Diproses" | "Selesai" | "Dibatalkan";
+    created_at: string;
+    daftar_invest: InvestItem[];
+    total_item: number;
+    tagihan: string;
+    sudah_dibayar: string;
+    menunggu_persetujuan: string;
+}
 
-  useEffect(() => {
-    apiFetch<PesananInvest[]>("/order/invest/")
-      .then(d => setOrders(Array.isArray(d) ? d : []))
-      .catch(e => setError(e?.status === 401 ? "Silakan login terlebih dahulu." : e?.message ?? "Gagal memuat."))
-      .finally(() => setLoading(false));
-  }, []);
+// ── Status Badge ──────────────────────────────────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+    const map: Record<string, { label: string; className: string }> = {
+        Diproses: {
+            label: "Diproses",
+            className: "bg-amber-100 text-amber-700 border border-amber-200",
+        },
+        Selesai: {
+            label: "Selesai",
+            className: "bg-blue-100 text-blue-700 border border-blue-200",
+        },
+        Dibatalkan: {
+            label: "Dibatalkan",
+            className: "bg-red-100 text-red-700 border border-red-200",
+        },
+    };
+    const style = map[status] ?? {
+        label: status,
+        className: "bg-gray-100 text-gray-600 border border-gray-200",
+    };
+    return (
+        <span
+            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${style.className}`}
+        >
+            {style.label}
+        </span>
+    );
+}
 
-  const filtered = filterStatus === "all" ? orders : orders.filter(o => o.status_pesanan === filterStatus);
-  const countOf = (s: string) => orders.filter(o => o.status_pesanan === s).length;
+// ── Detail Modal ──────────────────────────────────────────────────────────────
+function DetailModal({
+    order,
+    onClose,
+}: {
+    order: PesananInvest;
+    onClose: () => void;
+}) {
+    const fmt = (val: string | number) =>
+        `Rp ${Number(val).toLocaleString("id-ID")}`;
 
-  return (
-    <div className="bg-white min-h-screen selection:bg-[#1a8245] selection:text-white">
-      <Navbar activePage="invest-qurban" />
-
-      {/* Page Header — sama dengan invest-qurban/page.tsx */}
-      <div className="pt-[80px] md:pt-[80px] bg-[#f8fafc] border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">
-            Invest Ternak
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
-            Pesanan Saya
-          </h1>
-          <p className="text-gray-500 font-medium text-base md:text-lg max-w-xl">
-            Pantau progres investasi dan pembayaran paket invest ternak kamu.
-          </p>
-        </div>
-      </div>
-
-      {/* Content */}
-      <section className="py-12 md:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-[24px] p-5 text-sm font-medium text-red-700 mb-8">{error}</div>
-          )}
-
-          {/* Filter chips */}
-          {!loading && orders.length > 0 && (
-            <div className="flex gap-2 flex-wrap mb-10">
-              {[
-                { key: "all", label: `Semua (${orders.length})` },
-                { key: "Diproses", label: `Diproses (${countOf("Diproses")})` },
-                { key: "Selesai", label: `Selesai (${countOf("Selesai")})` },
-                { key: "Dibatalkan", label: `Dibatalkan (${countOf("Dibatalkan")})` },
-              ].map(f => (
-                <button key={f.key} onClick={() => setFilterStatus(f.key)}
-                  className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
-                    filterStatus === f.key
-                      ? "bg-[#1a8245] text-white shadow-lg shadow-green-100"
-                      : "bg-gray-50 text-gray-500 border border-gray-200 hover:border-[#1a8245] hover:text-[#1a8245]"
-                  }`}>
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Skeletons */}
-          {loading && (
-            <div className="space-y-5">
-              <SkeletonCard /><SkeletonCard /><SkeletonCard />
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!loading && filtered.length === 0 && !error && (
-            <div className="py-24 text-center bg-gray-50 rounded-[48px] border-2 border-dashed border-gray-200">
-              <div className="w-20 h-20 rounded-[28px] bg-white shadow-sm flex items-center justify-center mx-auto mb-6">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5">
-                  <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <p className="font-black text-gray-900 text-xl tracking-tight mb-2">
-                {filterStatus !== "all" ? `Tidak ada pesanan "${filterStatus}"` : "Belum Ada Pesanan"}
-              </p>
-              <p className="text-gray-400 font-medium text-sm mb-8 max-w-xs mx-auto">
-                {filterStatus !== "all"
-                  ? "Coba pilih filter lain di atas."
-                  : "Kamu belum memiliki pesanan invest ternak. Yuk mulai investasi sekarang!"}
-              </p>
-              {filterStatus === "all" && (
-                <button onClick={() => router.push("/invest-qurban")}
-                  className="px-8 py-3 bg-[#1a8245] text-white text-[10px] font-black rounded-2xl hover:bg-[#22ad5c] transition-all shadow-lg shadow-green-100 uppercase tracking-widest">
-                  Lihat Katalog Invest Ternak
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Order cards */}
-          <div className="space-y-5">
-            {filtered.map(order => {
-              const pct = Number(order.tagihan) > 0 ? Math.min((Number(order.sudah_dibayar) / Number(order.tagihan)) * 100, 100) : 0;
-              const sisa = Number(order.tagihan) - Number(order.sudah_dibayar);
-
-              return (
-                <div key={order.id_pesanan}
-                  className="bg-white rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
-
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-gray-50">
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-100">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                        Pesanan #{order.id_pesanan}
-                      </p>
-                      <p className="text-xs text-gray-500 font-medium mt-0.5">
-                        {new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
-                      </p>
-                    </div>
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${STATUS_COLORS[order.status_pesanan] ?? "bg-gray-100 text-gray-800"}`}>
-                      {order.status_pesanan}
-                    </span>
-                  </div>
-
-                  {/* Items */}
-                  <div className="px-6 md:px-8 py-5 flex items-start gap-4">
-                    {/* Photo strip */}
-                    <div className="flex gap-2 shrink-0">
-                      {order.daftar_invest.slice(0, 3).map((item, i) => (
-                        <div key={i} className="relative w-14 h-14 rounded-2xl overflow-hidden bg-gray-100 ring-1 ring-gray-200">
-                          {item.foto
-                            ? <Image src={item.foto} alt={item.nama} fill className="object-cover" unoptimized />
-                            : <div className="w-full h-full flex items-center justify-center text-gray-300 text-[10px] font-bold">—</div>
-                          }
-                          {i === 2 && order.daftar_invest.length > 3 && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                              <span className="text-white text-xs font-black">+{order.daftar_invest.length - 3}</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {/* Item names */}
-                    <div className="flex-1 min-w-0">
-                      {order.daftar_invest.slice(0, 2).map((item, i) => (
-                        <div key={i} className={i > 0 ? "mt-2" : ""}>
-                          <p className="text-sm font-black text-gray-900 tracking-tight truncate">{item.nama}</p>
-                          <p className="text-xs text-gray-400 font-medium">
-                            {item.berat ? `${item.berat} kg · ` : ""}{item.umur} hari · {item.status_investernak}
-                          </p>
-                        </div>
-                      ))}
-                      {order.daftar_invest.length > 2 && (
-                        <p className="text-xs text-gray-400 mt-1.5">+{order.daftar_invest.length - 2} paket lainnya</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Payment */}
-                  <div className="px-6 md:px-8 pb-6">
-                    <div className="bg-[#f8fafc] rounded-[24px] p-5">
-                      {/* Progress bar */}
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-black uppercase tracking-widest text-[10px] text-gray-400">Progres Pembayaran</span>
-                        <span className="font-black text-gray-900">{Math.round(pct)}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ${pct >= 100 ? "bg-[#1a8245]" : pct > 0 ? "bg-amber-400" : "bg-gray-300"}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-
-                      {/* Breakdown */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { label: "Total Tagihan", value: fmtF(order.tagihan), color: "text-gray-900" },
-                          { label: "Terbayar", value: fmtF(order.sudah_dibayar), color: "text-[#1a8245]" },
-                          { label: "Menunggu", value: fmtF(order.menunggu_persetujuan), color: "text-amber-600" },
-                        ].map(c => (
-                          <div key={c.label} className="bg-white rounded-2xl p-3 text-center shadow-sm border border-gray-100">
-                            <p className="text-[9px] font-black uppercase tracking-wide text-gray-400 mb-1">{c.label}</p>
-                            <p className={`text-xs font-black ${c.color}`}>{c.value}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      {sisa > 0 && order.status_pesanan !== "Dibatalkan" && (
-                        <p className="text-center text-[10px] text-gray-400 font-medium mt-3">
-                          Sisa tagihan: <span className="font-black text-gray-700">{fmtF(sisa)}</span>
+                        <h2 className="text-lg font-black text-gray-900">
+                            Detail Pesanan #{order.id_pesanan}
+                        </h2>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {new Date(order.created_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
                         </p>
-                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <StatusBadge status={order.status_pesanan} />
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600 transition-colors text-xl font-bold"
+                            aria-label="Tutup"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
+                {/* Daftar Invest */}
+                <div className="p-6">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-blue-700 mb-4">
+                        Daftar Paket ({order.total_item} paket)
+                    </h3>
+                    <div className="space-y-4">
+                        {order.daftar_invest.map((item: InvestItem, idx: number) => (
+                            <div
+                                key={idx}
+                                className="flex gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100"
+                            >
+                                <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200">
+                                    {item.foto ? (
+                                        <SafeImage
+                                            src={item.foto}
+                                            alt={item.nama}
+                                            width={80}
+                                            height={80}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                                            📈
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-gray-900 truncate">{item.nama}</p>
+                                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
+                                        <span>Berat: {item.berat ? `${Number(item.berat).toLocaleString()} kg` : "-"}</span>
+                                        <span>Umur: {item.umur} hari</span>
+                                    </div>
+                                    <p className="text-blue-700 font-black text-sm mt-1">
+                                        {fmt(item.harga_sapi)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
-                    {order.status_pesanan !== "Dibatalkan" && (
-                      <button
-                        onClick={() => router.push(`/invest-qurban/pesanan/${order.id_pesanan}/laporan`)}
-                        className="mt-4 w-full py-3.5 bg-[#1a8245] text-white text-[10px] font-black rounded-2xl hover:bg-[#22ad5c] hover:-translate-y-0.5 transition-all duration-200 shadow-lg shadow-green-100 uppercase tracking-widest">
-                        Lihat Laporan Perkembangan →
-                      </button>
-                    )}
-                  </div>
+                    {/* Ringkasan Pembayaran */}
+                    <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-600 mb-3">
+                            Ringkasan Pembayaran
+                        </h3>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Total Tagihan</span>
+                                <span className="font-bold text-gray-900">{fmt(order.tagihan)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Sudah Dibayar</span>
+                                <span className="font-bold text-gray-900">{fmt(order.sudah_dibayar)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Menunggu Persetujuan</span>
+                                <span className="font-bold text-amber-600">
+                                    {fmt(order.menunggu_persetujuan)}
+                                </span>
+                            </div>
+                            <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
+                                <span className="text-gray-700 font-semibold">Sisa Tagihan</span>
+                                <span className="font-black text-red-600">
+                                    {fmt(Number(order.tagihan) - Number(order.sudah_dibayar))}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              );
-            })}
-          </div>
+            </div>
         </div>
-      </section>
+    );
+}
 
-      <Footer />
-    </div>
-  );
+// ── Order Card ────────────────────────────────────────────────────────────────
+function OrderCard({
+    order,
+    onDetail,
+}: {
+    order: PesananInvest;
+    onDetail: (order: PesananInvest) => void;
+}) {
+    const router = useRouter();
+    const fmt = (val: string | number) =>
+        `Rp ${Number(val).toLocaleString("id-ID")}`;
+
+    return (
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between">
+            <div>
+                {/* Top row */}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <p className="text-xs text-gray-400 font-medium">
+                            Pesanan #{order.id_pesanan}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {new Date(order.created_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                            })}
+                        </p>
+                    </div>
+                    <StatusBadge status={order.status_pesanan} />
+                </div>
+
+                {/* Info */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-gray-50 rounded-xl p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
+                            Jumlah Paket
+                        </p>
+                        <p className="text-lg font-black text-gray-900">{order.total_item} paket</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
+                            Sudah Dibayar
+                        </p>
+                        <p className="text-sm font-black text-gray-900">{fmt(order.sudah_dibayar)}</p>
+                    </div>
+                    <div className="bg-red-50 rounded-xl p-3 col-span-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-1">
+                            Sisa Tagihan
+                        </p>
+                        <p className="text-sm font-black text-red-700">{fmt(Number(order.tagihan) - Number(order.sudah_dibayar))}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Action */}
+            <div className="space-y-2 mt-4">
+                <button
+                    onClick={() => onDetail(order)}
+                    className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors"
+                >
+                    Lihat Detail
+                </button>
+                
+                {order.status_pesanan !== "Dibatalkan" && (
+                    <button
+                        onClick={() => router.push(`/invest-qurban/pesanan/${order.id_pesanan}/laporan`)}
+                        className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
+                    >
+                        Lihat Laporan Perkembangan →
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function PesananInvestPage() {
+    const router = useRouter();
+    const [orders, setOrders] = useState<PesananInvest[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedOrder, setSelectedOrder] = useState<PesananInvest | null>(null);
+    const [filterStatus, setFilterStatus] = useState<string>("");
+    
+    // API pagination fallback (since invest orders don't have pagination yet)
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+            const params: any = {};
+            if (filterStatus) params.status = filterStatus;
+
+            const data: any = await apiFetch("/order/invest/", { method: "GET", params });
+            if (Array.isArray(data)) {
+                setOrders(data);
+            } else if (data.results) {
+                setOrders(data.results);
+            } else {
+                setOrders([]);
+            }
+        } catch (err: any) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, [filterStatus]);
+
+    const totalCount = orders.length;
+
+    return (
+        <div className="bg-white min-h-screen">
+            <Navbar activePage="invest-qurban" />
+
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                {/* Header */}
+                <div className="mb-8">
+                    <button
+                        onClick={() => router.back()}
+                        className="text-sm text-gray-400 hover:text-gray-600 font-medium mb-4 flex items-center gap-1"
+                    >
+                        ← Kembali
+                    </button>
+                    <h1 className="text-3xl font-black text-gray-900">Pesanan Saya</h1>
+                    <p className="text-gray-500 text-sm mt-1">
+                        Invest Qurban — {totalCount} pesanan ditemukan
+                    </p>
+                </div>
+
+                {/* Filters */}
+                <div className="flex gap-2 flex-wrap mb-8">
+                    {["Semua", "Diproses", "Selesai", "Dibatalkan"].map(status => {
+                        const isActive = (!filterStatus && status === "Semua") || filterStatus === status;
+                        return (
+                            <button
+                                key={status}
+                                onClick={() => {
+                                    setFilterStatus(status === "Semua" ? "" : status);
+                                    setCurrentPage(1);
+                                }}
+                                className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
+                                    isActive
+                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+                                        : "bg-gray-50 text-gray-500 border border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                                }`}
+                            >
+                                {status}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Content */}
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                    </div>
+                ) : orders.length === 0 ? (
+                    <div className="py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                        <p className="text-4xl mb-3">📈</p>
+                        <p className="text-gray-500 font-medium">Belum ada pesanan Invest Qurban.</p>
+                        {!filterStatus && (
+                            <button
+                                onClick={() => router.push("/invest-qurban")}
+                                className="mt-4 px-6 py-2 bg-blue-600 text-white text-xs font-black rounded-xl hover:bg-blue-700 transition-all uppercase tracking-widest"
+                            >
+                                Lihat Katalog Invest Ternak
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                            {orders.map((order) => (
+                                <OrderCard
+                                    key={order.id_pesanan}
+                                    order={order}
+                                    onDetail={setSelectedOrder}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {selectedOrder && (
+                <DetailModal
+                    order={selectedOrder}
+                    onClose={() => setSelectedOrder(null)}
+                />
+            )}
+
+            <Footer />
+        </div>
+    );
 }

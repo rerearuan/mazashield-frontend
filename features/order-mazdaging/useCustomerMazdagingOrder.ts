@@ -30,12 +30,13 @@ export function useCustomerMazdagingOrder() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    const fetchOrders = useCallback(async (page = 1) => {
+    const fetchOrders = useCallback(async (page = 1, status = "") => {
         setLoading(true);
         try {
-            const data: any = await orderService.getCustomerMazdagingOrders({
-                page: page.toString(),
-            });
+            const params: any = { page: page.toString() };
+            if (status) params.status = status;
+
+            const data: any = await orderService.getCustomerMazdagingOrders(params);
             if (data.results) {
                 setOrders(data.results);
                 setTotalCount(data.count);
@@ -55,9 +56,11 @@ export function useCustomerMazdagingOrder() {
         }
     }, []);
 
+    const [statusFilter, setStatusFilter] = useState<string>("");
+
     useEffect(() => {
-        fetchOrders(currentPage);
-    }, [currentPage, fetchOrders]);
+        fetchOrders(currentPage, statusFilter);
+    }, [currentPage, statusFilter, fetchOrders]);
 
     return {
         orders,
@@ -66,6 +69,8 @@ export function useCustomerMazdagingOrder() {
         setCurrentPage,
         totalPages,
         totalCount,
-        refetch: () => fetchOrders(currentPage),
+        statusFilter,
+        setStatusFilter,
+        refetch: () => fetchOrders(currentPage, statusFilter),
     };
 }

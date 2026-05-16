@@ -109,14 +109,18 @@ function DetailModal({
                     </div>
 
                     {/* Ringkasan Pembayaran */}
-                    <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-red-700 mb-3">
+                    <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-600 mb-3">
                             Ringkasan Pembayaran
                         </h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Total Harga (Sisa Tagihan)</span>
-                                <span className="font-bold text-red-600">{fmt(order.total_harga)}</span>
+                                <span className="text-gray-600">Total Tagihan</span>
+                                <span className="font-bold text-gray-900">{fmt(order.total_harga)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Sudah Dibayar</span>
+                                <span className="font-bold text-gray-900">{fmt(order.sudah_dibayar)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Menunggu Persetujuan</span>
@@ -124,10 +128,10 @@ function DetailModal({
                                     {fmt(order.menunggu_persetujuan)}
                                 </span>
                             </div>
-                            <div className="flex justify-between border-t border-red-200 pt-2 mt-2">
-                                <span className="text-gray-700 font-semibold">Sudah Dibayar</span>
+                            <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
+                                <span className="text-gray-700 font-semibold">Sisa Tagihan</span>
                                 <span className="font-black text-red-700">
-                                    {fmt(order.sudah_dibayar)}
+                                    {fmt(Number(order.total_harga) - Number(order.sudah_dibayar))}
                                 </span>
                             </div>
                         </div>
@@ -176,15 +180,15 @@ function OrderCard({
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
-                        Sisa Tagihan
+                        Sudah Dibayar
                     </p>
-                    <p className="text-sm font-black text-red-600">{fmt(order.total_harga)}</p>
+                    <p className="text-sm font-black text-gray-900">{fmt(order.sudah_dibayar)}</p>
                 </div>
                 <div className="bg-red-50 rounded-xl p-3 col-span-2">
                     <p className="text-[10px] font-black uppercase tracking-widest text-red-700 mb-1">
-                        Sudah Dibayar
+                        Sisa Tagihan
                     </p>
-                    <p className="text-sm font-black text-red-700">{fmt(order.sudah_dibayar)}</p>
+                    <p className="text-sm font-black text-red-700">{fmt(Number(order.total_harga) - Number(order.sudah_dibayar))}</p>
                 </div>
             </div>
 
@@ -202,7 +206,7 @@ function OrderCard({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function PesananSayaMazdagingPage() {
     const router = useRouter();
-    const { orders, loading, currentPage, setCurrentPage, totalPages, totalCount } =
+    const { orders, loading, currentPage, setCurrentPage, totalPages, totalCount, statusFilter, setStatusFilter } =
         useCustomerMazdagingOrder();
     const [selectedOrder, setSelectedOrder] = useState<CustomerPesananMazdaging | null>(null);
 
@@ -223,6 +227,29 @@ export default function PesananSayaMazdagingPage() {
                     <p className="text-gray-500 text-sm mt-1">
                         Mazdaging — {totalCount} order ditemukan
                     </p>
+                </div>
+
+                {/* Filters */}
+                <div className="flex gap-2 flex-wrap mb-8">
+                    {["Semua", "Diproses", "Selesai", "Dibatalkan"].map(status => {
+                        const isActive = (!statusFilter && status === "Semua") || statusFilter === status;
+                        return (
+                            <button
+                                key={status}
+                                onClick={() => {
+                                    setStatusFilter(status === "Semua" ? "" : status);
+                                    setCurrentPage(1);
+                                }}
+                                className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
+                                    isActive
+                                        ? "bg-red-700 text-white shadow-lg shadow-red-100"
+                                        : "bg-gray-50 text-gray-500 border border-gray-200 hover:border-red-700 hover:text-red-700"
+                                }`}
+                            >
+                                {status}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Content */}
