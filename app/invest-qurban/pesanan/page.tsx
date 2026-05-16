@@ -130,6 +130,7 @@ function DetailModal({
                                     <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
                                         <span>Berat: {item.berat ? `${Number(item.berat).toLocaleString()} kg` : "-"}</span>
                                         <span>Umur: {item.umur} hari</span>
+                                        <span className="font-semibold text-blue-600">Status: {item.status_investernak}</span>
                                     </div>
                                     <p className="text-blue-700 font-black text-sm mt-1">
                                         {fmt(item.harga_sapi)}
