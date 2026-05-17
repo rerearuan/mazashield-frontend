@@ -7,6 +7,7 @@ import Footer from "@/components/common/Footer";
 import Pagination from "@/components/common/Pagination";
 import SafeImage from "@/components/common/SafeImage";
 import { apiFetch } from "@/lib/api-client";
+import LaporanModal from "@/features/invest-order/components/LaporanModal";
 
 // ── Interfaces ──────────────────────────────────────────────────────────────
 export interface InvestItem {
@@ -182,9 +183,11 @@ function DetailModal({
 function OrderCard({
     order,
     onDetail,
+    onLaporanClick,
 }: {
     order: PesananInvest;
     onDetail: (order: PesananInvest) => void;
+    onLaporanClick: (orderId: number) => void;
 }) {
     const router = useRouter();
     const fmt = (val: string | number) =>
@@ -244,7 +247,7 @@ function OrderCard({
                 
                 {order.status_pesanan !== "Cancelled" && (
                     <button
-                        onClick={() => router.push(`/invest-qurban/pesanan/${order.id_pesanan}/laporan`)}
+                        onClick={() => onLaporanClick(order.id_pesanan)}
                         className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
                     >
                         Lihat Laporan Perkembangan →
@@ -261,6 +264,7 @@ export default function PesananInvestPage() {
     const [orders, setOrders] = useState<PesananInvest[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<PesananInvest | null>(null);
+    const [laporanOrderId, setLaporanOrderId] = useState<number | null>(null);
     const [filterStatus, setFilterStatus] = useState<string>("");
     
     // API pagination fallback (since invest orders don't have pagination yet)
@@ -361,6 +365,7 @@ export default function PesananInvestPage() {
                                     key={order.id_pesanan}
                                     order={order}
                                     onDetail={setSelectedOrder}
+                                    onLaporanClick={setLaporanOrderId}
                                 />
                             ))}
                         </div>
@@ -374,6 +379,12 @@ export default function PesananInvestPage() {
                     onClose={() => setSelectedOrder(null)}
                 />
             )}
+
+            <LaporanModal
+                orderId={laporanOrderId}
+                isOpen={!!laporanOrderId}
+                onClose={() => setLaporanOrderId(null)}
+            />
 
             <Footer />
         </div>
