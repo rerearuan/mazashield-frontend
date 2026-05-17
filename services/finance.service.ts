@@ -20,7 +20,7 @@ export interface FinancialDashboardData {
     menunggu_verif: number;
   };
   total_customer_baru: number;
-  penjualan_per_bulan: { bulan: string; total: number }[];
+  penjualan_per_bulan: { bulan: string; total: number; mazdafarm: number; mazdaging: number; investernak: number }[];
   customer_baru_per_bulan: { bulan: string; jumlah: number }[];
   breakdown_per_layanan: { layanan: string; total: number; persentase: number }[];
   piutang_per_layanan: { layanan: string; belum_bayar: number; menunggu_verif: number }[];
