@@ -175,7 +175,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
               (isCompletedOrCancelled || role === 'Finance') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
             }`}
           >
-            <option value="Pending">Pending</option>
+            <option value="Processed">Processed</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>

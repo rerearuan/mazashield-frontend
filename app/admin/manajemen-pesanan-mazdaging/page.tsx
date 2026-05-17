@@ -106,8 +106,8 @@ export default function ManajemenPesananMazdagingPage() {
               color: "text-gray-900" 
             },
             { 
-              label: "Pending", 
-              value: orders.filter(o => o.status_pesanan === 'Pending').length, 
+              label: "Processed", 
+              value: orders.filter(o => o.status_pesanan === 'Processed').length, 
               color: "text-amber-500" 
             },
             { 
@@ -140,7 +140,7 @@ export default function ManajemenPesananMazdagingPage() {
               className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm transition-all text-gray-900 shadow-sm"
             >
               <option value="all">Semua Status</option>
-              <option value="Pending">Pending</option>
+              <option value="Processed">Processed</option>
               <option value="Confirmed">Confirmed</option>
               <option value="Completed">Completed</option>
               <option value="Cancelled">Cancelled</option>

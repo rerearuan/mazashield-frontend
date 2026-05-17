@@ -201,7 +201,7 @@ export default function CattleModal({
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
                             <option value="Available">Available</option>
-                            <option value="Reserved">Reserved</option>
+                            <option value="Booked">Booked</option>
                             <option value="Sold">Sold</option>
                         </select>
                     </div>

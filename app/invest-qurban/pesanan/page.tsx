@@ -21,7 +21,7 @@ export interface InvestItem {
 
 export interface PesananInvest {
     id_pesanan: number;
-    status_pesanan: "Pending" | "Confirmed" | "Completed" | "Cancelled";
+    status_pesanan: "Processed" | "Confirmed" | "Completed" | "Cancelled";
     created_at: string;
     daftar_invest: InvestItem[];
     total_item: number;
@@ -33,8 +33,8 @@ export interface PesananInvest {
 // ── Status Badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
     const map: Record<string, { label: string; className: string }> = {
-        Pending: {
-            label: "Pending",
+        Processed: {
+            label: "Processed",
             className: "bg-amber-100 text-amber-700 border border-amber-200",
         },
         Confirmed: {
