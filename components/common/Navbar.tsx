@@ -105,19 +105,19 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                         href="/pesanan-saya/mazdafarm"
                         className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:text-[#1a8245] rounded-t-xl transition-colors"
                       >
-                        🐄 Pesanan Mazdafarm
+                        Mazdafarm
                       </Link>
                       <Link
                         href="/pesanan-saya/mazdaging"
                         className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                       >
-                        🥩 Order Mazdaging
+                        Mazdaging
                       </Link>
                       <Link
                         href="/invest-qurban/pesanan"
                         className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-b-xl transition-colors"
                       >
-                        📈 Invest Qurban
+                        Invest Qurban
                       </Link>
                     </div>
                   </div>
@@ -199,21 +199,21 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 rounded-xl font-semibold text-sm text-[#1a8245] hover:bg-green-50"
                     >
-                      🐄 Pesanan Mazdafarm
+                      Mazdafarm
                     </Link>
                     <Link
                       href="/pesanan-saya/mazdaging"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 rounded-xl font-semibold text-sm text-red-700 hover:bg-red-50"
                     >
-                      🥩 Order Mazdaging
+                      Mazdaging
                     </Link>
                     <Link
                       href="/invest-qurban/pesanan"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 rounded-xl font-semibold text-sm text-blue-700 hover:bg-blue-50"
                     >
-                      📈 Invest Qurban
+                      Invest Qurban
                     </Link>
                   </>
                 )}

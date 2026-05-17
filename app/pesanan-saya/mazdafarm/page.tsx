@@ -15,16 +15,17 @@ import {
 // ── Status Badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
     const map: Record<string, { label: string; className: string }> = {
-        Diproses: {
-            label: "Diproses",
+        Processed: {
+            label: "Processed",
             className: "bg-amber-100 text-amber-700 border border-amber-200",
         },
-        Selesai: {
-            label: "Selesai",
+
+        Completed: {
+            label: "Completed",
             className: "bg-green-100 text-green-700 border border-green-200",
         },
-        Dibatalkan: {
-            label: "Dibatalkan",
+        Cancelled: {
+            label: "Cancelled",
             className: "bg-red-100 text-red-700 border border-red-200",
         },
     };
@@ -122,14 +123,18 @@ function DetailModal({
                     </div>
 
                     {/* Ringkasan Pembayaran */}
-                    <div className="mt-6 p-4 bg-green-50 rounded-xl border border-green-100">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-[#1a8245] mb-3">
+                    <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-600 mb-3">
                             Ringkasan Pembayaran
                         </h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Sisa Tagihan</span>
-                                <span className="font-bold text-red-600">{fmt(order.tagihan)}</span>
+                                <span className="text-gray-600">Total Tagihan</span>
+                                <span className="font-bold text-gray-900">{fmt(order.tagihan)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Sudah Dibayar</span>
+                                <span className="font-bold text-gray-900">{fmt(order.sudah_dibayar)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Menunggu Persetujuan</span>
@@ -137,10 +142,10 @@ function DetailModal({
                                     {fmt(order.menunggu_persetujuan)}
                                 </span>
                             </div>
-                            <div className="flex justify-between border-t border-green-200 pt-2 mt-2">
-                                <span className="text-gray-700 font-semibold">Sudah Dibayar</span>
-                                <span className="font-black text-[#1a8245]">
-                                    {fmt(order.sudah_dibayar)}
+                            <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
+                                <span className="text-gray-700 font-semibold">Sisa Tagihan</span>
+                                <span className="font-black text-red-600">
+                                    {fmt(Number(order.tagihan))}
                                 </span>
                             </div>
                         </div>
@@ -191,15 +196,15 @@ function OrderCard({
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
-                        Sisa Tagihan
-                    </p>
-                    <p className="text-sm font-black text-red-600">{fmt(order.tagihan)}</p>
-                </div>
-                <div className="bg-green-50 rounded-xl p-3 col-span-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] mb-1">
                         Sudah Dibayar
                     </p>
-                    <p className="text-sm font-black text-[#1a8245]">{fmt(order.sudah_dibayar)}</p>
+                    <p className="text-sm font-black text-gray-900">{fmt(order.sudah_dibayar)}</p>
+                </div>
+                <div className="bg-red-50 rounded-xl p-3 col-span-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-1">
+                        Sisa Tagihan
+                    </p>
+                    <p className="text-sm font-black text-red-700">{fmt(Number(order.tagihan))}</p>
                 </div>
             </div>
 
@@ -217,7 +222,7 @@ function OrderCard({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function PesananSayaMazdafarmPage() {
     const router = useRouter();
-    const { orders, loading, currentPage, setCurrentPage, totalPages, totalCount } =
+    const { orders, loading, currentPage, setCurrentPage, totalPages, totalCount, statusFilter, setStatusFilter } =
         useCustomerMazdafarmOrder();
     const [selectedOrder, setSelectedOrder] = useState<CustomerPesananMazdafarm | null>(null);
 
@@ -238,6 +243,29 @@ export default function PesananSayaMazdafarmPage() {
                     <p className="text-gray-500 text-sm mt-1">
                         Mazdafarm — {totalCount} pesanan ditemukan
                     </p>
+                </div>
+
+                {/* Filters */}
+                <div className="flex gap-2 flex-wrap mb-8">
+                    {["Semua", "Processed", "Completed", "Cancelled"].map(status => {
+                        const isActive = (!statusFilter && status === "Semua") || statusFilter === status;
+                        return (
+                            <button
+                                key={status}
+                                onClick={() => {
+                                    setStatusFilter(status === "Semua" ? "" : status);
+                                    setCurrentPage(1);
+                                }}
+                                className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
+                                    isActive
+                                        ? "bg-[#1a8245] text-white shadow-lg shadow-green-100"
+                                        : "bg-gray-50 text-gray-500 border border-gray-200 hover:border-[#1a8245] hover:text-[#1a8245]"
+                                }`}
+                            >
+                                {status}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Content */}

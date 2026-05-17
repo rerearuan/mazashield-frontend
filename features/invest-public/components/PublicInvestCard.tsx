@@ -31,6 +31,15 @@ export default function PublicInvestCard({ pkg, onInvest }: PublicInvestCardProp
                         {pkg.jenis}
                     </span>
                 </div>
+                <div className="absolute top-4 right-4">
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg border ${
+                        pkg.status_investernak === 'Open' ? 'bg-green-100 text-green-700 border-green-200' :
+                        pkg.status_investernak === 'Closed' ? 'bg-red-100 text-red-700 border-red-200' :
+                        'bg-amber-100 text-amber-700 border-amber-200'
+                    }`}>
+                        {pkg.status_investernak}
+                    </span>
+                </div>
             </div>
             <div className="p-8 space-y-6">
                 <div>
