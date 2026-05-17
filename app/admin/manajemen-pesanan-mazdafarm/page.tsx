@@ -104,22 +104,22 @@ export default function ManajemenPesananMazdafarmPage() {
           {[
             { 
               label: "Total Sisa Tagihan", 
-              value: `Rp ${orders.filter(o => o.status_pesanan !== 'Dibatalkan').reduce((sum, o) => sum + Number(o.tagihan), 0).toLocaleString('id-ID')}`, 
+              value: `Rp ${orders.filter(o => o.status_pesanan !== 'Cancelled').reduce((sum, o) => sum + Number(o.tagihan), 0).toLocaleString('id-ID')}`, 
               color: "text-gray-900" 
             },
             { 
-              label: "Diproses", 
-              value: orders.filter(o => o.status_pesanan === 'Diproses').length, 
+              label: "Pending", 
+              value: orders.filter(o => o.status_pesanan === 'Pending').length, 
               color: "text-amber-500" 
             },
             { 
-              label: "Selesai", 
-              value: orders.filter(o => o.status_pesanan === 'Selesai').length, 
+              label: "Completed", 
+              value: orders.filter(o => o.status_pesanan === 'Completed').length, 
               color: "text-[#1a8245]" 
             },
             { 
-              label: "Dibatalkan", 
-              value: orders.filter(o => o.status_pesanan === 'Dibatalkan').length, 
+              label: "Cancelled", 
+              value: orders.filter(o => o.status_pesanan === 'Cancelled').length, 
               color: "text-red-500" 
             },
           ].map((stat, idx) => (
@@ -143,9 +143,10 @@ export default function ManajemenPesananMazdafarmPage() {
               className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm transition-all text-gray-900 shadow-sm"
             >
               <option value="all">Semua Status</option>
-              <option value="Diproses">Diproses</option>
-              <option value="Selesai">Selesai</option>
-              <option value="Dibatalkan">Dibatalkan</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
             </select>
           </div>
           <div className="md:col-span-1">
@@ -240,8 +241,8 @@ export default function ManajemenPesananMazdafarmPage() {
                     </td>
                     <td className="px-4 md:px-8 py-4 md:py-6">
                       <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                        order.status_pesanan === 'Selesai' ? 'bg-green-100 text-green-600' :
-                        order.status_pesanan === 'Dibatalkan' ? 'bg-red-100 text-red-600' :
+                        order.status_pesanan === 'Completed' ? 'bg-green-100 text-green-600' :
+                        order.status_pesanan === 'Cancelled' ? 'bg-red-100 text-red-600' :
                         'bg-amber-100 text-amber-600'
                       }`}>
                         {order.status_pesanan}

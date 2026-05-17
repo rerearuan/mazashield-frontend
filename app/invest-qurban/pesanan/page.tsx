@@ -21,7 +21,7 @@ export interface InvestItem {
 
 export interface PesananInvest {
     id_pesanan: number;
-    status_pesanan: "Diproses" | "Selesai" | "Dibatalkan";
+    status_pesanan: "Pending" | "Confirmed" | "Completed" | "Cancelled";
     created_at: string;
     daftar_invest: InvestItem[];
     total_item: number;
@@ -33,16 +33,20 @@ export interface PesananInvest {
 // ── Status Badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
     const map: Record<string, { label: string; className: string }> = {
-        Diproses: {
-            label: "Diproses",
+        Pending: {
+            label: "Pending",
             className: "bg-amber-100 text-amber-700 border border-amber-200",
         },
-        Selesai: {
-            label: "Selesai",
+        Confirmed: {
+            label: "Confirmed",
+            className: "bg-purple-100 text-purple-700 border border-purple-200",
+        },
+        Completed: {
+            label: "Completed",
             className: "bg-blue-100 text-blue-700 border border-blue-200",
         },
-        Dibatalkan: {
-            label: "Dibatalkan",
+        Cancelled: {
+            label: "Cancelled",
             className: "bg-red-100 text-red-700 border border-red-200",
         },
     };
@@ -238,7 +242,7 @@ function OrderCard({
                     Lihat Detail
                 </button>
                 
-                {order.status_pesanan !== "Dibatalkan" && (
+                {order.status_pesanan !== "Cancelled" && (
                     <button
                         onClick={() => router.push(`/invest-qurban/pesanan/${order.id_pesanan}/laporan`)}
                         className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"

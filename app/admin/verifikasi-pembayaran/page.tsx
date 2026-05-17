@@ -19,16 +19,16 @@ interface Payment {
     tanggal_transfer: string;
     waktu_transfer: string;
     catatan: string;
-    status: "Menunggu Verifikasi" | "Diterima" | "Ditolak";
+    status: "Waiting" | "Paid" | "Unpaid";
     created_by_name?: string;
 }
 
 const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
 
 const STATUS_COLORS: Record<string, string> = {
-    "Menunggu Verifikasi": "bg-amber-100 text-amber-800",
-    "Diterima": "bg-[#1a8245]/10 text-[#1a8245]",
-    "Ditolak": "bg-red-100 text-red-800",
+    "Waiting": "bg-amber-100 text-amber-800",
+    "Paid": "bg-[#1a8245]/10 text-[#1a8245]",
+    "Unpaid": "bg-red-100 text-red-800",
 };
 
 const ORDER_TYPE_LABELS: Record<string, string> = {
@@ -46,7 +46,7 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
 export default function VerifikasiPembayaranPage() {
     const router = useRouter();
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterStatus, setFilterStatus] = useState<"all" | "Menunggu Verifikasi" | "Diterima" | "Ditolak">("all");
+    const [filterStatus, setFilterStatus] = useState<"all" | "Waiting" | "Paid" | "Unpaid">("all");
     const [filterOrderType, setFilterOrderType] = useState<string>("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
@@ -107,10 +107,10 @@ export default function VerifikasiPembayaranPage() {
         setVerifying(true);
         try {
             await orderService.verifyPayment(paymentId, {
-                keputusan: approved ? "Diterima" : "Ditolak",
+                keputusan: approved ? "Paid" : "Unpaid",
                 catatan_verifikasi: catatanVerifikasi
             });
-            toast.success(`Pembayaran berhasil ${approved ? "Diterima" : "Ditolak"}!`);
+            toast.success(`Pembayaran berhasil ${approved ? "Paid" : "Unpaid"}!`);
             setSelectedPayment(null);
             setCatatanVerifikasi("");
             fetchPayments();
@@ -123,9 +123,9 @@ export default function VerifikasiPembayaranPage() {
 
     // Stats
     const totalPembayaran = payments
-        .filter(p => p.status === 'Diterima')
+        .filter(p => p.status === 'Paid')
         .reduce((acc, p) => acc + parseFloat(p.nominal_pembayaran as string), 0);
-    const totalPending = payments.filter((p) => p.status === "Menunggu Verifikasi").length;
+    const totalPending = payments.filter((p) => p.status === "Waiting").length;
 
     return (
         <div className="p-4 md:p-10 relative font-primary bg-[#f8fafc] min-h-screen">
@@ -147,9 +147,9 @@ export default function VerifikasiPembayaranPage() {
                 <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
                     {[
                         { label: "Total Dana Masuk", value: formatRupiah(totalPembayaran), color: "text-[#1a8245]" },
-                        { label: "Menunggu Verifikasi", value: totalPending, color: "text-amber-500" },
-                        { label: "Diterima", value: payments.filter(p => p.status === 'Diterima').length, color: "text-[#1a8245]" },
-                        { label: "Ditolak", value: payments.filter(p => p.status === 'Ditolak').length, color: "text-red-500" },
+                        { label: "Waiting", value: totalPending, color: "text-amber-500" },
+                        { label: "Paid", value: payments.filter(p => p.status === 'Paid').length, color: "text-[#1a8245]" },
+                        { label: "Unpaid", value: payments.filter(p => p.status === 'Unpaid').length, color: "text-red-500" },
                     ].map(({ label, value, color }) => (
                         <div key={label} className="min-w-[160px] md:min-w-0 bg-white rounded-[24px] shadow-sm border border-gray-100 p-4 md:p-6 flex-shrink-0">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
@@ -170,9 +170,9 @@ export default function VerifikasiPembayaranPage() {
                             className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
                         >
                             <option value="all">Semua Status</option>
-                            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
-                            <option value="Diterima">Diterima</option>
-                            <option value="Ditolak">Ditolak</option>
+                            <option value="Waiting">Waiting</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
                         </select>
                     </div>
                     <div className="md:col-span-1">
@@ -374,7 +374,7 @@ export default function VerifikasiPembayaranPage() {
                                 </div>
                             )}
 
-                            {selectedPayment.status === "Menunggu Verifikasi" && (
+                            {selectedPayment.status === "Waiting" && (
                                 <div className="pt-2">
                                     <label className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-2 block">Catatan Verifikasi (Feedback)</label>
                                     <textarea
@@ -387,7 +387,7 @@ export default function VerifikasiPembayaranPage() {
                             )}
                         </div>
 
-                        {selectedPayment.status === "Menunggu Verifikasi" ? (
+                        {selectedPayment.status === "Waiting" ? (
                             <div className="flex gap-4">
                                 <button
                                     disabled={verifying}
