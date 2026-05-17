@@ -205,3 +205,204 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
 
     loadImage(logoUrl).then((img) => drawPDF(img)).catch(() => drawPDF());
 }
+
+export function generateMazdagingInvoice(orderData: any, customerInfo: any, productsList: any[], orderItemsData: any[] = []) {
+    const doc = new jsPDF("p", "pt", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Set base font
+    doc.setFont("helvetica");
+
+    // Logo
+    const logoUrl = "/Daging.png"; 
+    
+    const loadImage = (url: string) => {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error("Failed to load image"));
+        });
+    };
+
+    const drawPDF = (logoImg?: HTMLImageElement) => {
+        if (logoImg) {
+            doc.addImage(logoImg, "PNG", 40, 40, 60, 60);
+        }
+
+        // Header Text
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("MAZDAGING", 115, 55);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Jl. Bali ED 19, Komplek Jatisari Permai, Jatiasih, Kota Bekasi, Jawa Barat", 115, 68);
+        doc.text("Kota Bekasi, Jawa Barat, 17426", 115, 81);
+        doc.text("mazdaging99@gmail.com", 115, 94);
+        doc.text("Telp. 085819051216", 115, 107);
+
+        // Date processing
+        // The image shows date format "17 February 2026" and delivery "17 February 2026 12:00:00"
+        const dateObj = new Date();
+        const dateStr = dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+        const timeStr = dateObj.toLocaleTimeString("en-GB", { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+        const tomorrow = new Date(dateObj);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tempoStr = tomorrow.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+        
+        const invoiceNo = `${orderData.id_pesanan || '0121'}/SGR/002/${new Date().getFullYear()}`;
+
+        // Boxes
+        doc.setDrawColor(200, 200, 200);
+        
+        // Left Box (Nota Pembelian)
+        doc.setFillColor(244, 204, 176); // #f4ccb0
+        doc.rect(40, 140, 240, 20, "F");
+        doc.rect(40, 140, 240, 70, "S");
+        doc.setFillColor(248, 222, 200); // Lighter for body
+        doc.rect(40, 160, 240, 50, "F");
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("Nota Pembelian", 45, 153);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text("Nama", 45, 172); doc.text(":", 85, 172); doc.text(customerInfo.nama || "-", 95, 172);
+        doc.text("Alamat", 45, 184); doc.text(":", 85, 184); doc.text(customerInfo.email || "-", 95, 184); // using email as address for now
+        doc.text("Delivery", 45, 196); doc.text(":", 85, 196); doc.text(`${dateStr} ${timeStr}`, 95, 196);
+        doc.text("Telepon", 45, 208); doc.text(":", 85, 208); doc.text(customerInfo.no_telp || "-", 95, 208);
+
+        // Right Box (Faktur)
+        doc.setFillColor(248, 222, 200);
+        doc.rect(340, 140, 215, 55, "F");
+        doc.rect(340, 140, 215, 55, "S");
+        doc.text("FAKTUR", 345, 153); doc.text(invoiceNo, 400, 153);
+        doc.text("Tanggal", 345, 165); doc.text(dateStr, 400, 165);
+        doc.text("Tempo", 345, 177); doc.text(tempoStr, 400, 177);
+        doc.text("Terms", 345, 189); doc.text("-", 400, 189);
+
+        // Table
+        const head = [["No", "Produk", "Jenis", "Kuantitas (kg)", "KETERANGAN", "Harga (Rp)", "Jumlah (Rp)"]];
+        
+        let totalKuantitas = 0;
+        let totalHarga = 0;
+
+        const body = productsList.map((p, i) => {
+            // Find order item if provided to get correct quantity, else default to 1
+            const oi = orderItemsData.find((item: any) => item.daging === p.id_daging || item.daging?.id_daging === p.id_daging);
+            const qty = oi ? parseFloat(oi.kuantitas_kg) : 1;
+            const hargaPerKg = parseFloat(p.harga_per_kg) || 0;
+            const subtotal = qty * hargaPerKg;
+            
+            totalKuantitas += qty;
+            totalHarga += subtotal;
+            return [
+                (i + 1).toString(),
+                p.nama, // "DAGING" or product name
+                p.bagian, // "RENDANG" or product type
+                qty.toString(),
+                "",
+                hargaPerKg.toLocaleString("id-ID"),
+                subtotal.toLocaleString("id-ID")
+            ];
+        });
+
+        // Add 2 empty rows just for styling space
+        body.push(["", "", "", "", "", "", ""]);
+        
+        (doc as any).autoTable({
+            startY: 220,
+            head: head,
+            body: body,
+            theme: 'grid',
+            headStyles: { fillColor: [172, 41, 37], textColor: 255, halign: 'center', fontSize: 9 }, // #ac2925
+            bodyStyles: { fontSize: 8, halign: 'center' },
+            columnStyles: {
+                0: { cellWidth: 30 },
+                1: { cellWidth: 90 },
+                2: { cellWidth: 70 },
+                3: { cellWidth: 70 },
+                4: { cellWidth: 90 },
+                5: { cellWidth: 80, halign: 'right' },
+                6: { cellWidth: 85, halign: 'right' }
+            },
+            margin: { left: 40, right: 40 },
+            showFoot: 'never',
+            didDrawPage: function (data: any) {
+                // ...
+            }
+        });
+
+        const finalY = (doc as any).lastAutoTable.finalY;
+
+        // Diskon, Total Row
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.text("DISKON", 120, finalY + 11);
+        doc.setFont("helvetica", "normal");
+        doc.text("0", pageWidth - 45, finalY + 11, { align: "right" });
+
+        doc.setFillColor(172, 41, 37);
+        doc.rect(40, finalY + 15, pageWidth - 80, 15, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.text(totalKuantitas.toString(), 280, finalY + 26, { align: "center" });
+        doc.text(totalHarga.toLocaleString("id-ID"), pageWidth - 45, finalY + 26, { align: "right" });
+
+        // Total Invoice Block
+        doc.setTextColor(0, 0, 0);
+        doc.setDrawColor(200, 200, 200);
+        const invY = finalY + 50;
+        doc.rect(40, invY, 100, 15, "S");
+        doc.rect(140, invY, 150, 15, "S");
+        doc.setFontSize(9);
+        doc.text("Total Invoice", 45, invY + 11);
+        doc.text("Rp " + totalHarga.toLocaleString("id-ID"), 285, invY + 11, { align: "right" });
+
+        // Terbilang
+        const terbilangY = invY + 15;
+        const terbilangText = terbilang(totalHarga).trim() + " Rupiah";
+        doc.rect(40, terbilangY, 100, 15, "S");
+        doc.rect(140, terbilangY, pageWidth - 180, 15, "S");
+        doc.setFont("helvetica", "bold");
+        doc.text("Terbilang", 45, terbilangY + 11);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.text(terbilangText, 145, terbilangY + 11);
+
+        // Notes
+        const notesY = terbilangY + 30;
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("Notes:", 45, notesY);
+
+        // Bank Info
+        const bankY = notesY + 20;
+        doc.setDrawColor(172, 41, 37); // Red border
+        doc.rect(40, bankY, 250, 55, "S");
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("Pembayaran dapat dilakukan melalui transfer ke rekening berikut:", 45, bankY + 12);
+        doc.text("BRI", 45, bankY + 25); doc.text("037901050843502", 120, bankY + 25);
+        doc.text("BCA", 45, bankY + 38); doc.text("6520947343", 120, bankY + 38);
+        doc.text("BSI", 45, bankY + 51); doc.setFont("helvetica", "bold"); doc.text("7303385767", 120, bankY + 51);
+        doc.setFont("helvetica", "normal");
+        doc.text("a.n.", 45, bankY + 64); doc.text("Shidqi Muhammad Naufal", 120, bankY + 64);
+
+        // Signatures
+        const sigY = bankY + 40;
+        doc.setFontSize(9);
+        doc.text("Customer", 420, sigY);
+        doc.setFont("helvetica", "bold");
+        doc.text(customerInfo.nama ? customerInfo.nama.toUpperCase() : "NY ASTUTI", 420, sigY + 80);
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text(`#${invoiceNo.split('/')[0]}`, 40, doc.internal.pageSize.getHeight() - 20);
+        doc.text("Page 1 of 1", pageWidth - 40, doc.internal.pageSize.getHeight() - 20, { align: "right" });
+
+        doc.save(`Invoice_Daging_${invoiceNo.replace(/\//g, '-')}.pdf`);
+    };
+
+    loadImage(logoUrl).then((img) => drawPDF(img)).catch(() => drawPDF());
+}
