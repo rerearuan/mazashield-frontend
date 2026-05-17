@@ -9,6 +9,8 @@ import { Button } from "@/components/button";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import PaymentUpdateModal from "@/features/payment/components/PaymentUpdateModal";
+import { Icons } from "@/components/common/Icons";
+import { generateMazdafarmInvoice } from "@/lib/invoice";
 
 
 interface OrderDetailsModalProps {
@@ -37,7 +39,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
     setCatatan(order.catatan || "");
   }, [order]);
 
-  const isCompletedOrCancelled = order.status_pesanan === 'Selesai' || order.status_pesanan === 'Dibatalkan';
+  const isCompletedOrCancelled = order.status_pesanan === 'Completed' || order.status_pesanan === 'Cancelled';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,20 +125,20 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
                       <p className="text-[8px] text-gray-400 font-semibold italic">Input oleh: {log.created_by_name || 'Sistem'}</p>
                     </div>
                     <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full ${
-                      log.status === 'Diterima' ? 'bg-green-100 text-green-700' : 
-                      log.status === 'Ditolak' ? 'bg-red-100 text-red-700' : 
+                      log.status === 'Paid' ? 'bg-green-100 text-green-700' : 
+                      log.status === 'Unpaid' ? 'bg-red-100 text-red-700' : 
                       'bg-amber-100 text-amber-700'
                     }`}>
-                      {log.status === 'Menunggu Verifikasi' ? 'WAITING' : log.status}
+                      {log.status === 'Paid' ? 'PAID' : log.status === 'Waiting' ? 'WAITING' : log.status}
                     </span>
                   </div>
                   <p className="text-[9px] text-gray-400 font-medium italic">
                     {new Date(log.created_at).toLocaleDateString('id-ID')} — {new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                   </p>
-                  {log.status !== 'Menunggu Verifikasi' && (
+                  {log.status !== 'Waiting' && (
                     <div className="pt-2 border-t border-gray-50">
                       <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1 italic">
-                        {log.status === 'Diterima' ? 'Verified by:' : 'Rejected by:'} 
+                        {log.status === 'Paid' ? 'Verified by:' : 'Rejected by:'} 
                         <span className="text-[#1a8245] ml-1">{log.verified_by_name || 'Staff Finance'}</span>
                       </p>
                       {log.catatan_verifikasi && (
@@ -175,11 +177,11 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
               (isCompletedOrCancelled || role === 'Finance') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-[#1a8245]'
             }`}
           >
-            <option value="Diproses">Diproses</option>
-            <option value="Selesai">Selesai</option>
-            <option value="Dibatalkan">Dibatalkan</option>
+            <option value="Processed">Processed</option>
+                        <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
-          {statusPesanan === 'Selesai' && order.status_pesanan !== 'Selesai' && (
+          {statusPesanan === 'Completed' && order.status_pesanan !== 'Completed' && (
             <p className="text-[10px] text-amber-600 mt-2 font-bold uppercase tracking-wider">
               * Validasi: Tagihan harus 0 dan tidak ada pembayaran tertunda.
             </p>
@@ -200,6 +202,9 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={() => generateMazdafarmInvoice(order, order.data_customer, order.daftar_ternak)} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+            <Icons.Download className="w-4 h-4" /> Unduh Invoice
+          </Button>
           <Button type="button" variant="secondary" onClick={onClose}>
             {isCompletedOrCancelled || role === 'Finance' ? "Tutup" : "Batal"}
           </Button>

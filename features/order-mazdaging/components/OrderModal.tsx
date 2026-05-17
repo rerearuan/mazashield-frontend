@@ -9,6 +9,7 @@ import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import SearchableSelect from "@/components/common/SearchableSelect";
 import { Icons } from "@/components/common/Icons";
+import { generateMazdagingInvoice } from "@/lib/invoice";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -101,7 +102,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
 
     setSubmitting(true);
     try {
-      await orderService.createMazdagingOrder({
+      const orderData = await orderService.createMazdagingOrder({
         id_customer: parseInt(selectedCustomerId),
         items: selectedItems.map(item => ({
             id_daging: item.id_daging,
@@ -109,6 +110,21 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
         })),
         catatan: catatan
       });
+      
+      const customerInfo = customers.find(c => c.id.toString() === selectedCustomerId);
+      const originalMeats = availableMeat.filter(m => selectedItems.some(si => si.id_daging === m.id_daging));
+      const orderItems = selectedItems.map(item => ({
+          daging: item.id_daging,
+          kuantitas_kg: item.berat_pesanan_kg
+      }));
+
+      try {
+          generateMazdagingInvoice(orderData, customerInfo, originalMeats, orderItems);
+      } catch (err) {
+          console.error("Gagal membuat PDF invoice Mazdaging:", err);
+          toast.error("Pesanan berhasil, tetapi gagal mengunduh invoice.");
+      }
+
       toast.success("Pesanan Daging berhasil dibuat!");
       onSuccess();
       onClose();
@@ -280,3 +296,4 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
     </Modal>
   );
 }
+

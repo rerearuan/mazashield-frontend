@@ -47,7 +47,6 @@ export default function MazdagingPage() {
       setLoading(true);
       const params: any = {
         page: currentPage.toString(),
-        status_daging: "Tersedia",
       };
 
       if (searchTerm) params.nama = searchTerm;
@@ -214,7 +213,7 @@ export default function MazdagingPage() {
                       title={item.nama}
                       description={item.deskripsi || `Bagian ${item.bagian} berkualitas segar.`}
                       code={item.id_daging}
-                      stock="Tersedia"
+                      stock={item.status_daging}
                       price={`Rp ${Number(item.harga_per_kg).toLocaleString("id-ID")} / kg`}
                       fallbackType="meat"
                       onButtonClick={() => handleOrder(item.nama)}

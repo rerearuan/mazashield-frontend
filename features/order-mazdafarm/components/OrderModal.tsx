@@ -10,6 +10,7 @@ import { catalogService } from "@/services/catalog.service";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import SearchableSelect from "@/components/common/SearchableSelect";
+import { generateMazdafarmInvoice } from "@/lib/invoice";
 
 
 interface OrderModalProps {
@@ -81,11 +82,22 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
 
     setSubmitting(true);
     try {
-      await orderService.createMazdafarmOrder({
+      const orderData = await orderService.createMazdafarmOrder({
         id_customer: parseInt(selectedCustomerId),
         daftar_id_ternak: selectedCattleIds,
         catatan: catatan
       });
+      
+      const customer = customers.find(c => c.id.toString() === selectedCustomerId);
+      const cattleList = selectedCattleIds.map(id => availableCattle.find(c => c.id_ternak === id)).filter(Boolean);
+      
+      try {
+        generateMazdafarmInvoice(orderData, customer, cattleList);
+      } catch (err) {
+        console.error("Gagal membuat PDF invoice:", err);
+        toast.error("Pesanan berhasil, tetapi gagal mengunduh invoice.");
+      }
+
       toast.success("Pesanan Ternak berhasil dibuat!");
       onSuccess();
       onClose();

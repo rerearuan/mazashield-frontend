@@ -37,7 +37,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
     const { name, value } = e.target;
     
     // Sanitization: Only numbers for bank account number
-    if (name === "nomor_rekening_pengirim") {
+    if (name === "nomor_rekening_pengirim" || name === "nominal_pembayaran") {
       const sanitizedValue = value.replace(/[^0-9]/g, "");
       setFormData({ ...formData, [name]: sanitizedValue });
       return;
@@ -48,7 +48,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (order.status_pesanan === 'Dibatalkan') {
+    if (order.status_pesanan === 'Cancelled') {
       toast.error("Pesanan sudah dibatalkan, tidak dapat menerima pembayaran.");
       return;
     }
@@ -124,14 +124,13 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-2">Nominal Pembayaran</label>
             <input
-              type="number"
+              type="text"
               name="nominal_pembayaran"
-              value={formData.nominal_pembayaran}
+              value={formData.nominal_pembayaran ? Number(formData.nominal_pembayaran).toLocaleString("id-ID") : ""}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1a8245] font-semibold text-sm transition-all"
               placeholder="0"
               required
-              min="1"
             />
           </div>
           
