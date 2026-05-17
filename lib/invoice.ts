@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 export function terbilang(angka: number): string {
     const huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
@@ -107,7 +107,7 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
         // Add 2 empty rows just for styling space
         body.push(["", "", "", "", "", "", ""]);
 
-        (doc as any).autoTable({
+        autoTable(doc, {
             startY: 220,
             head: head,
             body: body,
@@ -310,7 +310,7 @@ export function generateMazdagingInvoice(orderData: any, customerInfo: any, prod
         // Add 2 empty rows just for styling space
         body.push(["", "", "", "", "", "", ""]);
         
-        (doc as any).autoTable({
+        autoTable(doc, {
             startY: 220,
             head: head,
             body: body,
@@ -501,7 +501,7 @@ export function generateInvestInvoice(orderData: any, customerInfo: any, investL
             ["", "Bagi Hasil (LB*50%)", "0"],
         ];
 
-        (doc as any).autoTable({
+        autoTable(doc, {
             startY: currentY + 60,
             head: head,
             body: body,
