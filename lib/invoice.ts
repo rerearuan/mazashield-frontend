@@ -406,3 +406,139 @@ export function generateMazdagingInvoice(orderData: any, customerInfo: any, prod
 
     loadImage(logoUrl).then((img) => drawPDF(img)).catch(() => drawPDF());
 }
+
+export function generateInvestInvoice(orderData: any, customerInfo: any, investList: any[]) {
+    const doc = new jsPDF("p", "pt", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Set base font
+    doc.setFont("helvetica");
+
+    // Logo
+    const logoUrl = "/LogoMazdafarm.png";
+    
+    const loadImage = (url: string) => {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error("Failed to load image"));
+        });
+    };
+
+    const drawPDF = (logoImg?: HTMLImageElement) => {
+        if (logoImg) {
+            doc.addImage(logoImg, "PNG", 60, 40, 80, 80);
+        }
+
+        // Header Text
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(172, 41, 37); // Dark red
+        doc.text("PT. MAZASHI SEMUDA FARM", 150, 60);
+        
+        doc.setFontSize(14);
+        doc.setTextColor(59, 130, 63); // Greenish
+        doc.text("Investernak - Cattle Trading - Feedlot", 150, 75);
+        
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        doc.text("Jl. Bali blok ED no.19, Kel. Jatisari, Kec. Jatiasih, Kota Bekasi", 150, 90);
+        doc.text("Contact : (+62)815 5301 6262 E-mail : mazdafarmco@gmail.com", 150, 105);
+
+        // Header Line
+        doc.setLineWidth(1.5);
+        doc.line(60, 115, pageWidth - 60, 115);
+
+        // Title
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("LAPORAN HASIL INVESTERNAK", pageWidth / 2, 135, { align: "center" });
+
+        // Introduction text
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        const introText = "Assalamu'alaikum warahmatullahi wabarakatuh\n\nSegala puji dan syukur kita panjatkan ke hadirat Allah SWT atas limpahan rahmat dan karunia-Nya, sehingga pelaksanaan usaha Qurban tahun " + new Date().getFullYear() + " dapat berjalan dengan lancar dan penuh keberkahan. Alhamdulillah, pada tahun ini kami berhasil menjual hewan qurban kepada sohibul qurban. Laporan ini merupakan proyeksi dan hasil transaksi investasi ternak Anda. Seperti yang kita ketahui, berbagai tantangan di lapangan mewarnai proses pemeliharaan. Namun, dengan kerja keras dan kolaborasi bersama, seluruh proses dapat kami selesaikan dengan baik dan tuntas.";
+        
+        const textLines = doc.splitTextToSize(introText, pageWidth - 120);
+        doc.text(textLines, 60, 155);
+
+        const currentY = 155 + (textLines.length * 12) + 20;
+
+        // Info Block
+        // We will sum the investment total from investList. Since they selected specific packages, we take the first package's name as representation, or generic if multiple.
+        const firstInvestName = investList.length > 0 ? investList[0].nama_paket : "Paket Investasi";
+        const totalInvestasi = investList.reduce((sum, inv) => sum + (parseFloat(inv.harga_sapi) || 0), 0);
+        const totalEstimateReturn = totalInvestasi + (totalInvestasi * 0.1); // just a placeholder formula if actual return isn't fixed
+
+        doc.text(`Nama : ${customerInfo.nama || "-"}`, 60, currentY);
+        doc.text(`Rekening : - (Silakan konfirmasi ke Admin)`, 60, currentY + 15);
+        doc.setFont("helvetica", "bold");
+        doc.text(firstInvestName, 60, currentY + 30);
+        doc.text("Terjual ke DKM (Estimasi / Realisasi)", 60, currentY + 45);
+
+        // Table Data
+        // Based on the image: Item | Keterangan | Biaya (Rp)
+        // A | Belanja sapi | <amount>
+        // B | Harga Jual Sapi | <amount + profit>
+        // LK | Laba Kotor (B-A) | <profit>
+        // C | Pakan & Operasional Kandang | 0 (placeholder)
+        // D | Obat & Vitamin | 0 (placeholder)
+        // E | Fee Marketing | 0 (placeholder)
+        // LB | Laba Bersih (LK-C-D-E) | <profit>
+        //  | Bagi Hasil (LB*50%) | <profit/2>
+
+        const head = [["Item", "Keterangan", "Biaya (Rp)"]];
+        const body = [
+            ["A", "Belanja sapi", totalInvestasi.toLocaleString("id-ID")],
+            ["B", "Harga Jual Sapi", "0"],
+            ["LK", "Laba Kotor (B-A)", "0"],
+            ["C", "Pakan & Operasional Kandang", "0"],
+            ["D", "Obat & Vitamin", "0"],
+            ["E", "Fee Marketing", "0"],
+            ["LB", "Laba Bersih (LK-C-D-E)", "0"],
+            ["", "Bagi Hasil (LB*50%)", "0"],
+        ];
+
+        (doc as any).autoTable({
+            startY: currentY + 60,
+            head: head,
+            body: body,
+            theme: 'grid',
+            headStyles: { fillColor: [255, 255, 255], textColor: 0, halign: 'center', fontSize: 10, fontStyle: 'bold', lineColor: [0, 0, 0], lineWidth: 1 },
+            bodyStyles: { fontSize: 10, textColor: 0, lineColor: [0, 0, 0], lineWidth: 1 },
+            columnStyles: {
+                0: { cellWidth: 40, halign: 'center' },
+                1: { cellWidth: 260 },
+                2: { cellWidth: 120, halign: 'right' }
+            },
+            margin: { left: 60, right: 60 },
+            willDrawCell: function(data: any) {
+                // Bold specific rows
+                if (data.section === 'body') {
+                    if (data.row.index === 2 || data.row.index === 6 || data.row.index === 7) {
+                        doc.setFont("helvetica", "bold");
+                    }
+                }
+            }
+        });
+
+        const finalY = (doc as any).lastAutoTable.finalY + 10;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Mengetahui,", 60, finalY);
+        doc.text("Direktur Keuangan", 60, finalY + 15);
+        doc.text("Direktur Utama", pageWidth - 160, finalY + 15);
+
+        // Signatures space
+        doc.text("Agung NKH", 60, finalY + 70);
+        doc.text("Shidqi MN", pageWidth - 160, finalY + 70);
+
+        const invoiceNo = `${orderData.id_pesanan || 'INV'}/IVT/${new Date().getFullYear()}`;
+        doc.save(`Laporan_Invest_${invoiceNo.replace(/\//g, '-')}.pdf`);
+    };
+
+    loadImage(logoUrl).then((img) => drawPDF(img)).catch(() => drawPDF());
+}

@@ -9,6 +9,7 @@ import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import SearchableSelect from "@/components/common/SearchableSelect";
 import { Icons } from "@/components/common/Icons";
+import { generateInvestInvoice } from "@/lib/invoice";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -76,11 +77,22 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
 
     setSubmitting(true);
     try {
-      await orderService.createInvestOrder({
+      const orderData = await orderService.createInvestOrder({
         id_customer: parseInt(selectedCustomerId),
         items: selectedInvestIds,
         catatan: catatan
       });
+      
+      const customerInfo = customers.find(c => c.id.toString() === selectedCustomerId);
+      const originalInvests = availableInvest.filter(i => selectedInvestIds.includes(i.id_invest));
+
+      try {
+          generateInvestInvoice(orderData, customerInfo, originalInvests);
+      } catch (err) {
+          console.error("Gagal membuat PDF invoice Invest:", err);
+          toast.error("Pesanan berhasil, tetapi gagal mengunduh invoice.");
+      }
+
       toast.success("Pesanan Invest berhasil dibuat!");
       onSuccess();
       onClose();
