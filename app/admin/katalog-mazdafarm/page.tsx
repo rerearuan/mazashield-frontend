@@ -166,8 +166,8 @@ export default function KatalogMazdafarmPage() {
                 />
                 <div className="absolute top-4 right-4">
                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    item.status_ternak === 'Available' ? 'bg-[#1a8245] text-white' :
-                    item.status_ternak === 'Booked' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white'
+                    item.status_ternak === 'Tersedia' ? 'bg-[#1a8245] text-white' :
+                    item.status_ternak === 'Dipesan' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white'
                   }`}>
                     {item.status_ternak}
                   </span>
