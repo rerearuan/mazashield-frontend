@@ -180,7 +180,7 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
         // Bank Info
         const bankY = terbilangY + 30;
         doc.setDrawColor(172, 41, 37); // Red border for bank info
-        doc.rect(40, bankY, 250, 45, "S");
+        doc.rect(40, bankY, 280, 50, "S");
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text("Pembayaran dapat dilakukan melalui transfer ke rekening berikut:", 45, bankY + 12);
@@ -378,7 +378,7 @@ export function generateMazdagingInvoice(orderData: any, customerInfo: any, prod
         // Bank Info
         const bankY = notesY + 20;
         doc.setDrawColor(172, 41, 37); // Red border
-        doc.rect(40, bankY, 250, 55, "S");
+        doc.rect(40, bankY, 280, 75, "S");
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text("Pembayaran dapat dilakukan melalui transfer ke rekening berikut:", 45, bankY + 12);
