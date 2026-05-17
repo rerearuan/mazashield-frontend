@@ -115,7 +115,7 @@ export default function LaporanInvestasiCustomerPage() {
           )}
 
           {/* Processed: show weight history + estimations */}
-          {data.status_pesanan === "Processed", "Confirmed" && (
+          {["Processed", "Confirmed"].includes(data.status_pesanan) && (
             <>
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h2 className="text-sm font-bold text-gray-700 mb-1">Perkembangan Berat Mingguan</h2>

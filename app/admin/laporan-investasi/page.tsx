@@ -161,7 +161,7 @@ export default function LaporanInvestasiPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
           { label: "Total Pesanan", value: String(orders.length), accent: "border-l-gray-400" },
-          { label: ["Processed", "Confirmed"].includes(laporan.status_pesanan), value: String(countByStatus(["Processed", "Confirmed"].includes(laporan.status_pesanan))), accent: "border-l-amber-400" },
+          { label: "Processed & Confirmed", value: String(countByStatus("Processed") + countByStatus("Confirmed")), accent: "border-l-amber-400" },
           { label: "Completed", value: String(countByStatus("Completed")), accent: "border-l-blue-500" },
           { label: "Total Tagihan Aktif", value: loadingOrders ? "—" : "Rp " + Math.round(totalTagihan).toLocaleString("id-ID"), accent: "border-l-emerald-500" },
         ].map(c => (
