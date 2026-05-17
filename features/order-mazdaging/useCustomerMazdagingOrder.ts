@@ -19,7 +19,7 @@ export interface CustomerPesananMazdaging {
     total_harga: string;
     sudah_dibayar: string;
     menunggu_persetujuan: string;
-    order_status: "Processed" | "Confirmed" | "Completed" | "Cancelled";
+    order_status: "Processed" | "Completed" | "Cancelled";
     created_at: string;
 }
 

@@ -19,10 +19,7 @@ function StatusBadge({ status }: { status: string }) {
             label: "Processed",
             className: "bg-amber-100 text-amber-700 border border-amber-200",
         },
-        Confirmed: {
-            label: "Confirmed",
-            className: "bg-blue-100 text-blue-700 border border-blue-200",
-        },
+
         Completed: {
             label: "Completed",
             className: "bg-green-100 text-green-700 border border-green-200",
@@ -148,7 +145,7 @@ function DetailModal({
                             <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
                                 <span className="text-gray-700 font-semibold">Sisa Tagihan</span>
                                 <span className="font-black text-red-600">
-                                    {fmt(Number(order.tagihan) - Number(order.sudah_dibayar))}
+                                    {fmt(Number(order.tagihan))}
                                 </span>
                             </div>
                         </div>
@@ -207,7 +204,7 @@ function OrderCard({
                     <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-1">
                         Sisa Tagihan
                     </p>
-                    <p className="text-sm font-black text-red-700">{fmt(Number(order.tagihan) - Number(order.sudah_dibayar))}</p>
+                    <p className="text-sm font-black text-red-700">{fmt(Number(order.tagihan))}</p>
                 </div>
             </div>
 
@@ -250,7 +247,7 @@ export default function PesananSayaMazdafarmPage() {
 
                 {/* Filters */}
                 <div className="flex gap-2 flex-wrap mb-8">
-                    {["Semua", "Processed", "Confirmed", "Completed", "Cancelled"].map(status => {
+                    {["Semua", "Processed", "Completed", "Cancelled"].map(status => {
                         const isActive = (!statusFilter && status === "Semua") || statusFilter === status;
                         return (
                             <button

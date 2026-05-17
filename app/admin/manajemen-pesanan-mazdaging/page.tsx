@@ -141,8 +141,7 @@ export default function ManajemenPesananMazdagingPage() {
             >
               <option value="all">Semua Status</option>
               <option value="Processed">Processed</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Completed">Completed</option>
+                            <option value="Completed">Completed</option>
               <option value="Cancelled">Cancelled</option>
             </select>
           </div>

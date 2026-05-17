@@ -12,7 +12,6 @@ const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString(
 
 const STATUS_COLORS: Record<string, string> = {
     Processed: "bg-amber-100 text-amber-800",
-    Confirmed: "bg-blue-100 text-blue-800",
     Completed: "bg-[#1a8245]/10 text-[#1a8245]",
     Cancelled: "bg-red-100 text-red-800",
 };
@@ -131,8 +130,7 @@ export default function ManajemenInvestTernakPage() {
                         >
                             <option value="all">Semua Status</option>
                             <option value="Processed">Processed</option>
-              <option value="Confirmed">Confirmed</option>
-                            <option value="Completed">Completed</option>
+                                          <option value="Completed">Completed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>

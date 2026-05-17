@@ -26,11 +26,10 @@ interface OrderRow {
 
 const STATUS_COLOR: Record<string, string> = {
   Processed: "bg-amber-100 text-amber-700 border-amber-200",
-  Confirmed: "bg-green-100 text-green-700 border-green-200",
   Completed: "bg-blue-100 text-blue-700 border-blue-200",
   Cancelled: "bg-red-100 text-red-600 border-red-200",
 };
-const STATUS_DOT: Record<string, string> = { Processed: "bg-amber-400", Confirmed: "bg-green-500", Completed: "bg-blue-500", Cancelled: "bg-red-400" };
+const STATUS_DOT: Record<string, string> = { Processed: "bg-amber-400", Completed: "bg-blue-500", Cancelled: "bg-red-400" };
 
 function Sk({ c }: { c: string }) { return <div className={`animate-pulse bg-gray-100 rounded-xl ${c}`} />; }
 
@@ -161,7 +160,7 @@ export default function LaporanInvestasiPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
           { label: "Total Pesanan", value: String(orders.length), accent: "border-l-gray-400" },
-          { label: "Processed & Confirmed", value: String(countByStatus("Processed") + countByStatus("Confirmed")), accent: "border-l-amber-400" },
+          { label: "Processed", value: String(countByStatus("Processed")), accent: "border-l-amber-400" },
           { label: "Completed", value: String(countByStatus("Completed")), accent: "border-l-blue-500" },
           { label: "Total Tagihan Aktif", value: loadingOrders ? "—" : "Rp " + Math.round(totalTagihan).toLocaleString("id-ID"), accent: "border-l-emerald-500" },
         ].map(c => (
@@ -311,7 +310,7 @@ export default function LaporanInvestasiPage() {
               </div>
 
               {/* ── Input berat form (Diproses only) ── */}
-              {["Processed", "Confirmed"].includes(laporan.status_pesanan) && (
+              {["Processed"].includes(laporan.status_pesanan) && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Mingguan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>

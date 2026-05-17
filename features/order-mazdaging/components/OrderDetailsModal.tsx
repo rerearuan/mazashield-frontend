@@ -175,8 +175,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
             }`}
           >
             <option value="Processed">Processed</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
+                        <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>
           </select>
           {statusPesanan === 'Completed' && order.status_pesanan !== 'Completed' && (
