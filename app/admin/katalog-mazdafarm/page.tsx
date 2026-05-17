@@ -19,6 +19,14 @@ const CattleModal = dynamic(() => import("@/features/mazdafarm-catalog/component
   loading: () => null,
 });
 
+const formatUmur = (umurBulan: number) => {
+    const tahun = Math.floor(umurBulan / 12);
+    const bulan = umurBulan % 12;
+    if (tahun > 0 && bulan > 0) return `${tahun} Tahun ${bulan} Bulan`;
+    if (tahun > 0) return `${tahun} Tahun`;
+    return `${bulan} Bulan`;
+};
+
 function DescriptionToggle({ text }: { text: string }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const isLong = text.length > 80;
@@ -158,8 +166,8 @@ export default function KatalogMazdafarmPage() {
                 />
                 <div className="absolute top-4 right-4">
                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    item.status_ternak === 'Tersedia' ? 'bg-[#1a8245] text-white' :
-                    item.status_ternak === 'Dipesan' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white'
+                    item.status_ternak === 'Available' ? 'bg-[#1a8245] text-white' :
+                    item.status_ternak === 'Reserved' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white'
                   }`}>
                     {item.status_ternak}
                   </span>
@@ -202,7 +210,7 @@ export default function KatalogMazdafarmPage() {
                   </div>
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Usia</span>
-                    <span className="font-black text-gray-900">{item.umur} Bln</span>
+                    <span className="font-black text-gray-900">{formatUmur(item.umur)}</span>
                   </div>
                 </div>
 

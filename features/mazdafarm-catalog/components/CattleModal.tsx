@@ -32,7 +32,7 @@ export default function CattleModal({
         tanggal_lahir: "",
         harga: "",
         deskripsi: "",
-        status_ternak: "Tersedia",
+        status_ternak: "Available",
     });
     const [uploadFile, setUploadFile] = useState<File | null>(null);
 
@@ -61,7 +61,7 @@ export default function CattleModal({
 
                 harga: "",
                 deskripsi: "",
-                status_ternak: "Tersedia",
+                status_ternak: "Available",
             });
         }
         setUploadFile(null);
@@ -183,11 +183,13 @@ export default function CattleModal({
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga (Rp) <span className="text-red-500">*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             required
-                            min="0"
-                            value={formData.harga}
-                            onChange={(e) => setFormData({ ...formData, harga: e.target.value })}
+                            value={formData.harga ? Number(formData.harga).toLocaleString("id-ID") : ""}
+                            onChange={(e) => {
+                                const cleanValue = e.target.value.replace(/\D/g, "");
+                                setFormData({ ...formData, harga: cleanValue });
+                            }}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
                         />
                     </div>
@@ -198,9 +200,9 @@ export default function CattleModal({
                             onChange={(e) => setFormData({ ...formData, status_ternak: e.target.value as any })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
-                            <option value="Tersedia">Tersedia</option>
-                            <option value="Dipesan">Dipesan</option>
-                            <option value="Terjual">Terjual</option>
+                            <option value="Available">Available</option>
+                            <option value="Reserved">Reserved</option>
+                            <option value="Sold">Sold</option>
                         </select>
                     </div>
                     <div className="space-y-2 md:col-span-2">

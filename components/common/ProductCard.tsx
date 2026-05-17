@@ -5,31 +5,48 @@ import React, { useState } from "react";
 import SafeImage from "./SafeImage";
 import { Icons } from "./Icons";
 
-function DescriptionToggle({ text }: { text: string }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const isLong = text.length > 120; // Increased for public view
-
-    if (!isLong) return <p className="text-gray-500 text-sm leading-relaxed font-medium break-words">{text}</p>;
+function DescriptionModal({ text, title }: { text: string, title: string }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const isLong = text.length > 80;
 
     return (
         <div className="overflow-hidden">
-            <p className={`text-gray-500 text-sm leading-relaxed font-medium break-words ${!isExpanded ? 'line-clamp-3' : ''} transition-all duration-300`}>
+            <p className={`text-gray-500 text-sm leading-relaxed font-medium break-words ${isLong ? 'line-clamp-2' : ''}`}>
                 {text}
             </p>
 
-            <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded(!isExpanded);
-                }}
-                className="mt-2 text-[#1a8245] font-black uppercase text-[9px] tracking-widest hover:underline flex items-center gap-1"
-            >
-                {isExpanded ? (
-                    <>Show Less <Icons.ChevronUp className="w-3 h-3" /></>
-                ) : (
-                    <>Read More <Icons.ChevronDown className="w-3 h-3" /></>
-                )}
-            </button>
+            {isLong && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsOpen(true);
+                    }}
+                    className="mt-2 text-[#1a8245] font-black uppercase text-[9px] tracking-widest hover:underline flex items-center gap-1"
+                >
+                    Baca Selengkapnya <Icons.ChevronDown className="w-3 h-3 -rotate-90" />
+                </button>
+            )}
+
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm" onClick={(e) => {e.stopPropagation(); setIsOpen(false);}}>
+                    <div className="bg-white rounded-[32px] p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in duration-200 border border-gray-100" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
+                            <div>
+                                <span className="text-[#1a8245] font-black uppercase tracking-[0.2em] text-[10px] mb-1 block">Detail Informasi</span>
+                                <h3 className="font-black text-2xl text-gray-900 tracking-tight leading-none">{title}</h3>
+                            </div>
+                            <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div className="max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                            <p className="text-gray-600 leading-relaxed font-medium text-sm whitespace-pre-line">
+                                {text}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -85,7 +102,7 @@ export default function ProductCard({
       <div className="p-8 space-y-7">
         <div className="min-h-[100px]">
           <h3 className="text-gray-900 font-black text-2xl mb-2 tracking-tight line-clamp-1">{title}</h3>
-          <DescriptionToggle text={description} />
+          <DescriptionModal text={description} title={title} />
         </div>
 
 
