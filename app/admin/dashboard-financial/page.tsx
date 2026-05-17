@@ -191,15 +191,11 @@ export default function DashboardKeuanganPage() {
       )}
 
       {/* KPI row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {loading ? <><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/></> : <>
-          <KpiCard label={`Total Penjualan ${year}`} value={data ? fmtS(data.total_penjualan_tahun_aktif) : "—"}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {loading ? <><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/></> : <>
+          <KpiCard label={`Total Penjualan Lunas ${year}`} value={data ? fmtS(data.total_penjualan_tahun_aktif) : "—"}
             sub={data ? fmtF(data.total_penjualan_tahun_aktif) : undefined} color="bg-emerald-500" badge={String(year)}
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round"/></svg>}
-          />
-          <KpiCard label="Penjualan Lunas" value={fmtS(salesYear)}
-            sub={`${data?.penjualan_per_bulan.length ?? 0} bulan aktif · ${fmtF(salesYear)}`} color="bg-blue-500" badge={String(year)}
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M3 3v18h18M7 16l4-4 4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg>}
           />
           <KpiCard label="Total Piutang Aktif" value={fmtS((data?.total_piutang.belum_bayar ?? 0) + (data?.total_piutang.menunggu_verif ?? 0))}
             sub={`${fmtS(data?.total_piutang.belum_bayar??0)} blm bayar · ${fmtS(data?.total_piutang.menunggu_verif??0)} menunggu verif`} color="bg-orange-500"
