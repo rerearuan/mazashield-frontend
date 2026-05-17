@@ -66,7 +66,6 @@ export default function MazdafarmPage() {
       setLoading(true);
       const params: any = {
         page: currentPage.toString(),
-        status_ternak: "Available",
       };
 
       if (searchTerm) params.nama = searchTerm;
