@@ -8,7 +8,7 @@ const fmtF = (v: number | null | undefined) =>
 interface HistoriBerat { id: number; tanggal_input: string; berat_kg: number; keterangan: string; estimasi_harga_jual: number; }
 interface LaporanData {
   id: number; id_pesanan: number; status_pesanan: string;
-  harga_jual_per_kg: number; harga_beli: number | null;
+  harga_jual_per_kg: number; target_berat_kg: number; harga_beli: number | null;
   info_invest: { nama: string; berat_awal: number | null; durasi_hari: number; foto: string | null; harga_beli: number }[];
   histori_berat: HistoriBerat[];
   harga_jual_aktual: number | null; biaya_pakan: number | null; biaya_operasional: number | null;
@@ -82,7 +82,7 @@ export default function LaporanInvestasiPage() {
   const [laporan, setLaporan] = useState<LaporanData | null>(null);
   const [loadingLaporan, setLoadingLaporan] = useState(false);
   const [search, setSearch] = useState("");
-  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "" });
+  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
   const [savingBerat, setSavingBerat] = useState(false);
   const [beratMsg, setBeratMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [akhirForm, setAkhirForm] = useState({ harga_jual_aktual: "", biaya_pakan: "", biaya_operasional: "", biaya_obat_vitamin: "", fee_marketing: "" });
@@ -115,8 +115,9 @@ export default function LaporanInvestasiPage() {
       const body: any = { tanggal_input: beratForm.tanggal_input, berat_kg: beratForm.berat_kg };
       if (beratForm.keterangan) body.keterangan = beratForm.keterangan;
       if (beratForm.harga_jual_per_kg) body.harga_jual_per_kg = beratForm.harga_jual_per_kg;
+      if (beratForm.target_berat_kg) body.target_berat_kg = beratForm.target_berat_kg;
       const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${selectedId}/berat/`, { method: "POST", body: JSON.stringify(body) });
-      setLaporan(d); setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "" });
+      setLaporan(d); setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
       setBeratMsg({ type: "ok", text: "✓ Berat berhasil ditambahkan." });
     } catch (e: any) { setBeratMsg({ type: "err", text: e?.message ?? "Gagal menyimpan." }); }
     finally { setSavingBerat(false); }
@@ -153,7 +154,7 @@ export default function LaporanInvestasiPage() {
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Investasi</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-black text-gray-900">Laporan Hasil Investasi</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Input berat mingguan &amp; perhitungan akhir per pesanan invest ternak</p>
+        <p className="text-sm text-gray-400 mt-0.5">Input berat bulanan &amp; perhitungan akhir per pesanan invest ternak</p>
       </div>
 
       {/* Summary Cards + Export */}
@@ -274,7 +275,7 @@ export default function LaporanInvestasiPage() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-800">Perkembangan Berat Mingguan</h2>
+                    <h2 className="text-sm font-bold text-gray-800">Perkembangan Berat Bulanan</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Harga/kg: {fmtF(laporan.harga_jual_per_kg)} · {laporan.histori_berat.length} entri</p>
                   </div>
                   {laporan.histori_berat.length > 0 && (
@@ -312,13 +313,14 @@ export default function LaporanInvestasiPage() {
               {/* ── Input berat form (Diproses only) ── */}
               {["Processed"].includes(laporan.status_pesanan) && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                  <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Mingguan</h2>
+                  <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Bulanan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {[
                       { key: "tanggal_input", label: "Tanggal *", type: "date" },
                       { key: "berat_kg", label: "Berat (kg) *", type: "number", ph: "320.5" },
                       { key: "harga_jual_per_kg", label: "Harga Jual/kg (opsional)", type: "number", ph: "55000" },
+                      { key: "target_berat_kg", label: "Target Panen (kg)", type: "number", ph: "500" },
                     ].map(f => (
                       <div key={f.key} className="col-span-2 sm:col-span-1">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>

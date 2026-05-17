@@ -18,6 +18,7 @@ interface LaporanData {
   status_pesanan: string;
   detail?: string;
   harga_jual_per_kg: number;
+  target_berat_kg: number;
   harga_beli: number | null;
   info_invest: { nama: string; berat_awal: number | null; durasi_hari: number; foto: string | null; harga_beli: number }[];
   histori_berat: HistoriBerat[];
@@ -139,8 +140,26 @@ export default function LaporanModal({
               {["Processed", "Completed"].includes(data.status_pesanan) && (
                 <>
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                    <h2 className="text-sm font-bold text-gray-700 mb-1">Perkembangan Berat Mingguan</h2>
+                    
+                    <h2 className="text-sm font-bold text-gray-700 mb-1">Perkembangan Berat Bulanan</h2>
                     <p className="text-xs text-gray-400 mb-4">Estimasi nilai jual diperbarui setiap input berat baru · Harga/kg: {fmtF(data.harga_jual_per_kg)}</p>
+                    
+                    {/* Target Panen Progress */}
+                    {data.target_berat_kg > 0 && data.histori_berat.length > 0 && (
+                      <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                        <div className="flex justify-between items-end mb-2">
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-0.5">Progres Menuju Target Panen</p>
+                            <p className="text-sm font-bold text-gray-900">{data.histori_berat[0].berat_kg} kg <span className="text-gray-400 font-medium">/ {data.target_berat_kg} kg</span></p>
+                          </div>
+                          <span className="text-xs font-bold text-emerald-700">{Math.min(100, Math.round((data.histori_berat[0].berat_kg / data.target_berat_kg) * 100))}%</span>
+                        </div>
+                        <div className="w-full bg-emerald-200/50 rounded-full h-2">
+                          <div className="bg-emerald-500 h-2 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (data.histori_berat[0].berat_kg / data.target_berat_kg) * 100)}%` }}></div>
+                        </div>
+                      </div>
+                    )}
+            
                     <MiniChart data={data.histori_berat} />
                     {data.histori_berat.length > 0 ? (
                       <div className="mt-6 space-y-2">
