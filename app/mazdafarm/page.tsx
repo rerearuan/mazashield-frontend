@@ -13,6 +13,14 @@ import Pagination from "@/components/common/Pagination";
 import CTASection from "@/components/common/CTASection";
 import { catalogService } from "@/services/catalog.service";
 
+const formatUmur = (umurBulan: number) => {
+    const tahun = Math.floor(umurBulan / 12);
+    const bulan = umurBulan % 12;
+    if (tahun > 0 && bulan > 0) return `${tahun} Tahun ${bulan} Bulan`;
+    if (tahun > 0) return `${tahun} Tahun`;
+    return `${bulan} Bulan`;
+};
+
 import { Icons } from "@/components/common/Icons";
 import { getRandomCowImage } from "@/lib/image-utils";
 
@@ -58,7 +66,6 @@ export default function MazdafarmPage() {
       setLoading(true);
       const params: any = {
         page: currentPage.toString(),
-        status_ternak: "Tersedia",
       };
 
       if (searchTerm) params.nama = searchTerm;
@@ -256,6 +263,27 @@ export default function MazdafarmPage() {
             </p>
           </div>
 
+          <div className="bg-green-50/50 border border-green-100 rounded-[24px] p-6 mb-8 shadow-sm">
+              <h3 className="font-black text-[#1a8245] flex items-center gap-2 mb-4 text-sm uppercase tracking-widest">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Panduan Kelas Sapi
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {[
+                      { kelas: 'A', desc: 'Premium (> 500 kg), kualitas daging super' },
+                      { kelas: 'B', desc: 'Super (400 - 500 kg), postur sangat ideal' },
+                      { kelas: 'C', desc: 'Standar (300 - 400 kg), pas untuk kurban' },
+                      { kelas: 'D', desc: 'Ekonomis (250 - 300 kg), hemat anggaran' },
+                      { kelas: 'E', desc: 'Minimal (< 250 kg), batas minimal kurban' },
+                  ].map(k => (
+                      <div key={k.kelas} className="bg-white p-3.5 rounded-xl shadow-sm border border-green-50">
+                          <span className="font-black text-lg text-[#1a8245] block leading-none mb-1">Kelas {k.kelas}</span>
+                          <span className="text-[10px] text-gray-500 font-medium leading-tight block">{k.desc}</span>
+                      </div>
+                  ))}
+              </div>
+          </div>
+
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a8245]"></div>
@@ -276,7 +304,7 @@ export default function MazdafarmPage() {
                       description={item.deskripsi || `${item.jenis} Kelas ${item.kelas} berkualitas tinggi.`}
                       code={item.id_ternak}
                       weight={`${Number(item.berat).toLocaleString()} kg`}
-                      age={`${item.umur} Bulan`}
+                      age={formatUmur(item.umur)}
                       stock={item.status_ternak}
                       price={`Rp ${Number(item.harga).toLocaleString("id-ID")}`}
                       buttonColor="#1a8245"

@@ -8,7 +8,7 @@ const fmtF = (v: number | null | undefined) =>
 interface HistoriBerat { id: number; tanggal_input: string; berat_kg: number; keterangan: string; estimasi_harga_jual: number; }
 interface LaporanData {
   id: number; id_pesanan: number; status_pesanan: string;
-  harga_jual_per_kg: number; harga_beli: number | null;
+  harga_jual_per_kg: number; target_berat_kg: number; harga_beli: number | null;
   info_invest: { nama: string; berat_awal: number | null; durasi_hari: number; foto: string | null; harga_beli: number }[];
   histori_berat: HistoriBerat[];
   harga_jual_aktual: number | null; biaya_pakan: number | null; biaya_operasional: number | null;
@@ -21,15 +21,15 @@ interface OrderRow {
   status_pesanan: string;
   created_at: string;
   daftar_invest: { nama_paket: string }[];
-  tagihan: number; sudah_dibayar: number;
+  tagihan: number; sudah_dibayar: number; menunggu_persetujuan?: number;
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  Diproses: "bg-amber-100 text-amber-700 border-amber-200",
-  Selesai: "bg-blue-100 text-blue-700 border-blue-200",
-  Dibatalkan: "bg-red-100 text-red-600 border-red-200",
+  Processed: "bg-amber-100 text-amber-700 border-amber-200",
+  Completed: "bg-blue-100 text-blue-700 border-blue-200",
+  Cancelled: "bg-red-100 text-red-600 border-red-200",
 };
-const STATUS_DOT: Record<string, string> = { Diproses: "bg-amber-400", Selesai: "bg-blue-500", Dibatalkan: "bg-red-400" };
+const STATUS_DOT: Record<string, string> = { Processed: "bg-amber-400", Completed: "bg-blue-500", Cancelled: "bg-red-400" };
 
 function Sk({ c }: { c: string }) { return <div className={`animate-pulse bg-gray-100 rounded-xl ${c}`} />; }
 
@@ -82,7 +82,7 @@ export default function LaporanInvestasiPage() {
   const [laporan, setLaporan] = useState<LaporanData | null>(null);
   const [loadingLaporan, setLoadingLaporan] = useState(false);
   const [search, setSearch] = useState("");
-  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "" });
+  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
   const [savingBerat, setSavingBerat] = useState(false);
   const [beratMsg, setBeratMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [akhirForm, setAkhirForm] = useState({ harga_jual_aktual: "", biaya_pakan: "", biaya_operasional: "", biaya_obat_vitamin: "", fee_marketing: "" });
@@ -115,8 +115,9 @@ export default function LaporanInvestasiPage() {
       const body: any = { tanggal_input: beratForm.tanggal_input, berat_kg: beratForm.berat_kg };
       if (beratForm.keterangan) body.keterangan = beratForm.keterangan;
       if (beratForm.harga_jual_per_kg) body.harga_jual_per_kg = beratForm.harga_jual_per_kg;
+      if (beratForm.target_berat_kg) body.target_berat_kg = beratForm.target_berat_kg;
       const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${selectedId}/berat/`, { method: "POST", body: JSON.stringify(body) });
-      setLaporan(d); setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "" });
+      setLaporan(d); setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
       setBeratMsg({ type: "ok", text: "✓ Berat berhasil ditambahkan." });
     } catch (e: any) { setBeratMsg({ type: "err", text: e?.message ?? "Gagal menyimpan." }); }
     finally { setSavingBerat(false); }
@@ -141,7 +142,7 @@ export default function LaporanInvestasiPage() {
   const inp = "w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-400 bg-white";
 
   // Summary stats
-  const totalTagihan = orders.filter(o => o.status_pesanan !== "Dibatalkan").reduce((s, o) => s + Number(o.tagihan), 0);
+  const totalTagihan = orders.filter(o => o.status_pesanan !== "Cancelled").reduce((s, o) => s + Number(o.tagihan), 0);
   const countByStatus = (s: string) => orders.filter(o => o.status_pesanan === s).length;
 
   return (
@@ -150,18 +151,18 @@ export default function LaporanInvestasiPage() {
       <div className="mb-7">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-1 h-5 rounded-full bg-emerald-500" />
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">PBI-37</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Investasi</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-black text-gray-900">Laporan Hasil Investasi</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Input berat mingguan &amp; perhitungan akhir per pesanan invest ternak</p>
+        <p className="text-sm text-gray-400 mt-0.5">Input berat bulanan &amp; perhitungan akhir per pesanan invest ternak</p>
       </div>
 
       {/* Summary Cards + Export */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
           { label: "Total Pesanan", value: String(orders.length), accent: "border-l-gray-400" },
-          { label: "Diproses", value: String(countByStatus("Diproses")), accent: "border-l-amber-400" },
-          { label: "Selesai", value: String(countByStatus("Selesai")), accent: "border-l-blue-500" },
+          { label: "Processed", value: String(countByStatus("Processed")), accent: "border-l-amber-400" },
+          { label: "Completed", value: String(countByStatus("Completed")), accent: "border-l-blue-500" },
           { label: "Total Tagihan Aktif", value: loadingOrders ? "—" : "Rp " + Math.round(totalTagihan).toLocaleString("id-ID"), accent: "border-l-emerald-500" },
         ].map(c => (
           <div key={c.label} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 border-l-4 ${c.accent}`}>
@@ -200,7 +201,8 @@ export default function LaporanInvestasiPage() {
               : filtered.map(o => {
                   const isActive = selectedId === o.id_pesanan;
                   const nama = o.data_customer?.nama ?? "—";
-                  const pct = o.tagihan > 0 ? Math.min((Number(o.sudah_dibayar) / Number(o.tagihan)) * 100, 100) : 0;
+                  const totalHarga = Number(o.sudah_dibayar) + Number(o.tagihan) + Number(o.menunggu_persetujuan || 0);
+                  const pct = totalHarga > 0 ? Math.min((Number(o.sudah_dibayar) / totalHarga) * 100, 100) : 0;
                   return (
                     <button key={o.id_pesanan} onClick={() => handleSelect(o.id_pesanan)}
                       className={`w-full text-left px-4 py-3.5 transition-all hover:bg-emerald-50/70 ${isActive ? "bg-emerald-50 border-l-[3px] border-l-emerald-500" : "border-l-[3px] border-l-transparent"}`}>
@@ -273,7 +275,7 @@ export default function LaporanInvestasiPage() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-800">Perkembangan Berat Mingguan</h2>
+                    <h2 className="text-sm font-bold text-gray-800">Perkembangan Berat Bulanan</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Harga/kg: {fmtF(laporan.harga_jual_per_kg)} · {laporan.histori_berat.length} entri</p>
                   </div>
                   {laporan.histori_berat.length > 0 && (
@@ -309,23 +311,29 @@ export default function LaporanInvestasiPage() {
               </div>
 
               {/* ── Input berat form (Diproses only) ── */}
-              {laporan.status_pesanan === "Diproses" && (
+              {["Processed"].includes(laporan.status_pesanan) && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                  <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Mingguan</h2>
+                  <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Bulanan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {[
                       { key: "tanggal_input", label: "Tanggal *", type: "date" },
                       { key: "berat_kg", label: "Berat (kg) *", type: "number", ph: "320.5" },
                       { key: "harga_jual_per_kg", label: "Harga Jual/kg (opsional)", type: "number", ph: "55000" },
-                      { key: "keterangan", label: "Keterangan (opsional)", type: "text", ph: "Minggu ke-3..." },
+                      { key: "target_berat_kg", label: "Target Panen (kg)", type: "number", ph: "500" },
                     ].map(f => (
                       <div key={f.key} className="col-span-2 sm:col-span-1">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
                         <input type={f.type} step={f.type === "number" ? "0.01" : undefined} className={inp} placeholder={f.ph}
+                          max={f.type === "date" ? new Date().toISOString().split("T")[0] : undefined}
                           value={(beratForm as any)[f.key]} onChange={e => setBeratForm(p => ({ ...p, [f.key]: e.target.value }))} />
                       </div>
                     ))}
+                    <div className="col-span-2">
+                        <label className="text-xs text-gray-500 mb-1 block font-medium">Keterangan / Deskripsi (opsional)</label>
+                        <textarea className={`${inp} min-h-[80px] resize-y`} placeholder="Contoh: Berat badan naik setelah pemberian vitamin tambahan..."
+                          value={beratForm.keterangan} onChange={e => setBeratForm(p => ({ ...p, keterangan: e.target.value }))} />
+                    </div>
                   </div>
                   {beratMsg && <p className={`text-xs mb-3 font-medium ${beratMsg.type === "ok" ? "text-emerald-600" : "text-red-500"}`}>{beratMsg.text}</p>}
                   <button onClick={submitBerat} disabled={savingBerat || !beratForm.tanggal_input || !beratForm.berat_kg}
@@ -336,7 +344,7 @@ export default function LaporanInvestasiPage() {
               )}
 
               {/* ── Perhitungan akhir (Selesai only) ── */}
-              {laporan.status_pesanan === "Selesai" && (
+              {laporan.status_pesanan === "Completed" && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Perhitungan Akhir Investasi</h2>
                   <p className="text-xs text-gray-400 mb-4">Laba &amp; bagi hasil dihitung otomatis setelah disimpan</p>
@@ -378,7 +386,7 @@ export default function LaporanInvestasiPage() {
                 </div>
               )}
 
-              {laporan.status_pesanan === "Dibatalkan" && (
+              {laporan.status_pesanan === "Cancelled" && (
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
                   <p className="font-bold text-red-700">Pesanan Dibatalkan</p>
                   <p className="text-xs text-red-400 mt-1">Laporan tidak dapat diperbarui untuk pesanan yang dibatalkan.</p>

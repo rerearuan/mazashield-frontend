@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { financeService, FinancialDashboardData } from "@/services/finance.service";
 
-const fmtS = (v: number) => v >= 1e9 ? `Rp ${(v/1e9).toFixed(1)}M` : v >= 1e6 ? `Rp ${(v/1e6).toFixed(1)}Jt` : v >= 1e3 ? `Rp ${(v/1e3).toFixed(0)}Rb` : `Rp ${v}`;
+const fmtS = (v: number) => v >= 1e9 ? `Rp ${(v/1e9).toFixed(1).replace('.',',')}M` : v >= 1e6 ? `Rp ${(v/1e6).toFixed(1).replace('.',',')}Jt` : v >= 1e3 ? `Rp ${(v/1e3).toFixed(0)}Rb` : `Rp ${Math.round(v)}`;
 const fmtF = (v: number) => "Rp " + Math.round(v).toLocaleString("id-ID");
 const ML = ["","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const MS = ["","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
@@ -89,29 +89,39 @@ function LineChart({ vals, lbls }: { vals: number[]; lbls: string[] }) {
   );
 }
 
-function BreakdownBar({ mf, mg, iv }: { mf: number; mg: number; iv: number }) {
-  const total = mf + mg + iv || 1;
-  const segs = [
-    { label: "Mazdafarm", value: mf, color: "#10b981", pct: (mf/total)*100 },
-    { label: "Mazdaging", value: mg, color: "#f59e0b", pct: (mg/total)*100 },
-    { label: "Invest Ternak", value: iv, color: "#6366f1", pct: (iv/total)*100 },
-  ];
+function BreakdownBar({ data }: { data: { layanan: string; total: number; persentase: number }[] }) {
+  const bd = data || [];
+  const colorMap: Record<string, { bg: string, pillBg: string, pillText: string }> = { 
+    "Mazdafarm": { bg: "#10b981", pillBg: "#d1fae5", pillText: "#065f46" }, 
+    "Mazdaging": { bg: "#f59e0b", pillBg: "#fef3c7", pillText: "#92400e" }, 
+    "Investernak": { bg: "#8b5cf6", pillBg: "#ede9fe", pillText: "#5b21b6" }
+  };
   return (
     <div>
-      <div className="flex w-full h-3 rounded-full overflow-hidden gap-0.5 mb-3">
-        {segs.map(s => <div key={s.label} style={{ width: `${s.pct}%`, background: s.color }} className="first:rounded-l-full last:rounded-r-full" />)}
+      <div className="flex w-full h-3 rounded-full overflow-hidden gap-0.5 mb-5">
+        {bd.map(s => <div key={s.layanan} style={{ width: `${Math.max(s.persentase, 1)}%`, background: colorMap[s.layanan]?.bg }} className="first:rounded-l-full last:rounded-r-full" />)}
       </div>
-      <div className="grid grid-cols-3 gap-2">
-        {segs.map(s => (
-          <div key={s.label} className="flex items-start gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0" style={{ background: s.color }} />
-            <div>
-              <p className="text-[10px] text-gray-400 font-medium leading-none">{s.label}</p>
-              <p className="text-xs font-bold text-gray-800 mt-0.5">{fmtS(s.value)}</p>
-              <p className="text-[10px] text-gray-400">{s.pct.toFixed(1)}%</p>
+      <div className="space-y-4">
+        {bd.map(s => {
+          const cm = colorMap[s.layanan] || { bg: "#ccc", pillBg: "#eee", pillText: "#333" };
+          return (
+            <div key={s.layanan}>
+              <div className="flex justify-between items-center mb-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: cm.bg }} />
+                  <span className="text-sm font-medium text-gray-800">{s.layanan === "Investernak" ? "Invest Ternak" : s.layanan}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-800">{fmtS(s.total)}</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: cm.pillBg, color: cm.pillText }}>{s.persentase.toFixed(1).replace('.',',')}%</span>
+                </div>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-1.5 flex justify-start">
+                <div className="h-1.5 rounded-full" style={{ width: `${s.persentase}%`, background: cm.bg }}></div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );
@@ -152,13 +162,11 @@ export default function DashboardKeuanganPage() {
 
   useEffect(() => { load(year); }, [year, load]);
 
-  const bd = data?.breakdown_pendapatan;
-  const pq = data?.piutang;
-  const salesYear = (bd?.mazdafarm ?? 0) + (bd?.mazdaging ?? 0) + (bd?.invest_ternak ?? 0);
-  const custTotal = data?.data_customer_baru_per_bulan.reduce((s, d) => s + (d.jumlah_customer ?? 0), 0) ?? 0;
+  const salesYear = data?.total_penjualan_tahun_aktif ?? 0;
+  const custTotal = data?.total_customer_baru ?? 0;
 
-  const salesVals = Array.from({ length: 12 }, (_, i) => data?.data_penjualan_per_bulan.find(d => d.bulan_ke === i + 1)?.total_penjualan ?? 0);
-  const custVals  = Array.from({ length: 12 }, (_, i) => data?.data_customer_baru_per_bulan.find(d => d.bulan_ke === i + 1)?.jumlah_customer ?? 0);
+  const salesVals = data?.penjualan_per_bulan.map(d => d.total) ?? Array(12).fill(0);
+  const custVals  = data?.customer_baru_per_bulan.map(d => d.jumlah) ?? Array(12).fill(0);
   const lastS = salesVals.map((v, i) => v > 0 ? i : -1).filter(i => i >= 0).pop() ?? -1;
   const lastC = custVals.map((v, i)  => v > 0 ? i : -1).filter(i => i >= 0).pop() ?? -1;
   const tSales = lastS >= 0 ? salesVals.slice(0, lastS + 1) : [];
@@ -197,22 +205,18 @@ export default function DashboardKeuanganPage() {
       )}
 
       {/* KPI row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {loading ? <><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/></> : <>
-          <KpiCard label="Total Pendapatan (Semua Waktu)" value={data ? fmtS(data.total_pendapatan_keseluruhan) : "—"}
-            sub={data ? fmtF(data.total_pendapatan_keseluruhan) : undefined} color="bg-emerald-500" badge="ALL TIME"
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {loading ? <><Sk c="h-28"/><Sk c="h-28"/><Sk c="h-28"/></> : <>
+          <KpiCard label={`Total Penjualan Lunas ${year}`} value={data ? fmtS(data.total_penjualan_tahun_aktif) : "—"}
+            sub={data ? fmtF(data.total_penjualan_tahun_aktif) : undefined} color="bg-emerald-500" badge={String(year)}
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round"/></svg>}
           />
-          <KpiCard label={`Penjualan Lunas ${year}`} value={fmtS(salesYear)}
-            sub={`${data?.data_penjualan_per_bulan.length ?? 0} bulan aktif · ${fmtF(salesYear)}`} color="bg-blue-500" badge={String(year)}
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M3 3v18h18M7 16l4-4 4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-          />
-          <KpiCard label="Total Piutang Aktif" value={fmtS((pq?.total_tagihan ?? 0) + (pq?.total_menunggu_verifikasi ?? 0))}
-            sub={`${fmtS(pq?.total_tagihan??0)} blm bayar · ${fmtS(pq?.total_menunggu_verifikasi??0)} menunggu verif`} color="bg-orange-500"
+          <KpiCard label="Total Piutang Aktif" value={fmtS((data?.total_piutang.belum_bayar ?? 0) + (data?.total_piutang.menunggu_verif ?? 0))}
+            sub={`${fmtS(data?.total_piutang.belum_bayar??0)} blm bayar · ${fmtS(data?.total_piutang.menunggu_verif??0)} menunggu verif`} color="bg-orange-500"
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2"><path d="M9 14l6-6M9 9h.01M15 14h.01M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0" strokeLinecap="round"/></svg>}
           />
           <KpiCard label={`Customer Baru ${year}`} value={`${custTotal} orang`}
-            sub={`${data?.data_customer_baru_per_bulan.length ?? 0} bulan aktif`} color="bg-violet-500"
+            sub={`${data?.customer_baru_per_bulan.length ?? 0} bulan aktif`} color="bg-violet-500"
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round"/></svg>}
           />
         </>}
@@ -250,7 +254,7 @@ export default function DashboardKeuanganPage() {
               </svg>
             </button>
           </div>
-          {loading ? <Sk c="h-32"/> : <BreakdownBar mf={bd?.mazdafarm??0} mg={bd?.mazdaging??0} iv={bd?.invest_ternak??0}/>}
+          {loading ? <Sk c="h-32"/> : <BreakdownBar data={data?.breakdown_per_layanan ?? []}/>}
         </div>
 
         {/* Piutang */}
@@ -259,21 +263,21 @@ export default function DashboardKeuanganPage() {
             <h2 className="font-bold text-gray-800 text-sm">Piutang Aktif (Diproses)</h2>
             <p className="text-xs text-gray-400 mt-0.5">Pesanan aktif yang belum lunas</p>
           </div>
-          {loading ? <Sk c="h-32"/> : pq ? (
+          {loading ? <Sk c="h-32"/> : data?.total_piutang ? (
             <div>
               <div className="flex gap-3 mb-4">
                 <div className="flex-1 bg-orange-50 rounded-xl p-3 text-center">
                   <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wide">Belum Bayar</p>
-                  <p className="text-lg font-black text-orange-600 mt-0.5">{fmtS(pq.total_tagihan)}</p>
+                  <p className="text-lg font-black text-orange-600 mt-0.5">{fmtS(data.total_piutang.belum_bayar)}</p>
                 </div>
                 <div className="flex-1 bg-yellow-50 rounded-xl p-3 text-center">
                   <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-wide">Menunggu Verifikasi</p>
-                  <p className="text-lg font-black text-yellow-600 mt-0.5">{fmtS(pq.total_menunggu_verifikasi)}</p>
+                  <p className="text-lg font-black text-yellow-600 mt-0.5">{fmtS(data.total_piutang.menunggu_verif)}</p>
                 </div>
               </div>
-              <PiutangRow label="Mazdafarm (Ternak)" color="#10b981" tagihan={pq.detail.mazdafarm.tagihan} menunggu={pq.detail.mazdafarm.menunggu_verifikasi}/>
-              <PiutangRow label="Mazdaging (Daging)" color="#f59e0b" tagihan={pq.detail.mazdaging.tagihan} menunggu={pq.detail.mazdaging.menunggu_verifikasi}/>
-              <PiutangRow label="Invest Ternak" color="#6366f1" tagihan={pq.detail.invest_ternak.tagihan} menunggu={pq.detail.invest_ternak.menunggu_verifikasi}/>
+              {data.piutang_per_layanan.map(p => (
+                <PiutangRow key={p.layanan} label={p.layanan} color={p.layanan === "Mazdafarm" ? "#10b981" : p.layanan === "Mazdaging" ? "#f59e0b" : "#6366f1"} tagihan={p.belum_bayar} menunggu={p.menunggu_verif}/>
+              ))}
             </div>
           ) : null}
         </div>
@@ -282,36 +286,57 @@ export default function DashboardKeuanganPage() {
       {/* Detail table */}
       {!loading && data && detailOpen && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
-          <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="font-bold text-gray-800 text-sm">Rincian Penjualan Per Bulan — {year}</h2>
+          <div className="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h2 className="font-bold text-gray-800 text-sm">Rincian penjualan per bulan — {year}</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Breakdown per layanan · pesanan selesai</p>
+            </div>
+            <button onClick={() => setDetailOpen(false)} className="self-start sm:self-auto text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+              Sembunyikan <span className="text-gray-400">↑</span>
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">Bulan</th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">Total Penjualan</th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">Customer Baru</th>
+                  <th className="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">Bulan</th>
+                  <th className="px-5 py-3.5 text-center text-xs font-bold text-[#10b981] uppercase tracking-wide"><span className="inline-block w-1.5 h-1.5 rounded-full bg-[#10b981] mr-1.5 mb-0.5"></span>Mazdafarm</th>
+                  <th className="px-5 py-3.5 text-center text-xs font-bold text-[#f59e0b] uppercase tracking-wide"><span className="inline-block w-1.5 h-1.5 rounded-full bg-[#f59e0b] mr-1.5 mb-0.5"></span>Mazdaging</th>
+                  <th className="px-5 py-3.5 text-center text-xs font-bold text-[#8b5cf6] uppercase tracking-wide"><span className="inline-block w-1.5 h-1.5 rounded-full bg-[#8b5cf6] mr-1.5 mb-0.5"></span>Invest Ternak</th>
+                  <th className="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide">Total</th>
+                  <th className="px-5 py-3.5 text-right text-xs font-bold text-violet-500 uppercase tracking-wide">Customer Baru</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {ML.slice(1).map((name, i) => {
-                  const sv = data.data_penjualan_per_bulan.find(d => d.bulan_ke === i+1)?.total_penjualan ?? 0;
-                  const cv = data.data_customer_baru_per_bulan.find(d => d.bulan_ke === i+1)?.jumlah_customer ?? 0;
+                  const p = data.penjualan_per_bulan[i];
+                  const sv = p?.total ?? 0;
+                  const mf = p?.mazdafarm ?? 0;
+                  const mg = p?.mazdaging ?? 0;
+                  const inv = p?.investernak ?? 0;
+                  const cv = data.customer_baru_per_bulan[i]?.jumlah ?? 0;
                   return (
-                    <tr key={i} className={`hover:bg-gray-50/60 transition-colors ${!sv && !cv ? "opacity-30" : ""}`}>
-                      <td className="px-5 py-3 font-semibold text-gray-700">{name}</td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-gray-800">{sv > 0 ? fmtF(sv) : <span className="text-gray-300">—</span>}</td>
-                      <td className="px-5 py-3 text-right text-gray-700">{cv > 0 ? `${cv} orang` : <span className="text-gray-300">—</span>}</td>
+                    <tr key={i} className={`hover:bg-gray-50/60 transition-colors ${!sv && !cv ? "opacity-40" : ""}`}>
+                      <td className={`px-5 py-3 font-medium ${!sv && !cv ? "text-gray-400" : "text-gray-800"}`}>{name}</td>
+                      <td className="px-5 py-3 text-center text-gray-800">{mf > 0 ? fmtS(mf) : <span className="text-gray-300">—</span>}</td>
+                      <td className="px-5 py-3 text-center text-gray-800">{mg > 0 ? fmtS(mg) : <span className="text-gray-300">—</span>}</td>
+                      <td className="px-5 py-3 text-center text-gray-800">{inv > 0 ? fmtS(inv) : <span className="text-gray-300">—</span>}</td>
+                      <td className="px-5 py-3 text-center text-gray-700">{sv > 0 ? fmtS(sv) : <span className="text-gray-300">—</span>}</td>
+                      <td className="px-5 py-3 text-right font-medium text-gray-800">
+                        {cv > 0 ? <span className="flex items-center justify-end gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-violet-400"></span>{cv} orang</span> : <span className="text-gray-300">—</span>}
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
-              <tfoot className="bg-gray-50 border-t border-gray-200 font-bold">
+              <tfoot className="bg-gray-50/50 border-t border-gray-200">
                 <tr>
-                  <td className="px-5 py-3.5 text-gray-800">Total</td>
-                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-gray-900">{fmtF(salesYear)}</td>
-                  <td className="px-5 py-3.5 text-right text-gray-900">{custTotal} orang</td>
+                  <td className="px-5 py-4 font-bold text-gray-900">Total</td>
+                  <td className="px-5 py-4 text-center font-bold text-[#10b981]">{fmtS(data.breakdown_per_layanan.find(x => x.layanan === "Mazdafarm")?.total ?? 0)}</td>
+                  <td className="px-5 py-4 text-center font-bold text-[#f59e0b]">{fmtS(data.breakdown_per_layanan.find(x => x.layanan === "Mazdaging")?.total ?? 0)}</td>
+                  <td className="px-5 py-4 text-center font-bold text-[#8b5cf6]">{fmtS(data.breakdown_per_layanan.find(x => x.layanan === "Investernak")?.total ?? 0)}</td>
+                  <td className="px-5 py-4 text-center font-bold text-gray-900">{fmtS(salesYear)}</td>
+                  <td className="px-5 py-4 text-right font-bold text-gray-900">{custTotal} orang</td>
                 </tr>
               </tfoot>
             </table>

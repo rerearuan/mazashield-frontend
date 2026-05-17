@@ -42,7 +42,6 @@ export function useInvestPublic(itemsPerPage: number = 6) {
         try {
             setLoading(true);
             const params: any = {
-                status_investernak: "Open",
                 page: currentPage.toString(),
             };
 

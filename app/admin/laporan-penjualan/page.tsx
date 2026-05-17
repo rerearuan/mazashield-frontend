@@ -64,7 +64,7 @@ export default function LaporanPenjualanPage() {
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1"><div className="w-1 h-5 rounded-full bg-emerald-500" /><span className="text-xs font-bold uppercase tracking-widest text-emerald-600">PBI-39</span></div>
+        <div className="flex items-center gap-2 mb-1"><div className="w-1 h-5 rounded-full bg-emerald-500" /><span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Penjualan</span></div>
         <h1 className="text-2xl md:text-3xl font-black text-gray-900">Laporan Penjualan</h1>
         <p className="text-sm text-gray-400 mt-0.5">Pesanan selesai · Mazdafarm, Mazdaging, Invest Ternak</p>
       </div>
