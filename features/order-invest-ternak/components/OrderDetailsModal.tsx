@@ -6,6 +6,8 @@ import { Button } from "@/components/button";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import PaymentUpdateModal from "@/features/payment/components/PaymentUpdateModal";
+import { Icons } from "@/components/common/Icons";
+import { generateInvestInvoice } from "@/lib/invoice";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -208,6 +210,9 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={() => generateInvestInvoice(order, order.data_customer, order.daftar_invest)} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+            <Icons.Download className="w-4 h-4" /> Unduh Invoice
+          </Button>
           <Button type="button" variant="secondary" onClick={onClose}>
             {isCompletedOrCancelled || role === 'Finance' ? "Tutup" : "Batal"}
           </Button>

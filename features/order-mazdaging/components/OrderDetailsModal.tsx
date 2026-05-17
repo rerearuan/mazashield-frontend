@@ -6,6 +6,8 @@ import { Button } from "@/components/button";
 import { orderService } from "@/services/order.service";
 import { toast } from "react-hot-toast";
 import PaymentUpdateModal from "@/features/payment/components/PaymentUpdateModal";
+import { Icons } from "@/components/common/Icons";
+import { generateMazdagingInvoice } from "@/lib/invoice";
 
 
 interface OrderDetailsModalProps {
@@ -200,6 +202,9 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={() => generateMazdagingInvoice(order, order.data_customer, order.daftar_item, order.daftar_item.map((item: any) => ({ daging: item.id_daging, kuantitas_kg: item.berat_pesanan_kg })))} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+            <Icons.Download className="w-4 h-4" /> Unduh Invoice
+          </Button>
           <Button type="button" variant="secondary" onClick={onClose}>
             {isCompletedOrCancelled || role === 'Finance' ? "Tutup" : "Batal"}
           </Button>
