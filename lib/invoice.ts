@@ -428,28 +428,28 @@ export function generateInvestInvoice(orderData: any, customerInfo: any, investL
 
     const drawPDF = (logoImg?: HTMLImageElement) => {
         if (logoImg) {
-            doc.addImage(logoImg, "PNG", 60, 40, 80, 80);
+            doc.addImage(logoImg, "PNG", 60, 35, 75, 75);
         }
 
         // Header Text
         doc.setFontSize(16);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(172, 41, 37); // Dark red
-        doc.text("PT. MAZASHI SEMUDA FARM", 150, 60);
+        doc.text("PT. MAZASHI SEMUDA FARM", pageWidth / 2, 55, { align: "center" });
         
         doc.setFontSize(14);
         doc.setTextColor(59, 130, 63); // Greenish
-        doc.text("Investernak - Cattle Trading - Feedlot", 150, 75);
+        doc.text("Investernak - Cattle Trading - Feedlot", pageWidth / 2, 75, { align: "center" });
         
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
-        doc.text("Jl. Bali blok ED no.19, Kel. Jatisari, Kec. Jatiasih, Kota Bekasi", 150, 90);
-        doc.text("Contact : (+62)815 5301 6262 E-mail : mazdafarmco@gmail.com", 150, 105);
+        doc.text("Jl. Bali blok ED no.19, Kel. Jatisari, Kec. Jatiasih, Kota Bekasi", pageWidth / 2, 90, { align: "center" });
+        doc.text("Contact : (+62)815 5301 6262 E-mail : mazdafarmco@gmail.com", pageWidth / 2, 105, { align: "center" });
 
         // Header Line
         doc.setLineWidth(1.5);
-        doc.line(60, 115, pageWidth - 60, 115);
+        doc.line(60, 120, pageWidth - 60, 120);
 
         // Title
         doc.setFontSize(12);
