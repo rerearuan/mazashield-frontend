@@ -319,7 +319,6 @@ export default function LaporanInvestasiPage() {
                       { key: "tanggal_input", label: "Tanggal *", type: "date" },
                       { key: "berat_kg", label: "Berat (kg) *", type: "number", ph: "320.5" },
                       { key: "harga_jual_per_kg", label: "Harga Jual/kg (opsional)", type: "number", ph: "55000" },
-                      { key: "keterangan", label: "Keterangan (opsional)", type: "text", ph: "Minggu ke-3..." },
                     ].map(f => (
                       <div key={f.key} className="col-span-2 sm:col-span-1">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
@@ -328,6 +327,11 @@ export default function LaporanInvestasiPage() {
                           value={(beratForm as any)[f.key]} onChange={e => setBeratForm(p => ({ ...p, [f.key]: e.target.value }))} />
                       </div>
                     ))}
+                    <div className="col-span-2">
+                        <label className="text-xs text-gray-500 mb-1 block font-medium">Keterangan / Deskripsi (opsional)</label>
+                        <textarea className={`${inp} min-h-[80px] resize-y`} placeholder="Contoh: Berat badan naik setelah pemberian vitamin tambahan..."
+                          value={beratForm.keterangan} onChange={e => setBeratForm(p => ({ ...p, keterangan: e.target.value }))} />
+                    </div>
                   </div>
                   {beratMsg && <p className={`text-xs mb-3 font-medium ${beratMsg.type === "ok" ? "text-emerald-600" : "text-red-500"}`}>{beratMsg.text}</p>}
                   <button onClick={submitBerat} disabled={savingBerat || !beratForm.tanggal_input || !beratForm.berat_kg}
