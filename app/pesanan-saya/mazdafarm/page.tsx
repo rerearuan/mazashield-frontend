@@ -15,16 +15,20 @@ import {
 // ── Status Badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
     const map: Record<string, { label: string; className: string }> = {
-        Diproses: {
-            label: "Diproses",
+        Processed: {
+            label: "Processed",
             className: "bg-amber-100 text-amber-700 border border-amber-200",
         },
-        Selesai: {
-            label: "Selesai",
+        Confirmed: {
+            label: "Confirmed",
+            className: "bg-blue-100 text-blue-700 border border-blue-200",
+        },
+        Completed: {
+            label: "Completed",
             className: "bg-green-100 text-green-700 border border-green-200",
         },
-        Dibatalkan: {
-            label: "Dibatalkan",
+        Cancelled: {
+            label: "Cancelled",
             className: "bg-red-100 text-red-700 border border-red-200",
         },
     };
@@ -246,7 +250,7 @@ export default function PesananSayaMazdafarmPage() {
 
                 {/* Filters */}
                 <div className="flex gap-2 flex-wrap mb-8">
-                    {["Semua", "Diproses", "Selesai", "Dibatalkan"].map(status => {
+                    {["Semua", "Processed", "Confirmed", "Completed", "Cancelled"].map(status => {
                         const isActive = (!statusFilter && status === "Semua") || statusFilter === status;
                         return (
                             <button

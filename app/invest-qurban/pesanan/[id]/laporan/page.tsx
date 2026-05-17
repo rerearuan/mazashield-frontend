@@ -85,14 +85,14 @@ export default function LaporanInvestasiCustomerPage() {
           {/* Status badge */}
           <div className="flex items-center gap-3">
             <span className={`text-sm font-bold px-4 py-1.5 rounded-full ${
-              data.status_pesanan === "Selesai" ? "bg-blue-100 text-blue-700" :
-              data.status_pesanan === "Dibatalkan" ? "bg-red-100 text-red-600" :
+              data.status_pesanan === "Completed" ? "bg-blue-100 text-blue-700" :
+              data.status_pesanan === "Cancelled" ? "bg-red-100 text-red-600" :
               "bg-amber-100 text-amber-700"
             }`}>{data.status_pesanan}</span>
           </div>
 
           {/* Dibatalkan */}
-          {data.status_pesanan === "Dibatalkan" && (
+          {data.status_pesanan === "Cancelled" && (
             <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
               <p className="font-bold text-red-700">Investasi Dibatalkan</p>
               <p className="text-sm text-red-500 mt-1">{data.detail ?? "Tidak ada laporan hasil yang tersedia."}</p>
@@ -114,8 +114,8 @@ export default function LaporanInvestasiCustomerPage() {
             </div>
           )}
 
-          {/* Diproses: show weight history + estimations */}
-          {data.status_pesanan === "Diproses" && (
+          {/* Processed: show weight history + estimations */}
+          {data.status_pesanan === "Processed", "Confirmed" && (
             <>
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h2 className="text-sm font-bold text-gray-700 mb-1">Perkembangan Berat Mingguan</h2>
@@ -143,8 +143,8 @@ export default function LaporanInvestasiCustomerPage() {
             </>
           )}
 
-          {/* Selesai: show full final report */}
-          {data.status_pesanan === "Selesai" && (
+          {/* Completed: show full final report */}
+          {data.status_pesanan === "Completed" && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h2 className="text-sm font-bold text-gray-700 mb-4">Laporan Akhir Investasi</h2>
               <div className="space-y-2 mb-5">

@@ -25,7 +25,7 @@ export interface PesananInvest {
     tagihan: string;
     menunggu_persetujuan: string;
     sudah_dibayar: string;
-    status_pesanan: "Diproses" | "Selesai" | "Dibatalkan";
+    status_pesanan: "Processed" | "Confirmed" | "Completed" | "Cancelled";
     catatan: string | null;
     created_at: string;
     updated_at: string | null;

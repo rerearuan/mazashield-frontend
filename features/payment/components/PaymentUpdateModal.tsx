@@ -48,7 +48,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (order.status_pesanan === 'Dibatalkan') {
+    if (order.status_pesanan === 'Cancelled') {
       toast.error("Pesanan sudah dibatalkan, tidak dapat menerima pembayaran.");
       return;
     }

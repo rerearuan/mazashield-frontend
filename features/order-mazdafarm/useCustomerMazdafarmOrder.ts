@@ -19,7 +19,7 @@ export interface CustomerPesananMazdafarm {
     tagihan: string;
     menunggu_persetujuan: string;
     sudah_dibayar: string;
-    status_pesanan: "Diproses" | "Selesai" | "Dibatalkan";
+    status_pesanan: "Processed" | "Confirmed" | "Completed" | "Cancelled";
     created_at: string;
 }
 

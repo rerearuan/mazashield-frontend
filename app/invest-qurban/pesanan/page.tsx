@@ -314,7 +314,7 @@ export default function PesananInvestPage() {
 
                 {/* Filters */}
                 <div className="flex gap-2 flex-wrap mb-8">
-                    {["Semua", "Diproses", "Selesai", "Dibatalkan"].map(status => {
+                    {["Semua", "Processed", "Confirmed", "Completed", "Cancelled"].map(status => {
                         const isActive = (!filterStatus && status === "Semua") || filterStatus === status;
                         return (
                             <button

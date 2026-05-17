@@ -25,11 +25,12 @@ interface OrderRow {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  Diproses: "bg-amber-100 text-amber-700 border-amber-200",
-  Selesai: "bg-blue-100 text-blue-700 border-blue-200",
-  Dibatalkan: "bg-red-100 text-red-600 border-red-200",
+  Processed: "bg-amber-100 text-amber-700 border-amber-200",
+  Confirmed: "bg-green-100 text-green-700 border-green-200",
+  Completed: "bg-blue-100 text-blue-700 border-blue-200",
+  Cancelled: "bg-red-100 text-red-600 border-red-200",
 };
-const STATUS_DOT: Record<string, string> = { Diproses: "bg-amber-400", Selesai: "bg-blue-500", Dibatalkan: "bg-red-400" };
+const STATUS_DOT: Record<string, string> = { Processed: "bg-amber-400", Confirmed: "bg-green-500", Completed: "bg-blue-500", Cancelled: "bg-red-400" };
 
 function Sk({ c }: { c: string }) { return <div className={`animate-pulse bg-gray-100 rounded-xl ${c}`} />; }
 
@@ -141,7 +142,7 @@ export default function LaporanInvestasiPage() {
   const inp = "w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-400 bg-white";
 
   // Summary stats
-  const totalTagihan = orders.filter(o => o.status_pesanan !== "Dibatalkan").reduce((s, o) => s + Number(o.tagihan), 0);
+  const totalTagihan = orders.filter(o => o.status_pesanan !== "Cancelled").reduce((s, o) => s + Number(o.tagihan), 0);
   const countByStatus = (s: string) => orders.filter(o => o.status_pesanan === s).length;
 
   return (
@@ -160,8 +161,8 @@ export default function LaporanInvestasiPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
           { label: "Total Pesanan", value: String(orders.length), accent: "border-l-gray-400" },
-          { label: "Diproses", value: String(countByStatus("Diproses")), accent: "border-l-amber-400" },
-          { label: "Selesai", value: String(countByStatus("Selesai")), accent: "border-l-blue-500" },
+          { label: ["Processed", "Confirmed"].includes(laporan.status_pesanan), value: String(countByStatus(["Processed", "Confirmed"].includes(laporan.status_pesanan))), accent: "border-l-amber-400" },
+          { label: "Completed", value: String(countByStatus("Completed")), accent: "border-l-blue-500" },
           { label: "Total Tagihan Aktif", value: loadingOrders ? "—" : "Rp " + Math.round(totalTagihan).toLocaleString("id-ID"), accent: "border-l-emerald-500" },
         ].map(c => (
           <div key={c.label} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 border-l-4 ${c.accent}`}>
@@ -310,7 +311,7 @@ export default function LaporanInvestasiPage() {
               </div>
 
               {/* ── Input berat form (Diproses only) ── */}
-              {laporan.status_pesanan === "Diproses" && (
+              {["Processed", "Confirmed"].includes(laporan.status_pesanan) && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Mingguan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>
@@ -338,7 +339,7 @@ export default function LaporanInvestasiPage() {
               )}
 
               {/* ── Perhitungan akhir (Selesai only) ── */}
-              {laporan.status_pesanan === "Selesai" && (
+              {laporan.status_pesanan === "Completed" && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Perhitungan Akhir Investasi</h2>
                   <p className="text-xs text-gray-400 mb-4">Laba &amp; bagi hasil dihitung otomatis setelah disimpan</p>
@@ -380,7 +381,7 @@ export default function LaporanInvestasiPage() {
                 </div>
               )}
 
-              {laporan.status_pesanan === "Dibatalkan" && (
+              {laporan.status_pesanan === "Cancelled" && (
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
                   <p className="font-bold text-red-700">Pesanan Dibatalkan</p>
                   <p className="text-xs text-red-400 mt-1">Laporan tidak dapat diperbarui untuk pesanan yang dibatalkan.</p>

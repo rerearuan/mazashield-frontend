@@ -11,9 +11,10 @@ import OrderModal from "@/features/order-invest-ternak/components/OrderModal";
 const formatRupiah = (val: string | number) => `Rp ${Number(val).toLocaleString("id-ID")}`;
 
 const STATUS_COLORS: Record<string, string> = {
-    Diproses: "bg-amber-100 text-amber-800",
-    Selesai: "bg-[#1a8245]/10 text-[#1a8245]",
-    Dibatalkan: "bg-red-100 text-red-800",
+    Processed: "bg-amber-100 text-amber-800",
+    Confirmed: "bg-blue-100 text-blue-800",
+    Completed: "bg-[#1a8245]/10 text-[#1a8245]",
+    Cancelled: "bg-red-100 text-red-800",
 };
 
 const Badge = memo(({ status }: { status: string }) => (
@@ -52,7 +53,7 @@ export default function ManajemenInvestTernakPage() {
 
     const canManage = userRole === "SuperAdmin" || userRole === "Marketing";
     const countByStatus = (s: string) => orders.filter((o) => o.status_pesanan === s).length;
-    const totalTagihanVal = orders.filter((o) => o.status_pesanan !== "Dibatalkan").reduce((sum, o) => sum + Number(o.tagihan), 0);
+    const totalTagihanVal = orders.filter((o) => o.status_pesanan !== "Cancelled").reduce((sum, o) => sum + Number(o.tagihan), 0);
 
     const handleOpenDetail = useCallback((order: PesananInvest) => {
         setSelected(order);
@@ -106,9 +107,9 @@ export default function ManajemenInvestTernakPage() {
                 <div className="flex md:grid md:grid-cols-4 gap-4 min-w-max md:min-w-0">
                     {[
                         { label: "Total Sisa Tagihan", value: formatRupiah(totalTagihanVal), color: "text-gray-900" },
-                        { label: "Diproses", value: countByStatus("Diproses"), color: "text-amber-500" },
-                        { label: "Selesai", value: countByStatus("Selesai"), color: "text-[#1a8245]" },
-                        { label: "Dibatalkan", value: countByStatus("Dibatalkan"), color: "text-red-500" },
+                        { label: "Processed", value: countByStatus("Processed"), color: "text-amber-500" },
+                        { label: "Completed", value: countByStatus("Completed"), color: "text-[#1a8245]" },
+                        { label: "Cancelled", value: countByStatus("Cancelled"), color: "text-red-500" },
                     ].map(({ label, value, color }) => (
                         <div key={label} className="min-w-[160px] md:min-w-0 bg-white rounded-[24px] shadow-sm border border-gray-100 p-4 md:p-6 flex-shrink-0">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{label}</p>
