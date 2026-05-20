@@ -7,7 +7,7 @@ const fmtF = (v: number | null | undefined) =>
 
 interface HistoriBerat { id: number; tanggal_input: string; berat_kg: number; keterangan: string; estimasi_harga_jual: number; }
 interface LaporanData {
-  id: number; id_pesanan: number; status_pesanan: string;
+  id: number; id_pesanan: string; status_pesanan: string;
   harga_jual_per_kg: number; target_berat_kg: number; harga_beli: number | null;
   info_invest: { nama: string; berat_awal: number | null; durasi_hari: number; foto: string | null; harga_beli: number }[];
   histori_berat: HistoriBerat[];
@@ -16,7 +16,8 @@ interface LaporanData {
   laba_kotor: number | null; total_biaya: number | null; laba_bersih: number | null; bagi_hasil_investor: number | null;
 }
 interface OrderRow {
-  id_pesanan: number;
+  id: number;
+  id_pesanan: string;
   data_customer: { nama: string; email: string; no_telp: string };
   status_pesanan: string;
   created_at: string;
@@ -135,10 +136,10 @@ export default function LaporanInvestasiPage() {
 
   const filtered = orders.filter(o =>
     o.data_customer?.nama?.toLowerCase().includes(search.toLowerCase()) ||
-    String(o.id_pesanan).includes(search)
+    String(o.id_pesanan).toLowerCase().includes(search.toLowerCase())
   );
 
-  const selectedOrder = orders.find(o => o.id_pesanan === selectedId);
+  const selectedOrder = orders.find(o => o.id === selectedId);
   const inp = "w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-400 bg-white";
 
   // Summary stats
@@ -199,12 +200,12 @@ export default function LaporanInvestasiPage() {
                   <span className="text-xs">Tidak ada pesanan</span>
                 </div>
               : filtered.map(o => {
-                  const isActive = selectedId === o.id_pesanan;
+                  const isActive = selectedId === o.id;
                   const nama = o.data_customer?.nama ?? "—";
                   const totalHarga = Number(o.sudah_dibayar) + Number(o.tagihan) + Number(o.menunggu_persetujuan || 0);
                   const pct = totalHarga > 0 ? Math.min((Number(o.sudah_dibayar) / totalHarga) * 100, 100) : 0;
                   return (
-                    <button key={o.id_pesanan} onClick={() => handleSelect(o.id_pesanan)}
+                    <button key={o.id} onClick={() => handleSelect(o.id)}
                       className={`w-full text-left px-4 py-3.5 transition-all hover:bg-emerald-50/70 ${isActive ? "bg-emerald-50 border-l-[3px] border-l-emerald-500" : "border-l-[3px] border-l-transparent"}`}>
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <div className="min-w-0">

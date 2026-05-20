@@ -310,7 +310,7 @@ export default function VerifikasiPembayaranPage() {
             {/* Proof Modal */}
             {selectedPayment && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white/90 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300">
+                    <div className="bg-white/90 backdrop-blur-xl border border-white/20 rounded-[32px] p-6 md:p-8 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-8">
                             <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Detail Pembayaran #{selectedPayment.id}</h2>
                             <button

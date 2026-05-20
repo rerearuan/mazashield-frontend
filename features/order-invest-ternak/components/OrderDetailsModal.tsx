@@ -45,7 +45,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
 
     setSubmitting(true);
     try {
-      await orderService.updateInvestOrder(order.id_pesanan, {
+      await orderService.updateInvestOrder(order.id || order.id_pesanan, {
         status_pesanan: statusPesanan,
         catatan: catatan
       });
@@ -103,7 +103,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           </div>
 
           {(role === 'Marketing' || role === 'SuperAdmin' || role === 'CEO') && !isCompletedOrCancelled && parseFloat(order.tagihan) > 0 && (
-            <Button type="button" variant="secondary" onClick={() => setIsPaymentModalOpen(true)} className="w-full text-xs py-2">
+            <Button type="button" variant="primary" onClick={() => setIsPaymentModalOpen(true)} className="w-full text-xs py-2 shadow-sm font-black tracking-widest uppercase">
               + Input Pembayaran
             </Button>
           )}
