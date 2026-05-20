@@ -13,7 +13,8 @@ export interface TernakItem {
 }
 
 export interface CustomerPesananMazdafarm {
-    id_pesanan: number;
+    id: number;
+    id_pesanan: string;
     daftar_ternak: TernakItem[];
     total_item: number;
     tagihan: string;
