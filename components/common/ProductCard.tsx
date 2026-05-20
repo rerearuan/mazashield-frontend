@@ -98,6 +98,17 @@ export default function ProductCard({
                 </span>
             </div>
         )}
+        {stock && (
+            <div className="absolute top-4 right-4 z-10">
+                <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg border ${
+                    stock.toLowerCase() === 'available' || stock.toLowerCase() === 'tersedia' ? 'bg-green-100 text-green-700 border-green-200' :
+                    stock.toLowerCase() === 'sold out' || stock.toLowerCase() === 'habis' ? 'bg-red-100 text-red-700 border-red-200' :
+                    'bg-amber-100 text-amber-700 border-amber-200'
+                }`}>
+                    {stock}
+                </span>
+            </div>
+        )}
       </div>
       <div className="p-8 space-y-7">
         <div className="min-h-[100px]">
@@ -127,15 +138,7 @@ export default function ProductCard({
         )}
 
         <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-          {stock && (
-            <div>
-              <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-2 opacity-70">Stock Status</p>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                <p className="text-[#1a8245] font-black uppercase tracking-widest text-[9px]">{stock}</p>
-              </div>
-            </div>
-          )}
+          <div className="flex-1"></div>
           {price && (
             <div className="text-right">
               <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1 opacity-70">Investment Price</p>
