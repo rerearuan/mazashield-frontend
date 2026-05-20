@@ -35,9 +35,9 @@ export async function apiFetch<T = any>(endpoint: string, options: FetchOptions 
     const data = await response.json();
 
     if (!response.ok) {
-        let errorMessage = data.message || data.error || data.detail;
+        let errorMessage = data?.message || data?.error || data?.detail;
 
-        if (!errorMessage && typeof data === 'object') {
+        if (!errorMessage && typeof data === 'object' && data !== null) {
             // Handle DRF validation errors like { field: [error] }
             const firstKey = Object.keys(data)[0];
             if (firstKey && Array.isArray(data[firstKey])) {
