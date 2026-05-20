@@ -11,6 +11,10 @@ import SearchableSelect from "@/components/common/SearchableSelect";
 import { Icons } from "@/components/common/Icons";
 import { generateInvestInvoice } from "@/lib/invoice";
 
+// Module-level cache — survives modal open/close but resets on page reload
+let _cachedCustomers: any[] | null = null;
+let _cachedInvest: any[] | null = null;
+
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -35,16 +39,25 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   }, [isOpen]);
 
   const fetchData = async () => {
+    // Use cache if available
+    if (_cachedCustomers && _cachedInvest) {
+      setCustomers(_cachedCustomers);
+      setAvailableInvest(_cachedInvest);
+      return;
+    }
     setLoading(true);
     try {
       const [userRes, investRes] = await Promise.all([
         userService.getUsers("external"),
         catalogService.getInvestInternal({ status_investernak: "Open" })
       ]);
-      setCustomers((userRes as any).results || (Array.isArray(userRes) ? userRes : []));
-      
+      const customerList = (userRes as any).results || (Array.isArray(userRes) ? userRes : []);
       const investList = (investRes as any).results || (Array.isArray(investRes) ? investRes : []);
-      setAvailableInvest(investList.filter((i: any) => i.status_investernak === 'Open' && !i.deleted_at));
+      const filteredInvest = investList.filter((i: any) => i.status_investernak === 'Open' && !i.deleted_at);
+      _cachedCustomers = customerList;
+      _cachedInvest = filteredInvest;
+      setCustomers(customerList);
+      setAvailableInvest(filteredInvest);
     } catch (error) {
       toast.error("Gagal mengambil data pendukung.");
     } finally {
@@ -94,6 +107,8 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
       }
 
       toast.success("Pesanan Invest berhasil dibuat!");
+      // Invalidate invest cache so next open gets fresh availability
+      _cachedInvest = null;
       onSuccess();
       onClose();
       // Reset form

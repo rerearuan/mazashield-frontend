@@ -56,7 +56,7 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
 
         // Date processing
         const dateStr = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-        const invoiceNo = `${orderData.id_pesanan || 'NEW'}/MZF/${new Date().getFullYear()}`;
+        const invoiceNo = orderData.id_pesanan || `NEW/MZF/${new Date().getFullYear()}`;
 
         // Boxes
         doc.setDrawColor(200, 200, 200);
@@ -131,13 +131,14 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
         });
 
         const finalY = (doc as any).lastAutoTable.finalY;
+        const ongkir = parseFloat(orderData.ongkir) || 0;
 
-        // Lain-lain, DP, Potongan, Total Row
+        // Lain-lain / Ongkir, DP, Potongan, Total Row
         doc.setFillColor(238, 188, 177);
         doc.rect(40, finalY, pageWidth - 80, 15, "F");
         doc.setFont("helvetica", "normal");
-        doc.text("Lain-lain", 120, finalY + 11);
-        doc.text("0", pageWidth - 45, finalY + 11, { align: "right" });
+        doc.text("Ongkos Kirim", 120, finalY + 11);
+        doc.text(ongkir.toLocaleString("id-ID"), pageWidth - 45, finalY + 11, { align: "right" });
 
         doc.setFillColor(249, 218, 95);
         doc.rect(40, finalY + 15, pageWidth - 80, 15, "F");
@@ -150,11 +151,13 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
         doc.text("Potongan", 120, finalY + 41);
         doc.text("0", pageWidth - 45, finalY + 41, { align: "right" });
 
+        const grandTotal = totalHarga + ongkir;
+
         doc.setFillColor(172, 41, 37);
         doc.rect(40, finalY + 45, pageWidth - 80, 15, "F");
         doc.setTextColor(255, 255, 255);
         doc.text(totalBerat.toString(), 280, finalY + 56, { align: "center" });
-        doc.text(totalHarga.toLocaleString("id-ID"), pageWidth - 45, finalY + 56, { align: "right" });
+        doc.text(grandTotal.toLocaleString("id-ID"), pageWidth - 45, finalY + 56, { align: "right" });
 
         // Total Invoice Block
         doc.setTextColor(0, 0, 0);
@@ -164,11 +167,11 @@ export function generateMazdafarmInvoice(orderData: any, customerInfo: any, catt
         doc.rect(140, invY, 150, 15, "S");
         doc.setFontSize(9);
         doc.text("Total Invoice", 45, invY + 11);
-        doc.text("Rp " + totalHarga.toLocaleString("id-ID"), 285, invY + 11, { align: "right" });
+        doc.text("Rp " + grandTotal.toLocaleString("id-ID"), 285, invY + 11, { align: "right" });
 
         // Terbilang
         const terbilangY = invY + 20;
-        const terbilangText = terbilang(totalHarga).trim() + " Rupiah";
+        const terbilangText = terbilang(grandTotal).trim() + " Rupiah";
         doc.rect(40, terbilangY, 100, 15, "S");
         doc.rect(140, terbilangY, pageWidth - 180, 15, "S");
         doc.setFont("helvetica", "bold");
@@ -250,7 +253,7 @@ export function generateMazdagingInvoice(orderData: any, customerInfo: any, prod
         tomorrow.setDate(tomorrow.getDate() + 1);
         const tempoStr = tomorrow.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
         
-        const invoiceNo = `${orderData.id_pesanan || '0121'}/SGR/002/${new Date().getFullYear()}`;
+        const invoiceNo = orderData.id_pesanan || `0121/SGR/${new Date().getFullYear()}`;
 
         // Boxes
         doc.setDrawColor(200, 200, 200);
@@ -334,33 +337,41 @@ export function generateMazdagingInvoice(orderData: any, customerInfo: any, prod
         });
 
         const finalY = (doc as any).lastAutoTable.finalY;
+        const ongkir = parseFloat(orderData.ongkir) || 0;
 
-        // Diskon, Total Row
+        // Diskon, Ongkir, Total Row
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
         doc.text("DISKON", 120, finalY + 11);
         doc.setFont("helvetica", "normal");
         doc.text("0", pageWidth - 45, finalY + 11, { align: "right" });
 
+        doc.setFont("helvetica", "bold");
+        doc.text("ONGKOS KIRIM", 120, finalY + 26);
+        doc.setFont("helvetica", "normal");
+        doc.text(ongkir.toLocaleString("id-ID"), pageWidth - 45, finalY + 26, { align: "right" });
+
+        const grandTotal = totalHarga + ongkir;
+
         doc.setFillColor(172, 41, 37);
-        doc.rect(40, finalY + 15, pageWidth - 80, 15, "F");
+        doc.rect(40, finalY + 30, pageWidth - 80, 15, "F");
         doc.setTextColor(255, 255, 255);
-        doc.text(totalKuantitas.toString(), 280, finalY + 26, { align: "center" });
-        doc.text(totalHarga.toLocaleString("id-ID"), pageWidth - 45, finalY + 26, { align: "right" });
+        doc.text(totalKuantitas.toString(), 280, finalY + 41, { align: "center" });
+        doc.text(grandTotal.toLocaleString("id-ID"), pageWidth - 45, finalY + 41, { align: "right" });
 
         // Total Invoice Block
         doc.setTextColor(0, 0, 0);
         doc.setDrawColor(200, 200, 200);
-        const invY = finalY + 50;
+        const invY = finalY + 65;
         doc.rect(40, invY, 100, 15, "S");
         doc.rect(140, invY, 150, 15, "S");
         doc.setFontSize(9);
         doc.text("Total Invoice", 45, invY + 11);
-        doc.text("Rp " + totalHarga.toLocaleString("id-ID"), 285, invY + 11, { align: "right" });
+        doc.text("Rp " + grandTotal.toLocaleString("id-ID"), 285, invY + 11, { align: "right" });
 
         // Terbilang
         const terbilangY = invY + 15;
-        const terbilangText = terbilang(totalHarga).trim() + " Rupiah";
+        const terbilangText = terbilang(grandTotal).trim() + " Rupiah";
         doc.rect(40, terbilangY, 100, 15, "S");
         doc.rect(140, terbilangY, pageWidth - 180, 15, "S");
         doc.setFont("helvetica", "bold");
@@ -536,7 +547,7 @@ export function generateInvestInvoice(orderData: any, customerInfo: any, investL
         doc.text("Agung NKH", 60, finalY + 70);
         doc.text("Shidqi MN", pageWidth - 160, finalY + 70);
 
-        const invoiceNo = `${orderData.id_pesanan || 'INV'}/IVT/${new Date().getFullYear()}`;
+        const invoiceNo = orderData.id_pesanan || `INV/IVT/${new Date().getFullYear()}`;
         doc.save(`Laporan_Invest_${invoiceNo.replace(/\//g, '-')}.pdf`);
     };
 
