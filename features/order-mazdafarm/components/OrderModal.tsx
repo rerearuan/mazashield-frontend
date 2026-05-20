@@ -47,9 +47,9 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
         catalogService.getTernakInternal()
       ]);
       setCustomers((userRes as any).results || (Array.isArray(userRes) ? userRes : []));
-      // Filter cattle that are 'Tersedia' and not deleted
+      // Filter cattle that are 'Available' and not deleted
       const cattleList = (cattleRes as any).results || (Array.isArray(cattleRes) ? cattleRes : []);
-      setAvailableCattle(cattleList.filter((c: any) => c.status_ternak === 'Tersedia' && !c.deleted_at));
+      setAvailableCattle(cattleList.filter((c: any) => c.status_ternak === 'Available' && !c.deleted_at));
     } catch (error) {
       toast.error("Gagal mengambil data pendukung.");
     } finally {
