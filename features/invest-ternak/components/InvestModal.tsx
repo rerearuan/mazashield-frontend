@@ -64,6 +64,18 @@ export default function InvestModal({
         }));
     }, [formData.harga_sapi, formData.biaya_pemeliharaan, formData.vaksin_vitamin, formData.fee_marketing, formData.harga_jual]);
 
+    const formatCurrency = (value: string) => {
+        if (!value) return "";
+        const cleanValue = value.toString().replace(/\D/g, "");
+        if (!cleanValue) return "";
+        return parseInt(cleanValue).toLocaleString("id-ID");
+    };
+
+    const handleCurrencyChange = (val: string, field: string) => {
+        const cleanValue = val.replace(/\D/g, "");
+        setFormData(prev => ({ ...prev, [field]: cleanValue }));
+    };
+
     useEffect(() => {
         if (isEditing && selectedItem) {
             setFormData({
@@ -241,76 +253,76 @@ export default function InvestModal({
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Sapi (Rp) <span className="text-red-500">*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             required
-                            value={formData.harga_sapi}
-                            onChange={(e) => setFormData({ ...formData, harga_sapi: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] border-green-200 focus:ring-2 focus:ring-[#1a8245]"
+                            value={formatCurrency(formData.harga_sapi)}
+                            onChange={(e) => handleCurrencyChange(e.target.value, "harga_sapi")}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] border-green-200 focus:ring-2 focus:ring-[#1a8245] outline-none transition-all"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pemeliharaan (Rp)</label>
                         <input
-                            type="number"
-                            value={formData.biaya_pemeliharaan}
-                            onChange={(e) => setFormData({ ...formData, biaya_pemeliharaan: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                            type="text"
+                            value={formatCurrency(formData.biaya_pemeliharaan)}
+                            onChange={(e) => handleCurrencyChange(e.target.value, "biaya_pemeliharaan")}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] outline-none transition-all"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Vaksin/Vit (Rp)</label>
                         <input
-                            type="number"
-                            value={formData.vaksin_vitamin}
-                            onChange={(e) => setFormData({ ...formData, vaksin_vitamin: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                            type="text"
+                            value={formatCurrency(formData.vaksin_vitamin)}
+                            onChange={(e) => handleCurrencyChange(e.target.value, "vaksin_vitamin")}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] outline-none transition-all"
                         />
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fee Marketing (Rp)</label>
                         <input
-                            type="number"
-                            value={formData.fee_marketing}
-                            onChange={(e) => setFormData({ ...formData, fee_marketing: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                            type="text"
+                            value={formatCurrency(formData.fee_marketing)}
+                            onChange={(e) => handleCurrencyChange(e.target.value, "fee_marketing")}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] outline-none transition-all"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Modal (Rp) <span className="text-green-600">(Auto)</span></label>
                         <input
-                            type="number"
-                            value={formData.total_modal}
-                            onChange={(e) => setFormData({ ...formData, total_modal: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black text-[#1a8245]"
+                            type="text"
+                            disabled
+                            value={formatCurrency(formData.total_modal)}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black text-[#1a8245] outline-none transition-all cursor-not-allowed"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Jual (Rp) <span className="text-red-500">*</span></label>
                         <input
-                            type="number"
-                            value={formData.harga_jual}
-                            onChange={(e) => setFormData({ ...formData, harga_jual: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                            type="text"
+                            value={formatCurrency(formData.harga_jual)}
+                            onChange={(e) => handleCurrencyChange(e.target.value, "harga_jual")}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] outline-none transition-all"
                         />
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Keuntungan (Rp) <span className="text-green-600">(Auto)</span></label>
                         <input
-                            type="number"
-                            value={formData.keuntungan}
-                            onChange={(e) => setFormData({ ...formData, keuntungan: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px]"
+                            type="text"
+                            disabled
+                            value={formatCurrency(formData.keuntungan)}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] outline-none transition-all cursor-not-allowed"
                         />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hasil Investor (50%) <span className="text-green-600">(Auto)</span></label>
                         <input
-                            type="number"
-                            value={formData.hasil_investor}
-                            onChange={(e) => setFormData({ ...formData, hasil_investor: e.target.value })}
-                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black"
+                            type="text"
+                            disabled
+                            value={formatCurrency(formData.hasil_investor)}
+                            className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] font-black outline-none transition-all cursor-not-allowed"
                         />
                     </div>
                     <div className="space-y-2">

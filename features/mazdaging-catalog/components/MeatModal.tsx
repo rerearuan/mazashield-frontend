@@ -133,11 +133,13 @@ export default function MeatModal({
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Harga Per Kg (Rp) <span className="text-red-500">*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             required
-                            min="0"
-                            value={formData.harga_per_kg}
-                            onChange={(e) => setFormData({ ...formData, harga_per_kg: e.target.value })}
+                            value={formData.harga_per_kg ? Number(formData.harga_per_kg).toLocaleString("id-ID") : ""}
+                            onChange={(e) => {
+                                const cleanValue = e.target.value.replace(/\D/g, "");
+                                setFormData({ ...formData, harga_per_kg: cleanValue });
+                            }}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
                         />
                     </div>
