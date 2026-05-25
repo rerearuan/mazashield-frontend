@@ -78,7 +78,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
 
     setSubmitting(true);
     try {
-      await orderService.updatePayment(order.id_pesanan, formData);
+      await orderService.updatePayment(order.id || order.id_pesanan, formData);
       toast.success("Pembayaran berhasil diinput dan menunggu persetujuan.");
       onSuccess();
       onClose();

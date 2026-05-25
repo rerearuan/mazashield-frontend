@@ -12,6 +12,9 @@ import { toast } from "react-hot-toast";
 import SearchableSelect from "@/components/common/SearchableSelect";
 import { generateMazdafarmInvoice } from "@/lib/invoice";
 
+// Module-level cache — survives modal open/close but resets on page reload
+let _cachedCustomers: any[] | null = null;
+let _cachedCattle: any[] | null = null;
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -28,6 +31,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedCattleIds, setSelectedCattleIds] = useState<string[]>([]);
   const [catatan, setCatatan] = useState("");
+  const [ongkir, setOngkir] = useState<string>("");
 
   // Search states - PBI 23
   const [customerSearch, setCustomerSearch] = useState("");
@@ -40,16 +44,25 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   }, [isOpen]);
 
   const fetchData = async () => {
+    // Use cache if available
+    if (_cachedCustomers && _cachedCattle) {
+      setCustomers(_cachedCustomers);
+      setAvailableCattle(_cachedCattle);
+      return;
+    }
     setLoading(true);
     try {
       const [userRes, cattleRes] = await Promise.all([
         userService.getUsers("external"),
         catalogService.getTernakInternal()
       ]);
-      setCustomers((userRes as any).results || (Array.isArray(userRes) ? userRes : []));
-      // Filter cattle that are 'Available' and not deleted
+      const customerList = (userRes as any).results || (Array.isArray(userRes) ? userRes : []);
       const cattleList = (cattleRes as any).results || (Array.isArray(cattleRes) ? cattleRes : []);
-      setAvailableCattle(cattleList.filter((c: any) => c.status_ternak === 'Available' && !c.deleted_at));
+      const filteredCattle = cattleList.filter((c: any) => c.status_ternak === 'Available' && !c.deleted_at);
+      _cachedCustomers = customerList;
+      _cachedCattle = filteredCattle;
+      setCustomers(customerList);
+      setAvailableCattle(filteredCattle);
     } catch (error) {
       toast.error("Gagal mengambil data pendukung.");
     } finally {
@@ -71,7 +84,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   const totalTagihan = selectedCattleIds.reduce((sum, id) => {
     const cattle = availableCattle.find(c => c.id_ternak === id);
     return sum + (cattle ? parseFloat(cattle.harga) : 0);
-  }, 0);
+  }, 0) + (parseFloat(ongkir) || 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +98,8 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
       const orderData = await orderService.createMazdafarmOrder({
         id_customer: parseInt(selectedCustomerId),
         daftar_id_ternak: selectedCattleIds,
-        catatan: catatan
+        catatan: catatan,
+        ongkir: parseFloat(ongkir) || 0
       });
       
       const customer = customers.find(c => c.id.toString() === selectedCustomerId);
@@ -99,12 +113,15 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
       }
 
       toast.success("Pesanan Ternak berhasil dibuat!");
+      // Invalidate cattle cache so next open gets fresh stock
+      _cachedCattle = null;
       onSuccess();
       onClose();
       // Reset form
       setSelectedCustomerId("");
       setSelectedCattleIds([]);
       setCatatan("");
+      setOngkir("");
       setCustomerSearch("");
       setCattleSearch("");
     } catch (error: any) {
@@ -210,10 +227,28 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
               />
             </div>
 
+            <div>
+              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Ongkos Kirim (Opsional)</label>
+              <input
+                type="text"
+                value={ongkir ? Number(ongkir).toLocaleString("id-ID") : ""}
+                onChange={(e) => {
+                  const cleanValue = e.target.value.replace(/\D/g, "");
+                  setOngkir(cleanValue);
+                }}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all"
+                placeholder="0"
+              />
+            </div>
+
             <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-black text-green-800 uppercase tracking-widest">Total Ternak</span>
                 <span className="font-black text-green-900">{selectedCattleIds.length} Ekor</span>
+              </div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-black text-green-800 uppercase tracking-widest">Total Ongkir</span>
+                <span className="font-bold text-green-900">Rp {(parseFloat(ongkir) || 0).toLocaleString('id-ID')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs font-black text-green-800 uppercase tracking-widest">Total Tagihan</span>

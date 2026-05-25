@@ -283,7 +283,7 @@ export default function PesananSayaMazdafarmPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
                             {orders.map((order) => (
                                 <OrderCard
-                                    key={order.id_pesanan}
+                                    key={order.id}
                                     order={order}
                                     onDetail={setSelectedOrder}
                                 />

@@ -13,10 +13,12 @@ export interface DagingItem {
 }
 
 export interface CustomerPesananMazdaging {
-    id_pesanan: number;
+    id: number;
+    id_pesanan: string;
     daftar_item: DagingItem[];
     total_item: number;
     total_harga: string;
+    tagihan: string;
     sudah_dibayar: string;
     menunggu_persetujuan: string;
     order_status: "Processed" | "Completed" | "Cancelled";
