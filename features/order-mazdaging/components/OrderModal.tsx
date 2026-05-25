@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Modal from "@/components/ui/Modal";
 import { Button } from "@/components/button";
 import { userService } from "@/services/user.service";
@@ -10,6 +10,10 @@ import { toast } from "react-hot-toast";
 import SearchableSelect from "@/components/common/SearchableSelect";
 import { Icons } from "@/components/common/Icons";
 import { generateMazdagingInvoice } from "@/lib/invoice";
+
+// Module-level cache — survives modal open/close but resets on page reload
+let _cachedCustomers: any[] | null = null;
+let _cachedMeat: any[] | null = null;
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -33,6 +37,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [catatan, setCatatan] = useState("");
+  const [ongkir, setOngkir] = useState<string>("");
   const [meatSearch, setMeatSearch] = useState("");
 
   useEffect(() => {
@@ -42,17 +47,27 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
   }, [isOpen]);
 
   const fetchData = async () => {
+    // Use cache if available
+    if (_cachedCustomers && _cachedMeat) {
+      setCustomers(_cachedCustomers);
+      setAvailableMeat(_cachedMeat);
+      return;
+    }
     setLoading(true);
     try {
       const [userRes, meatRes] = await Promise.all([
         userService.getUsers("external"),
         catalogService.getDagingInternal()
       ]);
-      setCustomers((userRes as any).results || (Array.isArray(userRes) ? userRes : []));
+      const customerList = (userRes as any).results || (Array.isArray(userRes) ? userRes : []);
       const meatList = (meatRes as any).results || (Array.isArray(meatRes) ? meatRes : []);
-      setAvailableMeat(meatList.filter((m: any) => 
+      const filteredMeat = meatList.filter((m: any) => 
         (m.status_daging === 'Tersedia' || m.status_daging === 'Pre Order') && !m.deleted_at
-      ));
+      );
+      _cachedCustomers = customerList;
+      _cachedMeat = filteredMeat;
+      setCustomers(customerList);
+      setAvailableMeat(filteredMeat);
     } catch (error) {
       toast.error("Gagal mengambil data pendukung.");
     } finally {
@@ -84,7 +99,7 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
     const weight = parseFloat(item.berat_pesanan_kg) || 0;
     const price = parseFloat(item.harga_per_kg) || 0;
     return sum + (weight * price);
-  }, 0);
+  }, 0) + (parseFloat(ongkir) || 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +123,8 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
             id_daging: item.id_daging,
             berat_pesanan_kg: parseFloat(item.berat_pesanan_kg)
         })),
-        catatan: catatan
+        catatan: catatan,
+        ongkir: parseFloat(ongkir) || 0
       });
       
       const customerInfo = customers.find(c => c.id.toString() === selectedCustomerId);
@@ -126,11 +142,14 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
       }
 
       toast.success("Pesanan Daging berhasil dibuat!");
+      // Invalidate cache so next open gets fresh meat stock
+      _cachedMeat = null;
       onSuccess();
       onClose();
       setSelectedCustomerId("");
       setSelectedItems([]);
       setCatatan("");
+      setOngkir("");
       setMeatSearch("");
     } catch (error: any) {
       toast.error(error.message || "Gagal membuat Pesanan Daging.");
@@ -266,11 +285,29 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
               />
             </div>
 
+            <div>
+              <label className="block text-xs font-black text-[#1a8245] uppercase tracking-widest mb-2">Ongkos Kirim (Opsional)</label>
+              <input
+                type="text"
+                value={ongkir ? Number(ongkir).toLocaleString("id-ID") : ""}
+                onChange={(e) => {
+                  const cleanValue = e.target.value.replace(/\D/g, "");
+                  setOngkir(cleanValue);
+                }}
+                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1a8245] outline-none font-semibold text-sm transition-all shadow-inner"
+                placeholder="0"
+              />
+            </div>
+
             <div className="p-5 bg-gradient-to-br from-green-50 to-[#1a8245]/5 rounded-[24px] border border-green-100 shadow-sm relative overflow-hidden">
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-2">
                    <span className="text-[10px] font-black text-green-800 uppercase tracking-widest opacity-70">Total Item</span>
                    <span className="font-black text-green-900 text-sm tracking-tight">{selectedItems.length} Produk</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                   <span className="text-[10px] font-black text-green-800 uppercase tracking-widest opacity-70">Total Ongkir</span>
+                   <span className="font-black text-green-900 text-sm tracking-tight">Rp {(parseFloat(ongkir) || 0).toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t border-[#1a8245]/10">
                   <span className="text-[10px] font-black text-green-800 uppercase tracking-widest">Total Tagihan</span>
