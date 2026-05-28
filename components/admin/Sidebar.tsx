@@ -299,9 +299,9 @@ export default function Sidebar() {
                       <li key={item.href}>
                         <Link
                           href={item.href}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                            ? "bg-white/20 text-white shadow-md"
-                            : "text-white/90 hover:bg-white/10 hover:text-white"
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${isActive
+                            ? "font-bold text-white bg-transparent"
+                            : "font-medium text-white/80 hover:bg-white/10 hover:text-white"
                             }`}
                         >
                           <span className={`flex-shrink-0 ${isActive ? "text-white" : "text-white/80"}`}>

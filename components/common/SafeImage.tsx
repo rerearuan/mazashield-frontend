@@ -23,13 +23,13 @@ export default function SafeImage({
   loading,
   ...props 
 }: SafeImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>(DEFAULT_COW_IMAGE);
-  const [isFallback, setIsFallback] = useState(false);
-
   const getFallback = () => {
     if (fallbackSrc) return fallbackSrc;
     return fallbackType === "meat" ? getRandomMeatImage(id) : getRandomCowImage(id);
   };
+
+  const [imgSrc, setImgSrc] = useState<string>(src || getFallback());
+  const [isFallback, setIsFallback] = useState(!src);
 
   const handleError = () => {
     if (!isFallback) {
@@ -39,13 +39,8 @@ export default function SafeImage({
   };
 
   useEffect(() => {
-    if (src) {
-      setImgSrc(src);
-      setIsFallback(false);
-    } else {
-      setImgSrc(getFallback());
-      setIsFallback(true);
-    }
+    setImgSrc(src || getFallback());
+    setIsFallback(!src);
   }, [src, id, fallbackSrc, fallbackType]);
 
   return (
