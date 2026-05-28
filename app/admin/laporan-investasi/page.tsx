@@ -263,7 +263,7 @@ export default function LaporanInvestasiPage() {
             </div>
           </div>
 
-          <div className="overflow-y-auto flex-1 max-h-[65vh] divide-y divide-gray-50">
+          <div className="overflow-y-auto flex-1 max-h-[65vh] divide-y divide-gray-200">
             {loadingOrders
               ? <div className="p-4 space-y-3"><Sk c="h-20"/><Sk c="h-20"/><Sk c="h-20"/></div>
               : filtered.length === 0
@@ -278,11 +278,11 @@ export default function LaporanInvestasiPage() {
                   const pct = totalHarga > 0 ? Math.min((Number(o.sudah_dibayar) / totalHarga) * 100, 100) : 0;
                   return (
                     <button key={o.id} onClick={() => handleSelect(o.id)}
-                      className={`w-full text-left px-4 py-3.5 transition-all hover:bg-emerald-50/70 ${isActive ? "bg-emerald-50 border-l-[3px] border-l-emerald-500" : "border-l-[3px] border-l-transparent"}`}>
+                      className={`w-full text-left px-5 py-4 transition-all hover:bg-emerald-50/50 cursor-pointer ${isActive ? "bg-emerald-50/70 border-l-[4px] border-l-[#1a8245]" : "border-l-[4px] border-l-transparent bg-white"}`}>
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-gray-800 truncate">{nama}</p>
-                          <p className="text-xs text-gray-400">Pesanan #{o.id_pesanan} · {o.created_at?.slice(0, 10)}</p>
+                          <p className="text-sm font-black text-gray-900 truncate">{nama}</p>
+                          <p className="text-xs text-gray-500 font-semibold">Pesanan #{o.id_pesanan} · {o.created_at?.slice(0, 10)}</p>
                         </div>
                         <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_COLOR[o.status_pesanan] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}>
                           {o.status_pesanan}
@@ -291,7 +291,7 @@ export default function LaporanInvestasiPage() {
                       <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                       </div>
-                      <p className="text-[10px] text-gray-400 mt-1">{pct.toFixed(0)}% terbayar</p>
+                      <p className="text-[10px] text-gray-400 mt-1 font-bold">{pct.toFixed(0)}% terbayar</p>
                     </button>
                   );
                 })}
@@ -337,8 +337,9 @@ export default function LaporanInvestasiPage() {
                     </button>
                   </div>
                 </div>
-                {laporan.info_invest.map((inv, i) => (
-                  <div key={i} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="space-y-4 divide-y divide-gray-100">
+                  {laporan.info_invest.map((inv, i) => (
+                    <div key={i} className={`grid grid-cols-2 sm:grid-cols-4 gap-3 ${i !== 0 ? 'pt-4' : ''}`}>
                     {[
                       { label: "Paket", value: inv.nama },
                       { label: "Berat Awal", value: inv.berat_awal ? `${inv.berat_awal} kg` : "—" },
@@ -352,6 +353,7 @@ export default function LaporanInvestasiPage() {
                     ))}
                   </div>
                 ))}
+                </div>
               </div>
 
               {/* ── Berat chart ── */}

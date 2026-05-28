@@ -79,9 +79,9 @@ export default function ManajemenAkunInternalPage() {
           {userRole === "SuperAdmin" && (
             <Button
               onClick={actions.exportData}
-              variant="secondary"
+              variant="outline"
               size="lg"
-              className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
+              className="rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-black uppercase text-[10px] tracking-widest px-8 h-14"
             >
               Export CSV
             </Button>
@@ -140,7 +140,7 @@ export default function ManajemenAkunInternalPage() {
           <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
+              <tr className="bg-gray-50/50 border-b-2 border-gray-200">
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Role</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>

@@ -197,19 +197,19 @@ export default function KatalogMazdafarmPage() {
 
                 <div className="bg-[#1a8245]/5 p-4 rounded-2xl mb-6 space-y-2 border border-[#1a8245]/10">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Jenis</span>
+                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Jenis</span>
                     <span className="font-black text-gray-900">{item.jenis}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Kelas</span>
+                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Kelas</span>
                     <span className="font-black text-[#1a8245]">{item.kelas}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Berat</span>
+                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Berat</span>
                     <span className="font-black text-gray-900">{item.berat} kg</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Usia</span>
+                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Usia</span>
                     <span className="font-black text-gray-900">{formatUmur(item.umur)}</span>
                   </div>
                 </div>
