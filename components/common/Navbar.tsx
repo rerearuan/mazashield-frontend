@@ -117,7 +117,7 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                         href="/invest-qurban/pesanan"
                         className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-b-xl transition-colors"
                       >
-                        Invest Qurban
+                        Invest Ternak
                       </Link>
                     </div>
                   </div>
@@ -213,7 +213,7 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block px-4 py-3 rounded-xl font-semibold text-sm text-blue-700 hover:bg-blue-50"
                     >
-                      Invest Qurban
+                      Invest Ternak
                     </Link>
                   </>
                 )}

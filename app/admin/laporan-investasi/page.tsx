@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "@/lib/api-client";
+import { generateInvestReportPDF, generateCustomerInvestmentsPDF } from "@/lib/invoice";
 
 const fmtF = (v: number | null | undefined) =>
   v != null ? "Rp " + Math.round(v).toLocaleString("id-ID") : "—";
 
-interface HistoriBerat { id: number; tanggal_input: string; berat_kg: number; keterangan: string; estimasi_harga_jual: number; }
+interface HistoriBerat { id: number; tanggal_input: string; berat_kg: number; harga_per_kg: number; keterangan: string; estimasi_harga_jual: number; }
 interface LaporanData {
   id: number; id_pesanan: string; status_pesanan: string;
   harga_jual_per_kg: number; target_berat_kg: number; harga_beli: number | null;
@@ -14,6 +15,7 @@ interface LaporanData {
   harga_jual_aktual: number | null; biaya_pakan: number | null; biaya_operasional: number | null;
   biaya_obat_vitamin: number | null; fee_marketing: number | null;
   laba_kotor: number | null; total_biaya: number | null; laba_bersih: number | null; bagi_hasil_investor: number | null;
+  is_final: boolean;
 }
 interface OrderRow {
   id: number;
@@ -83,9 +85,12 @@ export default function LaporanInvestasiPage() {
   const [laporan, setLaporan] = useState<LaporanData | null>(null);
   const [loadingLaporan, setLoadingLaporan] = useState(false);
   const [search, setSearch] = useState("");
-  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
+  const [selectedCustomer, setSelectedCustomer] = useState("");
+  
+  const [beratForm, setBeratForm] = useState({ tanggal_input: "", berat_kg: "", keterangan: "", harga_per_kg: "", target_berat_kg: "" });
   const [savingBerat, setSavingBerat] = useState(false);
   const [beratMsg, setBeratMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  
   const [akhirForm, setAkhirForm] = useState({ harga_jual_aktual: "", biaya_pakan: "", biaya_operasional: "", biaya_obat_vitamin: "", fee_marketing: "" });
   const [savingAkhir, setSavingAkhir] = useState(false);
   const [akhirMsg, setAkhirMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
@@ -102,7 +107,17 @@ export default function LaporanInvestasiPage() {
     try {
       const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${id}/`);
       setLaporan(d);
-      if (d.harga_jual_aktual) setAkhirForm({ harga_jual_aktual: String(d.harga_jual_aktual), biaya_pakan: String(d.biaya_pakan ?? ""), biaya_operasional: String(d.biaya_operasional ?? ""), biaya_obat_vitamin: String(d.biaya_obat_vitamin ?? ""), fee_marketing: String(d.fee_marketing ?? "") });
+      if (d.harga_jual_aktual) {
+        setAkhirForm({ 
+          harga_jual_aktual: String(Math.round(d.harga_jual_aktual)), 
+          biaya_pakan: String(d.biaya_pakan ? Math.round(d.biaya_pakan) : ""), 
+          biaya_operasional: String(d.biaya_operasional ? Math.round(d.biaya_operasional) : ""), 
+          biaya_obat_vitamin: String(d.biaya_obat_vitamin ? Math.round(d.biaya_obat_vitamin) : ""), 
+          fee_marketing: String(d.fee_marketing ? Math.round(d.fee_marketing) : "") 
+        });
+      } else {
+        setAkhirForm({ harga_jual_aktual: "", biaya_pakan: "", biaya_operasional: "", biaya_obat_vitamin: "", fee_marketing: "" });
+      }
     } catch { setLaporan(null); }
     finally { setLoadingLaporan(false); }
   }, []);
@@ -113,28 +128,55 @@ export default function LaporanInvestasiPage() {
     if (!selectedId || !beratForm.tanggal_input || !beratForm.berat_kg) return;
     setSavingBerat(true); setBeratMsg(null);
     try {
-      const body: any = { tanggal_input: beratForm.tanggal_input, berat_kg: beratForm.berat_kg };
+      const body: any = { 
+        tanggal_input: beratForm.tanggal_input, 
+        berat_kg: beratForm.berat_kg,
+        harga_per_kg: beratForm.harga_per_kg || "0"
+      };
       if (beratForm.keterangan) body.keterangan = beratForm.keterangan;
-      if (beratForm.harga_jual_per_kg) body.harga_jual_per_kg = beratForm.harga_jual_per_kg;
       if (beratForm.target_berat_kg) body.target_berat_kg = beratForm.target_berat_kg;
+      
       const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${selectedId}/berat/`, { method: "POST", body: JSON.stringify(body) });
-      setLaporan(d); setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_jual_per_kg: "", target_berat_kg: "" });
+      setLaporan(d); 
+      setBeratForm({ tanggal_input: "", berat_kg: "", keterangan: "", harga_per_kg: "", target_berat_kg: "" });
       setBeratMsg({ type: "ok", text: "✓ Berat berhasil ditambahkan." });
     } catch (e: any) { setBeratMsg({ type: "err", text: e?.message ?? "Gagal menyimpan." }); }
     finally { setSavingBerat(false); }
   };
 
-  const submitAkhir = async () => {
+  const submitAkhir = async (isFinal: boolean = false) => {
     if (!selectedId) return;
+    if (isFinal) {
+      const confirm = window.confirm("Apakah Anda yakin ingin menyelesaikan laporan ini? Setelah disimpan akhir, data perhitungan tidak akan bisa diubah kembali.");
+      if (!confirm) return;
+    }
     setSavingAkhir(true); setAkhirMsg(null);
     try {
-      const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${selectedId}/akhir/`, { method: "PUT", body: JSON.stringify(akhirForm) });
-      setLaporan(d); setAkhirMsg({ type: "ok", text: "✓ Perhitungan akhir berhasil disimpan." });
+      const body = { 
+        harga_jual_aktual: akhirForm.harga_jual_aktual || "0",
+        biaya_pakan: akhirForm.biaya_pakan || "0",
+        biaya_operasional: akhirForm.biaya_operasional || "0",
+        biaya_obat_vitamin: akhirForm.biaya_obat_vitamin || "0",
+        fee_marketing: akhirForm.fee_marketing || "0",
+        is_final: isFinal 
+      };
+      const d = await apiFetch<LaporanData>(`/sales/laporan-invest/${selectedId}/akhir/`, { method: "PUT", body: JSON.stringify(body) });
+      setLaporan(d); 
+      setAkhirMsg({ type: "ok", text: isFinal ? "✓ Perhitungan akhir berhasil difinalisasi." : "✓ Perubahan berhasil disimpan." });
     } catch (e: any) { setAkhirMsg({ type: "err", text: e?.message ?? "Gagal menyimpan." }); }
     finally { setSavingAkhir(false); }
   };
 
-  const filtered = orders.filter(o =>
+  // Customer selection list
+  const uniqueCustomers = Array.from(new Set(orders.map(o => o.data_customer?.nama).filter(Boolean)));
+
+  // Filter strictly by customer selection dropdown first
+  const filteredCustomerOrders = selectedCustomer 
+    ? orders.filter(o => o.data_customer?.nama === selectedCustomer)
+    : orders;
+
+  // Filtered by sidebar search input
+  const filtered = filteredCustomerOrders.filter(o =>
     o.data_customer?.nama?.toLowerCase().includes(search.toLowerCase()) ||
     String(o.id_pesanan).toLowerCase().includes(search.toLowerCase())
   );
@@ -142,9 +184,9 @@ export default function LaporanInvestasiPage() {
   const selectedOrder = orders.find(o => o.id === selectedId);
   const inp = "w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-400 bg-white";
 
-  // Summary stats
-  const totalTagihan = orders.filter(o => o.status_pesanan !== "Cancelled").reduce((s, o) => s + Number(o.tagihan), 0);
-  const countByStatus = (s: string) => orders.filter(o => o.status_pesanan === s).length;
+  // Summary stats based on filteredCustomerOrders
+  const totalTagihan = filteredCustomerOrders.filter(o => o.status_pesanan !== "Cancelled").reduce((s, o) => s + Number(o.tagihan), 0);
+  const countByStatus = (s: string) => filteredCustomerOrders.filter(o => o.status_pesanan === s).length;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
@@ -158,10 +200,10 @@ export default function LaporanInvestasiPage() {
         <p className="text-sm text-gray-400 mt-0.5">Input berat bulanan &amp; perhitungan akhir per pesanan invest ternak</p>
       </div>
 
-      {/* Summary Cards + Export */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Total Pesanan", value: String(orders.length), accent: "border-l-gray-400" },
+          { label: "Total Pesanan", value: String(filteredCustomerOrders.length), accent: "border-l-gray-400" },
           { label: "Processed", value: String(countByStatus("Processed")), accent: "border-l-amber-400" },
           { label: "Completed", value: String(countByStatus("Completed")), accent: "border-l-blue-500" },
           { label: "Total Tagihan Aktif", value: loadingOrders ? "—" : "Rp " + Math.round(totalTagihan).toLocaleString("id-ID"), accent: "border-l-emerald-500" },
@@ -172,12 +214,42 @@ export default function LaporanInvestasiPage() {
           </div>
         ))}
       </div>
-      <div className="flex justify-end mb-4">
-        <button onClick={() => exportCSV(orders)} disabled={orders.length === 0}
-          className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round"/></svg>
-          Export CSV
-        </button>
+
+      {/* Customer Filter and Export Controls */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center mb-6 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <span className="text-xs font-black text-gray-400 uppercase tracking-wider whitespace-nowrap">Filter Customer:</span>
+          <select 
+            value={selectedCustomer} 
+            onChange={e => { setSelectedCustomer(e.target.value); setSelectedId(null); setLaporan(null); }}
+            className="px-3 py-2 text-xs font-bold border border-gray-200 rounded-xl outline-none bg-gray-50 focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+          >
+            <option value="">Semua Customer</option>
+            {uniqueCustomers.map(custName => (
+              <option key={custName} value={custName}>{custName}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex gap-2 w-full sm:w-auto justify-end">
+          <button onClick={() => exportCSV(filteredCustomerOrders)} disabled={filteredCustomerOrders.length === 0}
+            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round"/></svg>
+            Export CSV
+          </button>
+          <button onClick={() => {
+              if (selectedCustomer) {
+                generateCustomerInvestmentsPDF(selectedCustomer, filteredCustomerOrders);
+              } else {
+                alert("Pilih customer terlebih dahulu untuk melakukan export PDF per customer.");
+              }
+            }} 
+            disabled={!selectedCustomer || filteredCustomerOrders.length === 0}
+            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 disabled:opacity-40 transition-colors shadow-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round"/></svg>
+            Export PDF per Customer
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -250,9 +322,19 @@ export default function LaporanInvestasiPage() {
                     <h2 className="text-lg font-black text-gray-900">{selectedOrder?.data_customer?.nama ?? "—"}</h2>
                     <p className="text-xs text-gray-400">{selectedOrder?.data_customer?.email} · Pesanan #{laporan.id_pesanan}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[laporan.status_pesanan] ?? "bg-gray-400"}`} />
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full border ${STATUS_COLOR[laporan.status_pesanan] ?? ""}`}>{laporan.status_pesanan}</span>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[laporan.status_pesanan] ?? "bg-gray-400"}`} />
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full border ${STATUS_COLOR[laporan.status_pesanan] ?? ""}`}>{laporan.status_pesanan}</span>
+                    </div>
+                    
+                    <button 
+                      onClick={() => generateInvestReportPDF(laporan, selectedOrder?.data_customer)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 text-xs font-black uppercase tracking-wider rounded-xl hover:bg-red-100 transition-colors shadow-sm mt-1"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round"/></svg>
+                      Unduh PDF Laporan
+                    </button>
                   </div>
                 </div>
                 {laporan.info_invest.map((inv, i) => (
@@ -293,6 +375,7 @@ export default function LaporanInvestasiPage() {
                       <thead><tr className="border-b border-gray-100">
                         <th className="pb-2 text-left text-xs text-gray-400 font-semibold">Tanggal</th>
                         <th className="pb-2 text-right text-xs text-gray-400 font-semibold">Berat (kg)</th>
+                        <th className="pb-2 text-right text-xs text-gray-400 font-semibold">Harga/kg</th>
                         <th className="pb-2 text-right text-xs text-gray-400 font-semibold">Estimasi Jual</th>
                         <th className="pb-2 text-left text-xs text-gray-400 font-semibold pl-4">Keterangan</th>
                       </tr></thead>
@@ -300,7 +383,8 @@ export default function LaporanInvestasiPage() {
                         {laporan.histori_berat.map(h => (
                           <tr key={h.id} className="hover:bg-gray-50">
                             <td className="py-2 text-gray-600 text-xs">{h.tanggal_input}</td>
-                            <td className="py-2 text-right font-mono tabular-nums font-semibold text-gray-800">{h.berat_kg}</td>
+                            <td className="py-2 text-right font-mono tabular-nums font-semibold text-gray-800">{h.berat_kg} kg</td>
+                            <td className="py-2 text-right font-mono tabular-nums text-gray-600">{fmtF(h.harga_per_kg || laporan.harga_jual_per_kg)}</td>
                             <td className="py-2 text-right font-mono tabular-nums text-emerald-700 font-bold">{fmtF(h.estimasi_harga_jual)}</td>
                             <td className="py-2 text-xs text-gray-400 pl-4">{h.keterangan || "—"}</td>
                           </tr>
@@ -317,19 +401,36 @@ export default function LaporanInvestasiPage() {
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Bulanan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    {[
-                      { key: "tanggal_input", label: "Tanggal *", type: "date" },
-                      { key: "berat_kg", label: "Berat (kg) *", type: "number", ph: "320.5" },
-                      { key: "harga_jual_per_kg", label: "Harga Jual/kg (opsional)", type: "number", ph: "55000" },
-                      { key: "target_berat_kg", label: "Target Panen (kg)", type: "number", ph: "500" },
-                    ].map(f => (
-                      <div key={f.key} className="col-span-2 sm:col-span-1">
-                        <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
-                        <input type={f.type} step={f.type === "number" ? "0.01" : undefined} className={inp} placeholder={f.ph}
-                          max={f.type === "date" ? new Date().toISOString().split("T")[0] : undefined}
-                          value={(beratForm as any)[f.key]} onChange={e => setBeratForm(p => ({ ...p, [f.key]: e.target.value }))} />
-                      </div>
-                    ))}
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">Tanggal *</label>
+                      <input type="date" className={inp}
+                        max={new Date().toISOString().split("T")[0]}
+                        value={beratForm.tanggal_input} onChange={e => setBeratForm(p => ({ ...p, [e.target.value ? "tanggal_input" : "tanggal_input"]: e.target.value }))} />
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">Berat (kg) *</label>
+                      <input type="number" step="0.01" className={inp} placeholder="Contoh: 320.5"
+                        value={beratForm.berat_kg} onChange={e => setBeratForm(p => ({ ...p, berat_kg: e.target.value }))} />
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">Harga per Kilo (Rp) *</label>
+                      <input type="text" className={inp} placeholder="Contoh: 55.000"
+                        value={beratForm.harga_per_kg ? Number(beratForm.harga_per_kg).toLocaleString("id-ID") : ""}
+                        onChange={e => {
+                          const cleanValue = e.target.value.replace(/\D/g, "");
+                          setBeratForm(p => ({ ...p, harga_per_kg: cleanValue }));
+                        }} />
+                      {beratForm.berat_kg && beratForm.harga_per_kg && (
+                        <p className="text-[10px] font-black text-emerald-700 mt-1">
+                          Estimasi Harga Jual: Rp {(Number(beratForm.berat_kg) * Number(beratForm.harga_per_kg)).toLocaleString("id-ID")}
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">Target Panen (kg)</label>
+                      <input type="number" step="0.01" className={inp} placeholder="Contoh: 500"
+                        value={beratForm.target_berat_kg} onChange={e => setBeratForm(p => ({ ...p, target_berat_kg: e.target.value }))} />
+                    </div>
                     <div className="col-span-2">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">Keterangan / Deskripsi (opsional)</label>
                         <textarea className={`${inp} min-h-[80px] resize-y`} placeholder="Contoh: Berat badan naik setelah pemberian vitamin tambahan..."
@@ -337,8 +438,8 @@ export default function LaporanInvestasiPage() {
                     </div>
                   </div>
                   {beratMsg && <p className={`text-xs mb-3 font-medium ${beratMsg.type === "ok" ? "text-emerald-600" : "text-red-500"}`}>{beratMsg.text}</p>}
-                  <button onClick={submitBerat} disabled={savingBerat || !beratForm.tanggal_input || !beratForm.berat_kg}
-                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors">
+                  <button onClick={submitBerat} disabled={savingBerat || !beratForm.tanggal_input || !beratForm.berat_kg || !beratForm.harga_per_kg}
+                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-sm">
                     {savingBerat ? "Menyimpan..." : "Simpan Berat"}
                   </button>
                 </div>
@@ -359,8 +460,13 @@ export default function LaporanInvestasiPage() {
                     ].map(f => (
                       <div key={f.key} className="col-span-2 sm:col-span-1">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
-                        <input type="number" className={inp} value={(akhirForm as any)[f.key]}
-                          onChange={e => setAkhirForm(p => ({ ...p, [f.key]: e.target.value }))} />
+                        <input 
+                          type="number" 
+                          className={inp} 
+                          value={(akhirForm as any)[f.key]}
+                          disabled={laporan.is_final}
+                          onChange={e => setAkhirForm(p => ({ ...p, [f.key]: e.target.value }))} 
+                        />
                       </div>
                     ))}
                   </div>
@@ -380,10 +486,30 @@ export default function LaporanInvestasiPage() {
                     </div>
                   )}
                   {akhirMsg && <p className={`text-xs mb-3 font-medium ${akhirMsg.type === "ok" ? "text-emerald-600" : "text-red-500"}`}>{akhirMsg.text}</p>}
-                  <button onClick={submitAkhir} disabled={savingAkhir}
-                    className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 disabled:opacity-40 transition-colors">
-                    {savingAkhir ? "Menyimpan..." : "Simpan Perhitungan Akhir"}
-                  </button>
+                  
+                  {laporan.is_final ? (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 text-center text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6 9 17l-5-5" strokeLinecap="round"/></svg>
+                      Laporan Telah Difinalisasi (Simpan Akhir)
+                    </div>
+                  ) : (
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => submitAkhir(false)} 
+                        disabled={savingAkhir}
+                        className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 disabled:opacity-40 transition-colors shadow-sm flex-1"
+                      >
+                        {savingAkhir ? "Menyimpan..." : "Simpan Perubahan"}
+                      </button>
+                      <button 
+                        onClick={() => submitAkhir(true)} 
+                        disabled={savingAkhir}
+                        className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-sm flex-1"
+                      >
+                        {savingAkhir ? "Menyelesaikan..." : "Simpan Akhir"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -31,7 +31,7 @@ export default function LaporanPenjualanPage() {
   const [error, setError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [jenis, setJenis] = useState("");
+  const [jenis, setJenis] = useState("Mazdafarm");
   const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
@@ -51,15 +51,21 @@ export default function LaporanPenjualanPage() {
   }, [page, startDate, endDate, jenis]);
 
   useEffect(() => { load(); }, [load]);
-  const reset = () => { setStartDate(""); setEndDate(""); setJenis(""); setPage(1); };
+  const reset = () => { setStartDate(""); setEndDate(""); setJenis("Mazdafarm"); setPage(1); };
   const inp = "w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-400 bg-white";
   const rekap = result?.rekapitulasi;
 
   const CARDS = [
-    { label: "Total Transaksi", value: loading ? "—" : String(rekap?.total_jumlah_transaksi ?? 0), sub: "pesanan selesai", accent: "border-l-emerald-500" },
+    { label: "Total Transaksi", value: loading ? "—" : String(rekap?.total_jumlah_transaksi ?? 0), sub: "produk terjual", accent: "border-l-emerald-500" },
     { label: "Customer Unik", value: loading ? "—" : String(rekap?.total_customer_unik ?? 0), sub: "customer berbeda", accent: "border-l-blue-500" },
-    { label: "Total Tagihan", value: loading ? "—" : fmtS(rekap?.total_pendapatan ?? 0), sub: "semua pesanan selesai", accent: "border-l-violet-500" },
+    { label: "Total Pendapatan", value: loading ? "—" : fmtS(rekap?.total_pendapatan ?? 0), sub: "semua pesanan selesai", accent: "border-l-violet-500" },
   ];
+
+  const getHeaders = () => {
+    if (jenis === "Mazdafarm") return ["ID Pesanan", "Customer", "Eartag/ID", "Nama Ternak", "Detail Ternak", "Modal Awal", "Harga Jual", "Keuntungan", "Tanggal"];
+    if (jenis === "Mazdaging") return ["ID Pesanan", "Customer", "ID Daging", "Nama Produk", "Detail Daging", "Modal Awal", "Harga Jual", "Keuntungan", "Tanggal"];
+    return ["ID Pesanan", "Customer", "ID Invest", "Paket Investasi", "Detail Paket", "Modal Awal", "Harga Jual", "Keuntungan", "Tanggal"];
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
@@ -91,16 +97,35 @@ export default function LaporanPenjualanPage() {
             Export CSV
           </button>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div><label className="text-xs text-gray-400 mb-1 block">Dari Tanggal</label><input type="date" className={inp} value={startDate} onChange={e => { setStartDate(e.target.value); setPage(1); }} /></div>
           <div><label className="text-xs text-gray-400 mb-1 block">Sampai Tanggal</label><input type="date" className={inp} value={endDate} onChange={e => { setEndDate(e.target.value); setPage(1); }} /></div>
-          <div><label className="text-xs text-gray-400 mb-1 block">Jenis Layanan</label>
-            <select className={inp} value={jenis} onChange={e => { setJenis(e.target.value); setPage(1); }}>
-              {JENIS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-          <div className="flex items-end"><button onClick={reset} className="w-full px-3 py-2 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100">Reset</button></div>
+          <div className="flex items-end"><button onClick={reset} className="w-full px-3 py-2 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100">Reset Filter</button></div>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto">
+        {[
+          { id: "Mazdafarm", label: "Ternak (Mazdafarm)", color: "border-emerald-500 text-emerald-600 bg-emerald-50/30" },
+          { id: "Mazdaging", label: "Daging (Mazdaging)", color: "border-amber-500 text-amber-600 bg-amber-50/30" },
+          { id: "Investernak", label: "Invest (Invest Ternak)", color: "border-violet-500 text-violet-600 bg-violet-50/30" }
+        ].map((tab) => {
+          const isSel = jenis === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => { setJenis(tab.id); setPage(1); }}
+              className={`px-6 py-3.5 text-xs font-black uppercase tracking-widest border-b-2 transition-all rounded-t-2xl whitespace-nowrap ${
+                isSel 
+                  ? `${tab.color} border-[#1a8245] text-gray-900` 
+                  : "border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Table */}
@@ -111,33 +136,38 @@ export default function LaporanPenjualanPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    {["ID", "Customer", "Layanan", "Total Tagihan", "Sudah Dibayar", "Menunggu Verif.", "Tanggal"].map(h => (
+                    {getHeaders().map(h => (
                       <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {!result?.data.length
-                    ? <tr><td colSpan={7} className="px-5 py-10 text-center text-gray-300 text-sm">Tidak ada data transaksi</td></tr>
-                    : result.data.map(row => (
-                      <tr key={`${row.jenis_layanan}-${row.id_pesanan}`} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-5 py-3.5 font-bold text-gray-700">#{row.id_pesanan}</td>
-                        <td className="px-5 py-3.5 text-gray-800">{row.nama_customer}</td>
-                        <td className="px-5 py-3.5">
-                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${BADGE[row.jenis_layanan] ?? "bg-gray-100 text-gray-600"}`}>{row.jenis_layanan}</span>
-                        </td>
-                        <td className="px-5 py-3.5 font-mono tabular-nums font-bold text-gray-800">{fmtF(row.total_tagihan)}</td>
-                        <td className="px-5 py-3.5 font-mono tabular-nums text-emerald-700">{fmtF(row.sudah_dibayar)}</td>
-                        <td className="px-5 py-3.5 font-mono tabular-nums text-amber-600">{fmtF(row.menunggu_persetujuan)}</td>
-                        <td className="px-5 py-3.5 text-gray-400 text-xs">{new Date(row.tanggal_transaksi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                      </tr>
-                    ))}
+                    ? <tr><td colSpan={9} className="px-5 py-10 text-center text-gray-300 text-sm">Tidak ada data transaksi</td></tr>
+                    : result.data.map((row: any) => {
+                      const keuntungan = Number(row.total_tagihan || 0) - Number(row.modal_awal || 0);
+                      return (
+                        <tr key={`${row.jenis_layanan}-${row.produk_id}-${row.id_pesanan}`} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-5 py-3.5 font-bold text-gray-700">#{row.id_pesanan}</td>
+                          <td className="px-5 py-3.5 text-gray-800">{row.nama_customer}</td>
+                          <td className="px-5 py-3.5 font-mono text-xs text-gray-500 font-bold">{row.produk_id}</td>
+                          <td className="px-5 py-3.5 text-gray-900 font-bold">{row.nama_produk}</td>
+                          <td className="px-5 py-3.5 text-gray-400 text-xs italic font-medium">{row.detail_layanan}</td>
+                          <td className="px-5 py-3.5 font-mono tabular-nums text-gray-600">{fmtF(row.modal_awal || 0)}</td>
+                          <td className="px-5 py-3.5 font-mono tabular-nums font-bold text-gray-800">{fmtF(row.total_tagihan || 0)}</td>
+                          <td className={`px-5 py-3.5 font-mono tabular-nums font-black ${keuntungan >= 0 ? "text-[#1a8245]" : "text-red-600"}`}>
+                            {fmtF(keuntungan)}
+                          </td>
+                          <td className="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{new Date(row.tanggal_transaksi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
             {result && result.pagination.total_pages > 1 && (
               <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
-                <p className="text-xs text-gray-400">Hal. {result.pagination.page} / {result.pagination.total_pages} · {result.pagination.total_items} transaksi</p>
+                <p className="text-xs text-gray-400">Hal. {result.pagination.page} / {result.pagination.total_pages} · {result.pagination.total_items} item</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">← Prev</button>
                   <button onClick={() => setPage(p => Math.min(result.pagination.total_pages, p + 1))} disabled={page === result.pagination.total_pages} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">Next →</button>

@@ -16,6 +16,9 @@ export function useAuth() {
             localStorage.setItem("refreshToken", data.refresh);
             localStorage.setItem("userRole", data.role);
             localStorage.setItem("userName", data.nama);
+            localStorage.setItem("aksesMazdafarm", String(data.akses_mazdafarm ?? true));
+            localStorage.setItem("aksesMazdaging", String(data.akses_mazdaging ?? true));
+            localStorage.setItem("aksesInvesternak", String(data.akses_investernak ?? true));
 
             toast.success(`Selamat datang, ${data.nama}!`);
 

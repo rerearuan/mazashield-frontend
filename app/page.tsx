@@ -215,7 +215,7 @@ export default function Home() {
                 <span className="p-2 bg-[#1a8245]/10 rounded-xl"><Icons.Meat className="w-6 h-6 text-[#1a8245]" /></span>
                 Sapi Bali & Jawa
               </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
@@ -250,7 +250,7 @@ export default function Home() {
                 <span className="p-2 bg-[#fbbf24]/10 rounded-xl"><Icons.Leaf className="w-6 h-6 text-[#d97706]" /></span>
                 Kambing/Domba
               </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
@@ -279,6 +279,32 @@ export default function Home() {
             </div>
           </div>
           <p className="mt-8 text-xs text-gray-400 font-medium italic">*Harga Sapi sudah termasuk biaya operasional sembelih Rp 1.500.000/ekor. Harga Kambing belum termasuk biaya jagal.</p>
+        </div>
+      </section>
+
+      {/* Bank Account Info Section */}
+      <section className="py-16 bg-gray-50 border-y border-gray-100 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] block">Official Payment Channel</span>
+          <h2 className="text-gray-900 font-extrabold text-2xl lg:text-3xl tracking-tighter">Informasi Rekening Pembayaran Resmi</h2>
+          <p className="text-gray-500 font-medium text-sm max-w-2xl mx-auto">
+            Untuk kemudahan transaksi dan menjaga keamanan Anda, seluruh pembayaran tabungan qurban, pembelian daging, dan paket investasi disalurkan melalui rekening korporat resmi kami berikut:
+          </p>
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/60 shadow-xl shadow-green-900/5 max-w-md mx-auto relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-2xl -z-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="flex flex-col items-center">
+              <span className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-2 block">Transfer Bank Syariah</span>
+              <p className="text-lg font-black text-gray-900">Bank Syariah Indonesia (BSI)</p>
+              <div className="my-4 px-6 py-3 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-center gap-3">
+                <span className="text-2xl font-black text-[#1a8245] tracking-widest">9000 6060 78</span>
+              </div>
+              <p className="text-xs text-gray-500 font-bold">Atas Nama Penerima:</p>
+              <p className="text-sm font-black text-gray-900 mt-1 uppercase tracking-wider">PT Mazashi Semuda Farm</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 font-medium italic">
+            *Mohon konfirmasikan bukti transfer Anda ke nomor WhatsApp Admin resmi kami setelah melakukan pembayaran.
+          </p>
         </div>
       </section>
 

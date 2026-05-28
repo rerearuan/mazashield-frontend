@@ -105,7 +105,7 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
     <Modal size="lg" isOpen={isOpen} onClose={onClose} title={`Input Pembayaran #${order.id_pesanan || order.id}`}>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-100 flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-100 flex flex-col sm:flex-row gap-4 mb-4">
           <div className="flex-1">
             <span className="block text-[10px] uppercase font-black text-gray-500 tracking-wider">Sisa Tagihan</span>
             <span className="text-lg font-black text-gray-900">Rp {parseFloat(order.tagihan).toLocaleString("id-ID")}</span>
@@ -117,6 +117,18 @@ export default function PaymentUpdateModal({ isOpen, onClose, order, orderType, 
           <div className="flex-1">
             <span className="block text-[10px] uppercase font-black text-gray-500 tracking-wider">Menunggu Persetujuan</span>
             <span className="text-lg font-black text-amber-500">Rp {parseFloat(order.menunggu_persetujuan).toLocaleString("id-ID")}</span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100/60 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span className="block text-[9px] uppercase font-black text-emerald-600 tracking-wider">Rekening Tujuan Transfer</span>
+            <span className="text-sm font-black text-gray-900">Bank Syariah Indonesia (BSI)</span>
+            <span className="block text-[10px] text-gray-500 font-bold mt-0.5">a.n. PT Mazashi Semuda Farm</span>
+          </div>
+          <div className="px-4 py-2 bg-white rounded-xl border border-emerald-200 text-center sm:text-right shrink-0">
+            <span className="block text-[9px] uppercase font-black text-gray-400 tracking-wider">Nomor Rekening</span>
+            <span className="text-base font-black text-[#1a8245] tracking-widest">9000 6060 78</span>
           </div>
         </div>
 

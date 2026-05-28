@@ -309,7 +309,7 @@ export default function PesananInvestPage() {
                     </button>
                     <h1 className="text-3xl font-black text-gray-900">Pesanan Saya</h1>
                     <p className="text-gray-500 text-sm mt-1">
-                        Invest Qurban — {totalCount} pesanan ditemukan
+                        Invest Ternak — {totalCount} pesanan ditemukan
                     </p>
                 </div>
 
@@ -344,7 +344,7 @@ export default function PesananInvestPage() {
                 ) : orders.length === 0 ? (
                     <div className="py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                         <p className="text-4xl mb-3">📈</p>
-                        <p className="text-gray-500 font-medium">Belum ada pesanan Invest Qurban.</p>
+                        <p className="text-gray-500 font-medium">Belum ada pesanan Invest Ternak.</p>
                         {!filterStatus && (
                             <button
                                 onClick={() => router.push("/invest-qurban")}
