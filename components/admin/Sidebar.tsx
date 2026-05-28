@@ -335,7 +335,7 @@ export default function Sidebar() {
         onClose={() => setShowLogoutModal(false)}
         onConfirm={onConfirmLogout}
         title="Konfirmasi Keluar"
-        message="Apakah Anda yakin ingin keluar dari sistem Mazdafarm? Sesi Anda akan berakhir dan Anda harus masuk kembali."
+        message="Apakah Anda yakin ingin keluar?"
         confirmText="Keluar Sekarang"
         type="danger"
         isLoading={isLoggingOut}

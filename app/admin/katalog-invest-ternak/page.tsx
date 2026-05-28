@@ -167,7 +167,7 @@ export default function KatalogInvestTernakPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onConfirmDelete}
         title="Hapus Invest"
-        message="Data yang sudah dihapus tidak dapat dikembalikan. Pastikan Anda sudah memverifikasi data ini."
+        message="Apakah Anda yakin ingin menghapus data invest ini?"
         confirmText="Ya, Hapus Permanen"
         type="danger"
       />

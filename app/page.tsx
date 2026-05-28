@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import SafeImage from "@/components/common/SafeImage";
 import Link from "next/link";
 import Navbar from "@/components/common/Navbar";
@@ -19,6 +22,22 @@ const images = {
 };
 
 export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const carouselImages = [
+    "/images/homepages/Sapi.png",
+    "/images/homepages/Daging.png",
+    "/images/homepages/image 8.png",
+    "/images/homepages/image 10.png",
+    "/images/homepages/image 13.png",
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [carouselImages.length]);
+
   return (
     <div className="bg-white min-h-screen font-primary">
       <Navbar activePage="home" />
@@ -26,17 +45,27 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="relative min-h-[600px] h-[100svh] max-h-[900px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <SafeImage
-            src={images.background}
-            alt="Farm background"
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+          {carouselImages.map((src, index) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+              }`}
+            >
+              <SafeImage
+                src={src}
+                alt={`Mazashi slide ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                unoptimized
+              />
+            </div>
+          ))}
+          {/* Fading overlay on top of carousel */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 z-20" />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left">
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left">
           <div className="max-w-[800px] space-y-6">
             <span className="text-[#22ad5c] font-black uppercase tracking-[0.3em] text-xs sm:text-sm">PT Mazashi Semuda Farm</span>
             <h1 className="text-4xl md:text-7xl font-black text-white leading-[1.1] tracking-tighter mb-8">

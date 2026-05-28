@@ -170,7 +170,7 @@ export default function KatalogMazdagingPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onConfirmDelete}
         title="Hapus Produk"
-        message="Produk ini akan dihapus permanen dari katalog. Lanjutkan?"
+        message="Apakah Anda yakin ingin menghapus produk ini?"
         confirmText="Ya, Hapus"
         type="danger"
       />

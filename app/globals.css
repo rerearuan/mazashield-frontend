@@ -2,20 +2,39 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1e293b; /* Slate-800 for high contrast typography */
+}
+
+@theme {
+  /* Premium typography scale-up for older target market */
+  --text-xs: 0.875rem;     /* 14px instead of 12px */
+  --text-sm: 1rem;         /* 16px instead of 14px */
+  --text-base: 1.125rem;   /* 18px instead of 16px */
+  --text-lg: 1.25rem;      /* 20px instead of 18px */
+  --text-xl: 1.5rem;       /* 24px instead of 20px */
+  --text-2xl: 1.75rem;     /* 28px */
+  --text-3xl: 2.25rem;     /* 36px */
+  --text-4xl: 3rem;        /* 48px */
+  
+  /* Brand colors */
+  --color-green-600: #006730; /* Primary Green */
+  --color-green-700: #004d24;
+  --color-amber-500: #FFDA41; /* Brand Yellow */
+  --color-red-600: #FF0118;   /* Brand Red */
+  
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-poppins: var(--font-poppins);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-plus-jakarta-sans);
-  --font-poppins: var(--font-poppins);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a; /* Dark Slate background */
+    --foreground: #f8fafc;
   }
 }
 
@@ -23,4 +42,131 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-plus-jakarta-sans), sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   GLOBAL TYPOGRAPHY SCALE & CONTRAST OVERRIDES 
+   ========================================== */
+
+/* Scale up tiny arbitrary sizes */
+[class*="text-[10px]"], [class*="text-[10px]"] * {
+  font-size: 0.875rem !important; /* Scale 10px to 14px */
+}
+[class*="text-[11px]"], [class*="text-[11px]"] * {
+  font-size: 0.875rem !important; /* Scale 11px to 14px */
+}
+[class*="text-[8px]"], [class*="text-[8px]"] * {
+  font-size: 0.8125rem !important; /* Scale 8px to 13px */
+}
+[class*="text-[9px]"], [class*="text-[9px]"] * {
+  font-size: 0.8125rem !important; /* Scale 9px to 13px */
+}
+[class*="text-xs"] {
+  font-size: 0.875rem !important; /* Force 14px */
+}
+[class*="text-sm"] {
+  font-size: 1rem !important; /* Force 16px */
+}
+
+/* Improve text readability contrast */
+.text-gray-400 {
+  color: #475569 !important; /* Change Slate-400 to darker Slate-600 */
+}
+.text-gray-500 {
+  color: #334155 !important; /* Change Slate-500 to darker Slate-700 */
+}
+.text-gray-600 {
+  color: #1e293b !important; /* Change Slate-600 to darker Slate-800 */
+}
+
+/* ==========================================
+   GLOBAL MAZASHI BRAND COLORS OVERRIDES 
+   ========================================== */
+
+/* Map old green #1a8245 -> Brand Green #006730 */
+[class*="bg-[#1a8245]"] {
+  background-color: #006730 !important;
+}
+[class*="text-[#1a8245]"] {
+  color: #006730 !important;
+}
+[class*="border-[#1a8245]"] {
+  border-color: #006730 !important;
+}
+[class*="bg-[#1a8245]/10"] {
+  background-color: rgba(0, 103, 48, 0.1) !important;
+}
+[class*="bg-[#1a8245]/20"] {
+  background-color: rgba(0, 103, 48, 0.2) !important;
+}
+[class*="text-[#1a8245]/10"] {
+  color: rgba(0, 103, 48, 0.1) !important;
+}
+
+/* Hovers light green #22ad5c -> Brand Green light #00823d */
+[class*="hover:bg-[#22ad5c]"]:hover {
+  background-color: #00823d !important;
+}
+[class*="bg-[#22ad5c]"] {
+  background-color: #00823d !important;
+}
+[class*="text-[#22ad5c]"] {
+  color: #00823d !important;
+}
+
+/* Map old yellow #fbbf24 -> Brand Yellow #FFDA41 */
+[class*="bg-[#fbbf24]"] {
+  background-color: #FFDA41 !important;
+}
+[class*="text-[#fbbf24]"] {
+  color: #FFDA41 !important;
+}
+[class*="border-[#fbbf24]"] {
+  border-color: #FFDA41 !important;
+}
+[class*="hover:bg-[#fbbf24]"]:hover {
+  background-color: #ffd20d !important; /* Richer hover yellow */
+}
+
+/* Add custom Red #FF0118 accent styling for design highlights */
+.border-red-brand {
+  border-color: #FF0118 !important;
+}
+.text-red-brand {
+  color: #FF0118 !important;
+}
+.bg-red-brand {
+  background-color: #FF0118 !important;
+}
+
+/* ==========================================
+   GLOBAL CONTRAST FOR CARDS, BUTTONS, INPUTS
+   ========================================== */
+
+/* Buttons high-contrast border and shadows */
+button, .btn {
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+}
+[class*="bg-[#006730]"], [class*="bg-[#1a8245]"] {
+  box-shadow: 0 4px 6px -1px rgba(0, 103, 48, 0.2), 0 2px 4px -2px rgba(0, 103, 48, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Cards high-contrast outline */
+.bg-white, [class*="bg-white"] {
+  border: 1px solid #cbd5e1 !important; /* Clean high-contrast border */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Inputs high-contrast outline */
+input, select, textarea {
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #006730 !important;
+  box-shadow: 0 0 0 2px rgba(0, 103, 48, 0.2) !important;
 }

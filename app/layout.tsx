@@ -30,6 +30,7 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${poppins.variable} antialiased`}
       >
+        <div className="fixed top-0 left-0 right-0 h-[3px] bg-[#FF0118] z-[9999] pointer-events-none" />
         <Toaster
           position="top-right"
           toastOptions={{

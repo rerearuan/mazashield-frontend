@@ -267,7 +267,7 @@ export default function ManajemenAkunInternalPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onConfirmDelete}
         title="Hapus Akun Pengguna"
-        message="Akun ini akan dinonaktifkan (soft delete) dan tidak dapat diakses lagi. Lanjutkan?"
+        message="Apakah Anda yakin ingin menghapus akun pengguna ini?"
         confirmText="Hapus Akun"
         type="danger"
       />
