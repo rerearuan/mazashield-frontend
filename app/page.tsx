@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import SafeImage from "@/components/common/SafeImage";
 import Link from "next/link";
 import Navbar from "@/components/common/Navbar";
@@ -19,6 +22,22 @@ const images = {
 };
 
 export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const carouselImages = [
+    "/images/homepages/Sapi.png",
+    "/images/homepages/Daging.png",
+    "/images/homepages/image 8.png",
+    "/images/homepages/image 10.png",
+    "/images/homepages/image 13.png",
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [carouselImages.length]);
+
   return (
     <div className="bg-white min-h-screen font-primary">
       <Navbar activePage="home" />
@@ -26,17 +45,27 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="relative min-h-[600px] h-[100svh] max-h-[900px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <SafeImage
-            src={images.background}
-            alt="Farm background"
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+          {carouselImages.map((src, index) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+              }`}
+            >
+              <SafeImage
+                src={src}
+                alt={`Mazashi slide ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                unoptimized
+              />
+            </div>
+          ))}
+          {/* Fading overlay on top of carousel */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 z-20" />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left">
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left">
           <div className="max-w-[800px] space-y-6">
             <span className="text-[#22ad5c] font-black uppercase tracking-[0.3em] text-xs sm:text-sm">PT Mazashi Semuda Farm</span>
             <h1 className="text-4xl md:text-7xl font-black text-white leading-[1.1] tracking-tighter mb-8">
@@ -215,7 +244,7 @@ export default function Home() {
                 <span className="p-2 bg-[#1a8245]/10 rounded-xl"><Icons.Meat className="w-6 h-6 text-[#1a8245]" /></span>
                 Sapi Bali & Jawa
               </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
@@ -250,7 +279,7 @@ export default function Home() {
                 <span className="p-2 bg-[#fbbf24]/10 rounded-xl"><Icons.Leaf className="w-6 h-6 text-[#d97706]" /></span>
                 Kambing/Domba
               </h3>
-              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
@@ -279,6 +308,32 @@ export default function Home() {
             </div>
           </div>
           <p className="mt-8 text-xs text-gray-400 font-medium italic">*Harga Sapi sudah termasuk biaya operasional sembelih Rp 1.500.000/ekor. Harga Kambing belum termasuk biaya jagal.</p>
+        </div>
+      </section>
+
+      {/* Bank Account Info Section */}
+      <section className="py-16 bg-gray-50 border-y border-gray-100 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <span className="text-[#1a8245] font-black uppercase tracking-[0.3em] text-[10px] block">Official Payment Channel</span>
+          <h2 className="text-gray-900 font-extrabold text-2xl lg:text-3xl tracking-tighter">Informasi Rekening Pembayaran Resmi</h2>
+          <p className="text-gray-500 font-medium text-sm max-w-2xl mx-auto">
+            Untuk kemudahan transaksi dan menjaga keamanan Anda, seluruh pembayaran tabungan qurban, pembelian daging, dan paket investasi disalurkan melalui rekening korporat resmi kami berikut:
+          </p>
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/60 shadow-xl shadow-green-900/5 max-w-md mx-auto relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-2xl -z-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="flex flex-col items-center">
+              <span className="text-gray-400 font-black uppercase tracking-widest text-[9px] mb-2 block">Transfer Bank Syariah</span>
+              <p className="text-lg font-black text-gray-900">Bank Syariah Indonesia (BSI)</p>
+              <div className="my-4 px-6 py-3 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-center gap-3">
+                <span className="text-2xl font-black text-[#1a8245] tracking-widest">9000 6060 78</span>
+              </div>
+              <p className="text-xs text-gray-500 font-bold">Atas Nama Penerima:</p>
+              <p className="text-sm font-black text-gray-900 mt-1 uppercase tracking-wider">PT Mazashi Semuda Farm</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 font-medium italic">
+            *Mohon konfirmasikan bukti transfer Anda ke nomor WhatsApp Admin resmi kami setelah melakukan pembayaran.
+          </p>
         </div>
       </section>
 

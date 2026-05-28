@@ -25,13 +25,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 relative overflow-hidden font-primary">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 relative overflow-hidden font-primary">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#1a8245]/10 rounded-full blur-[120px] animate-pulse"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#22ad5c]/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
 
-      <div className="w-full max-w-[480px] relative z-10">
-        <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-10 md:p-14">
+      <div className="w-full max-w-[480px] relative z-10 flex flex-col gap-6">
+        {/* Back to Home Button */}
+        <Link
+          href="/"
+          className="self-start inline-flex items-center gap-2 px-5 py-3 bg-white/80 backdrop-blur-md border border-gray-100 hover:border-[#1a8245] hover:text-[#1a8245] text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-sm shadow-gray-100/50 hover:shadow-lg active:scale-95"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          Kembali Ke Beranda
+        </Link>
+
+        <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-6 sm:p-10 md:p-14">
           {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex p-4 rounded-3xl bg-gray-50 mb-6 group hover:scale-105 transition-transform duration-300">

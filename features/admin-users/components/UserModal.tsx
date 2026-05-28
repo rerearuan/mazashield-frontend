@@ -29,6 +29,9 @@ export default function UserModal({
         email: "",
         nomor_telepon: "",
         role: type === "internal" ? "Marketing" : "Customer",
+        akses_mazdafarm: true,
+        akses_mazdaging: true,
+        akses_investernak: true,
     });
     const [generatedPassword, setGeneratedPassword] = useState("");
 
@@ -39,6 +42,9 @@ export default function UserModal({
                 email: selectedUser.email,
                 nomor_telepon: selectedUser.nomor_telepon || "",
                 role: selectedUser.role,
+                akses_mazdafarm: selectedUser.akses_mazdafarm !== false,
+                akses_mazdaging: selectedUser.akses_mazdaging !== false,
+                akses_investernak: selectedUser.akses_investernak !== false,
             });
         } else {
             setFormData({
@@ -46,6 +52,9 @@ export default function UserModal({
                 email: "",
                 nomor_telepon: "",
                 role: type === "internal" ? "Marketing" : "Customer",
+                akses_mazdafarm: true,
+                akses_mazdaging: true,
+                akses_investernak: true,
             });
         }
         setGeneratedPassword("");
@@ -164,6 +173,51 @@ export default function UserModal({
                             )}
                         </select>
                     </div>
+                    {type === "internal" && (
+                        <div className="md:col-span-2 p-6 bg-green-50/50 rounded-[24px] border border-green-100/50 space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-[#1a8245] ml-1 block">
+                                Modul yang Dapat Diakses Staf
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <label className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#1a8245] transition-all select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.akses_mazdafarm}
+                                        onChange={(e) => setFormData({ ...formData, akses_mazdafarm: e.target.checked })}
+                                        className="w-5 h-5 rounded-lg border-gray-200 text-[#1a8245] focus:ring-[#1a8245] cursor-pointer"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-gray-900 text-xs">Mazdafarm</span>
+                                        <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-tight">Katalog & Order Ternak</span>
+                                    </div>
+                                </label>
+                                <label className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#1a8245] transition-all select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.akses_mazdaging}
+                                        onChange={(e) => setFormData({ ...formData, akses_mazdaging: e.target.checked })}
+                                        className="w-5 h-5 rounded-lg border-gray-200 text-[#1a8245] focus:ring-[#1a8245] cursor-pointer"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-gray-900 text-xs">Mazdaging</span>
+                                        <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-tight">Katalog & Order Daging</span>
+                                    </div>
+                                </label>
+                                <label className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#1a8245] transition-all select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.akses_investernak}
+                                        onChange={(e) => setFormData({ ...formData, akses_investernak: e.target.checked })}
+                                        className="w-5 h-5 rounded-lg border-gray-200 text-[#1a8245] focus:ring-[#1a8245] cursor-pointer"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-gray-900 text-xs">Invest Ternak</span>
+                                        <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-tight">Katalog, Order, Laporan</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex gap-4 pt-4">

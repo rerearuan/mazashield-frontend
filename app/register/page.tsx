@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/useAuth";
 import { Button } from "@/components/button";
+import { Icons } from "@/components/common/Icons";
 
 const logo = "/images/logoPrimer 1.png";
 
@@ -21,6 +22,8 @@ export default function RegisterPage() {
     });
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -94,7 +97,7 @@ export default function RegisterPage() {
             <div className="absolute bottom-[-10%] left-[-10%] w-[45%] h-[45%] bg-[#22ad5c]/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
 
             <div className="w-full max-w-[540px] relative z-10 py-10">
-                <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-10 md:p-14">
+                <div className="bg-white/80 backdrop-blur-2xl rounded-[40px] shadow-2xl shadow-green-900/5 border border-white p-6 sm:p-10 md:p-14">
                     {/* Header */}
                     <div className="text-center mb-10">
                         <div className="inline-flex p-4 rounded-3xl bg-gray-50 mb-6 group hover:scale-105 transition-transform duration-300">
@@ -161,27 +164,45 @@ export default function RegisterPage() {
                             </div>
                             <div>
                                 <label className={labelClasses}>Kata Sandi</label>
-                                <input
-                                    type="password"
-                                    required
-                                    minLength={8}
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    placeholder="••••••••"
-                                    className={`${inputClasses} ${errors.password ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        minLength={8}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        placeholder="••••••••"
+                                        className={`${inputClasses} pr-12 ${errors.password ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1a8245] transition-colors"
+                                    >
+                                        {showPassword ? <Icons.EyeOff className="w-5 h-5" /> : <Icons.Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
                                 {errors.password && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.password}</span>}
                             </div>
                             <div>
                                 <label className={labelClasses}>Ulangi Sandi</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                                    placeholder="••••••••"
-                                    className={`${inputClasses} ${errors.confirmPassword ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        required
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                        placeholder="••••••••"
+                                        className={`${inputClasses} pr-12 ${errors.confirmPassword ? 'border-red-500 bg-red-50/30 ring-red-200' : ''}`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1a8245] transition-colors"
+                                    >
+                                        {showConfirmPassword ? <Icons.EyeOff className="w-5 h-5" /> : <Icons.Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
                                 {errors.confirmPassword && <span className="text-red-500 text-[10px] font-bold mt-1.5 ml-1 block">{errors.confirmPassword}</span>}
                             </div>
                         </div>

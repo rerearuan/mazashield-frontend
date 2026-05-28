@@ -24,6 +24,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
   const [catatan, setCatatan] = useState(order.catatan || "");
   const [submitting, setSubmitting] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [signatureImage, setSignatureImage] = useState<string | null>(null);
 
   const [role, setRole] = useState("");
 
@@ -34,6 +35,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
     }
     setStatusPesanan(order.status_pesanan);
     setCatatan(order.catatan || "");
+    setSignatureImage(null);
   }, [order]);
 
   const isCompletedOrCancelled = order.status_pesanan === 'Completed' || order.status_pesanan === 'Cancelled';
@@ -201,8 +203,36 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           />
         </div>
 
+        {/* Signature Upload Field */}
+        <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100/50 space-y-2">
+          <label className="block text-[10px] font-black text-amber-800 uppercase tracking-[0.2em]">
+            Foto Tanda Tangan untuk Invoice
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setSignatureImage(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+            className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-wider file:bg-[#1a8245] file:text-white hover:file:opacity-90 cursor-pointer"
+          />
+          {signatureImage && (
+            <div className="mt-2 p-2 bg-white rounded-lg border border-amber-100 inline-block">
+              <p className="text-[9px] text-amber-800 font-bold uppercase tracking-wider mb-1">Preview:</p>
+              <img src={signatureImage} alt="Signature Preview" className="h-16 object-contain" />
+            </div>
+          )}
+        </div>
+
         <div className="flex justify-end gap-3 pt-4">
-          <Button type="button" variant="outline" onClick={() => generateMazdagingInvoice(order, order.data_customer, order.daftar_item, order.daftar_item.map((item: any) => ({ daging: item.id_daging, kuantitas_kg: item.berat_pesanan_kg })))} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+          <Button type="button" variant="outline" onClick={() => generateMazdagingInvoice(order, order.data_customer, order.daftar_item, order.daftar_item.map((item: any) => ({ daging: item.id_daging, kuantitas_kg: item.berat_pesanan_kg })), signatureImage || undefined)} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
             <Icons.Download className="w-4 h-4" /> Unduh Invoice
           </Button>
           <Button type="button" variant="secondary" onClick={onClose}>

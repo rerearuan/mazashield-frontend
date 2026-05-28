@@ -266,42 +266,7 @@ export default function InvestQurbanPage() {
             Pakan diberikan berupa konsentrat, ampas kedelai, dan hijauan. Biaya pemeliharaan sudah termasuk pakan dan operasional.
           </p>
 
-          {/* Detailed Breakdown Table */}
-          <div className="mt-24 space-y-8">
-            <div className="text-center">
-              <h3 className="text-2xl font-black text-gray-900 tracking-tight">Transparansi Struktur Biaya</h3>
-              <p className="text-gray-500 text-sm font-medium mt-2">Detail alokasi dana untuk setiap paket investasi per ekor.</p>
-            </div>
-            <div className="bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-x-auto">
-              <table className="w-full text-left min-w-[1000px]">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100">
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Paket</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">Harga Sapi</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Pemeliharaan</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Vaksin/Vit</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Marketing</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-900">Total Modal</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#1a8245]">ROI (%)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {packages.map((pkg, i) => (
-                    <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-8 py-6 font-black text-gray-900">{pkg.nama_paket}</td>
-                      <td className="px-8 py-6 font-black text-[#1a8245]">Rp {Number(pkg.harga_sapi).toLocaleString("id-ID")}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.biaya_pemeliharaan).toLocaleString("id-ID")}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.vaksin_vitamin).toLocaleString("id-ID")}</td>
-                      <td className="px-8 py-6 font-medium text-gray-500 text-sm">Rp {Number(pkg.fee_marketing).toLocaleString("id-ID")}</td>
-                      <td className="px-8 py-6 font-black text-gray-900">Rp {Number(pkg.total_modal).toLocaleString("id-ID")}</td>
-                      <td className="px-8 py-6 font-black text-[#1a8245]">{pkg.roi_persen}%</td>
-                    </tr>
-                  ))}
 
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </section>
 

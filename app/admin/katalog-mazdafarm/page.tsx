@@ -277,7 +277,7 @@ export default function KatalogMazdafarmPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onConfirmDelete}
         title="Hapus Ternak"
-        message="Menghapus ternak ini akan menghilangkan data monitoring secara permanen. Lanjutkan?"
+        message="Apakah Anda yakin ingin menghapus data ternak ini?"
         confirmText="Hapus Sekarang"
         type="danger"
       />

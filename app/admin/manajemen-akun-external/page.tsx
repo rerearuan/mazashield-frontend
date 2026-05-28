@@ -259,7 +259,7 @@ export default function ManajemenAkunExternalPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onConfirmDelete}
         title="Hapus Klien Eksternal"
-        message="Akun klien ini akan dinonaktifkan (soft delete) dan tidak dapat diakses lagi. Lanjutkan?"
+        message="Apakah Anda yakin ingin menghapus akun klien ini?"
         confirmText="Hapus Akun"
         type="danger"
       />

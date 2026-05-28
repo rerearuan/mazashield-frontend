@@ -181,6 +181,18 @@ export default function Sidebar() {
 
   const isAllowed = (itemLabel: string, sectionTitle: string) => {
     if (!userRole) return false;
+
+    // Check specific module access
+    if (["Katalog Ternak", "Pesanan Ternak"].includes(itemLabel)) {
+      if (typeof window !== "undefined" && localStorage.getItem("aksesMazdafarm") === "false") return false;
+    }
+    if (["Katalog Daging", "Pesanan Daging"].includes(itemLabel)) {
+      if (typeof window !== "undefined" && localStorage.getItem("aksesMazdaging") === "false") return false;
+    }
+    if (["Katalog Invest", "Pesanan Invest", "Laporan Investasi"].includes(itemLabel)) {
+      if (typeof window !== "undefined" && localStorage.getItem("aksesInvesternak") === "false") return false;
+    }
+
     if (userRole === "SuperAdmin" || userRole === "CEO") return true;
 
     if (userRole === "Finance") {
@@ -323,7 +335,7 @@ export default function Sidebar() {
         onClose={() => setShowLogoutModal(false)}
         onConfirm={onConfirmLogout}
         title="Konfirmasi Keluar"
-        message="Apakah Anda yakin ingin keluar dari sistem Mazdafarm? Sesi Anda akan berakhir dan Anda harus masuk kembali."
+        message="Apakah Anda yakin ingin keluar?"
         confirmText="Keluar Sekarang"
         type="danger"
         isLoading={isLoggingOut}

@@ -15,9 +15,15 @@ export default function Footer() {
             </div>
             <div>
               <h4 className="text-[#1a8245] font-black text-xl tracking-tighter mb-4">PT Mazashi Semuda Farm</h4>
-              <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-xs mx-auto sm:mx-0">
+              <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-xs mx-auto sm:mx-0 mb-6">
                 Pionir peternakan modern masa depan. Kami menghadirkan kualitas terbaik melalui integrasi teknologi dan kearifan lokal.
               </p>
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-left inline-block max-w-xs w-full mx-auto sm:mx-0">
+                <span className="text-gray-400 font-black uppercase tracking-widest text-[9px] block mb-1">Rekening Resmi Pembayaran</span>
+                <p className="text-xs font-black text-gray-900">Bank Syariah Indonesia (BSI)</p>
+                <p className="text-sm font-black text-[#1a8245] tracking-widest mt-0.5">9000 6060 78</p>
+                <p className="text-[10px] text-gray-500 font-bold mt-0.5">a.n. PT Mazashi Semuda Farm</p>
+              </div>
             </div>
           </div>
 
