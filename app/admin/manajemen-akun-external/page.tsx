@@ -137,7 +137,7 @@ export default function ManajemenAkunExternalPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
+              <tr className="bg-gray-50/50 border-b-2 border-gray-200">
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama & Kontak</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Tipe / Role</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Bergabung Pada</th>

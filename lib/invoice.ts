@@ -704,7 +704,7 @@ export function generateInvestReportPDF(laporan: any, customerInfo: any) {
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(71, 85, 105); // Slate-600
-        doc.text("Investernak - Cattle Trading - Feedlot", startX, 68);
+        doc.text("Investernak - Perdagangan & Penggemukan Sapi", startX, 68);
 
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
@@ -731,13 +731,13 @@ export function generateInvestReportPDF(laporan: any, customerInfo: any) {
         doc.setFillColor(248, 250, 252); // #f8fafc
         doc.setDrawColor(226, 232, 240); // #e2e8f0
         doc.setLineWidth(0.75);
-        (doc as any).roundRect(60, 150, pageWidth - 120, 60, 8, 8, "FD");
+        doc.roundedRect(60, 150, pageWidth - 120, 60, 8, 8, "FD");
 
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(26, 130, 69);
         doc.text("INFORMASI CUSTOMER", 75, 166);
-        doc.text("METADATA LAPORAN", 340, 166);
+
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(51, 65, 85); // Slate-700
@@ -768,7 +768,7 @@ export function generateInvestReportPDF(laporan: any, customerInfo: any) {
 
         // Draw badge background
         doc.setFillColor(badgeBg[0], badgeBg[1], badgeBg[2]);
-        (doc as any).roundRect(statusX, statusY, statusWidth + 12, 11, 3, 3, "F");
+        doc.roundedRect(statusX, statusY, statusWidth + 12, 11, 3, 3, "F");
 
         // Draw badge text
         doc.setTextColor(badgeText[0], badgeText[1], badgeText[2]);
@@ -814,6 +814,12 @@ export function generateInvestReportPDF(laporan: any, customerInfo: any) {
                 styles: {
                     lineColor: [226, 232, 240],
                     lineWidth: 0.5
+                },
+                columnStyles: {
+                    0: { cellWidth: 130 },
+                    1: { cellWidth: 90, halign: 'center' },
+                    2: { cellWidth: 90, halign: 'center' },
+                    3: { cellWidth: 160, halign: 'right' }
                 },
                 margin: { left: 60, right: 60 }
             });
@@ -1014,7 +1020,7 @@ export function generateCustomerInvestmentsPDF(customerName: string, orders: any
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(71, 85, 105); // Slate-600
-        doc.text("Investernak - Cattle Trading - Feedlot", startX, 68);
+        doc.text("Investernak - Perdagangan & Penggemukan Sapi", startX, 68);
 
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
@@ -1041,13 +1047,13 @@ export function generateCustomerInvestmentsPDF(customerName: string, orders: any
         doc.setFillColor(248, 250, 252); // #f8fafc
         doc.setDrawColor(226, 232, 240); // #e2e8f0
         doc.setLineWidth(0.75);
-        (doc as any).roundRect(60, 150, pageWidth - 120, 60, 8, 8, "FD");
+        doc.roundedRect(60, 150, pageWidth - 120, 60, 8, 8, "FD");
 
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(26, 130, 69);
         doc.text("INFORMASI PORTFOLIO CUSTOMER", 75, 166);
-        doc.text("METADATA LAPORAN", 340, 166);
+
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(51, 65, 85); // Slate-700
@@ -1092,12 +1098,12 @@ export function generateCustomerInvestmentsPDF(customerName: string, orders: any
             },
             columnStyles: {
                 0: { cellWidth: 25 },
-                1: { cellWidth: 80 },
-                2: { cellWidth: 130, halign: 'left' },
-                3: { cellWidth: 65, fontStyle: 'bold' },
-                4: { cellWidth: 90, halign: 'right' },
-                5: { cellWidth: 90, halign: 'right' },
-                6: { cellWidth: 65 }
+                1: { cellWidth: 70 },
+                2: { cellWidth: 115, halign: 'left' },
+                3: { cellWidth: 55, fontStyle: 'bold' },
+                4: { cellWidth: 75, halign: 'right' },
+                5: { cellWidth: 75, halign: 'right' },
+                6: { cellWidth: 55 }
             },
             styles: {
                 lineColor: [226, 232, 240],

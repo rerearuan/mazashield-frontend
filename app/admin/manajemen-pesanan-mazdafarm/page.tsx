@@ -192,7 +192,7 @@ export default function ManajemenPesananMazdafarmPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[700px]">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
+              <tr className="bg-gray-50/50 border-b-2 border-gray-200">
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">ID</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Customer</th>
                 <th className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Ternak</th>
@@ -261,7 +261,7 @@ export default function ManajemenPesananMazdafarmPage() {
                     <td className="px-4 md:px-8 py-4 md:py-6">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleOpenDetail(order); }}
-                        className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100 whitespace-nowrap"
+                        className="bg-[#1a8245] hover:bg-[#156a38] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md border border-[#1a8245] whitespace-nowrap"
                       >
                         Detail
                       </button>

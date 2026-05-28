@@ -227,7 +227,7 @@ export default function VerifikasiPembayaranPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse min-w-[650px]">
                             <thead>
-                                <tr className="bg-[#fcfdfc] border-b border-gray-100">
+                                <tr className="bg-[#fcfdfc] border-b-2 border-gray-200">
                                     {["ID", "Tipe / Order", "Customer", "Jumlah / Bank", "Status", "Aksi"].map((h) => (
                                         <th key={h} className="px-4 md:px-8 py-4 md:py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                             {h}
@@ -274,7 +274,7 @@ export default function VerifikasiPembayaranPage() {
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); setSelectedPayment(payment); }}
-                                                    className="bg-gray-100/50 hover:bg-[#1a8245] text-gray-500 hover:text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-gray-100 whitespace-nowrap"
+                                                    className="bg-[#1a8245] hover:bg-[#156a38] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md border border-[#1a8245] whitespace-nowrap"
                                                 >
                                                     Detail
                                                 </button>

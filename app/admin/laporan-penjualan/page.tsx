@@ -69,10 +69,26 @@ export default function LaporanPenjualanPage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1"><div className="w-1 h-5 rounded-full bg-emerald-500" /><span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Penjualan</span></div>
-        <h1 className="text-2xl md:text-3xl font-black text-gray-900">Laporan Penjualan</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Pesanan selesai · Mazdafarm, Mazdaging, Invest Ternak</p>
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1 h-5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[#1a8245]">Penjualan</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2 text-[#1a8245]">Laporan Penjualan</h1>
+          <p className="text-sm text-gray-500 font-medium mt-0.5">Pesanan selesai · Mazdafarm, Mazdaging, Invest Ternak</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => exportCSV(allRows)}
+            className="flex items-center gap-1.5 px-6 py-2 bg-[#1a8245] hover:bg-[#156a38] text-white text-[10px] font-black uppercase tracking-[0.16em] rounded-xl transition-all duration-300 shadow-xl shadow-green-100/50 h-14 border border-[#1a8245] whitespace-nowrap cursor-pointer"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-1">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" />
+            </svg>
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {error && <div className="mb-5 bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-700">{error}</div>}
@@ -88,38 +104,54 @@ export default function LaporanPenjualanPage() {
         ))}
       </div>
 
-      {/* Filters + Export */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-5">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-bold text-gray-700">Filter</p>
-          <button onClick={() => exportCSV(allRows)} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 transition-colors">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round"/></svg>
-            Export CSV
-          </button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div><label className="text-xs text-gray-400 mb-1 block">Dari Tanggal</label><input type="date" className={inp} value={startDate} onChange={e => { setStartDate(e.target.value); setPage(1); }} /></div>
-          <div><label className="text-xs text-gray-400 mb-1 block">Sampai Tanggal</label><input type="date" className={inp} value={endDate} onChange={e => { setEndDate(e.target.value); setPage(1); }} /></div>
-          <div className="flex items-end"><button onClick={reset} className="w-full px-3 py-2 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100">Reset Filter</button></div>
+      {/* Filters */}
+      <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-6 md:p-7 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Dari Tanggal</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm" 
+              value={startDate} 
+              onChange={e => { setStartDate(e.target.value); setPage(1); }} 
+            />
+          </div>
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Sampai Tanggal</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none transition-all font-semibold text-sm text-gray-900 shadow-sm" 
+              value={endDate} 
+              onChange={e => { setEndDate(e.target.value); setPage(1); }} 
+            />
+          </div>
+          <div className="flex items-end">
+            <button 
+              onClick={reset} 
+              className="rounded-xl h-[42px] bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm w-full transition-colors cursor-pointer"
+            >
+              Reset Filter
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto">
+      <div className="flex gap-2 mb-6 overflow-x-auto p-1.5 bg-gray-100/80 rounded-2xl max-w-max border border-gray-200">
         {[
-          { id: "Mazdafarm", label: "Ternak (Mazdafarm)", color: "border-emerald-500 text-emerald-600 bg-emerald-50/30" },
-          { id: "Mazdaging", label: "Daging (Mazdaging)", color: "border-amber-500 text-amber-600 bg-amber-50/30" },
-          { id: "Investernak", label: "Invest (Invest Ternak)", color: "border-violet-500 text-violet-600 bg-violet-50/30" }
+          { id: "Mazdafarm", label: "Mazdafarm" },
+          { id: "Mazdaging", label: "Mazdaging" },
+          { id: "Investernak", label: "Invest Ternak" }
         ].map((tab) => {
           const isSel = jenis === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => { setJenis(tab.id); setPage(1); }}
-              className={`px-6 py-3.5 text-xs font-black uppercase tracking-widest border-b-2 transition-all rounded-t-2xl whitespace-nowrap ${
+              className={`px-6 py-3 text-xs font-black uppercase tracking-widest transition-all rounded-xl whitespace-nowrap cursor-pointer ${
                 isSel 
-                  ? `${tab.color} border-[#1a8245] text-gray-900` 
-                  : "border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+                  ? "bg-[#1a8245] text-white shadow-md" 
+                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
               }`}
             >
               {tab.label}
@@ -133,8 +165,8 @@ export default function LaporanPenjualanPage() {
         {loading ? <div className="p-6 space-y-2"><Sk/><Sk/><Sk/><Sk/></div> : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
+              <table className="w-full text-sm min-w-[900px]">
+                <thead className="bg-gray-50 border-b-2 border-gray-200">
                   <tr>
                     {getHeaders().map(h => (
                       <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
@@ -148,14 +180,14 @@ export default function LaporanPenjualanPage() {
                       const keuntungan = Number(row.total_tagihan || 0) - Number(row.modal_awal || 0);
                       return (
                         <tr key={`${row.jenis_layanan}-${row.produk_id}-${row.id_pesanan}`} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-5 py-3.5 font-bold text-gray-700">#{row.id_pesanan}</td>
-                          <td className="px-5 py-3.5 text-gray-800">{row.nama_customer}</td>
-                          <td className="px-5 py-3.5 font-mono text-xs text-gray-500 font-bold">{row.produk_id}</td>
-                          <td className="px-5 py-3.5 text-gray-900 font-bold">{row.nama_produk}</td>
-                          <td className="px-5 py-3.5 text-gray-400 text-xs italic font-medium">{row.detail_layanan}</td>
-                          <td className="px-5 py-3.5 font-mono tabular-nums text-gray-600">{fmtF(row.modal_awal || 0)}</td>
-                          <td className="px-5 py-3.5 font-mono tabular-nums font-bold text-gray-800">{fmtF(row.total_tagihan || 0)}</td>
-                          <td className={`px-5 py-3.5 font-mono tabular-nums font-black ${keuntungan >= 0 ? "text-[#1a8245]" : "text-red-600"}`}>
+                          <td className="px-5 py-3.5 font-bold text-gray-700 whitespace-nowrap">#{row.id_pesanan}</td>
+                          <td className="px-5 py-3.5 text-gray-800 whitespace-nowrap">{row.nama_customer}</td>
+                          <td className="px-5 py-3.5 font-mono text-xs text-gray-500 font-bold whitespace-nowrap">{row.produk_id}</td>
+                          <td className="px-5 py-3.5 text-gray-900 font-bold whitespace-nowrap">{row.nama_produk}</td>
+                          <td className="px-5 py-3.5 text-gray-400 text-xs italic font-medium whitespace-nowrap">{row.detail_layanan}</td>
+                          <td className="px-5 py-3.5 font-mono tabular-nums text-gray-600 whitespace-nowrap">{fmtF(row.modal_awal || 0)}</td>
+                          <td className="px-5 py-3.5 font-mono tabular-nums font-bold text-gray-800 whitespace-nowrap">{fmtF(row.total_tagihan || 0)}</td>
+                          <td className={`px-5 py-3.5 font-mono tabular-nums font-black whitespace-nowrap ${keuntungan >= 0 ? "text-[#1a8245]" : "text-red-600"}`}>
                             {fmtF(keuntungan)}
                           </td>
                           <td className="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{new Date(row.tanggal_transaksi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
@@ -169,8 +201,8 @@ export default function LaporanPenjualanPage() {
               <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
                 <p className="text-xs text-gray-400">Hal. {result.pagination.page} / {result.pagination.total_pages} · {result.pagination.total_items} item</p>
                 <div className="flex gap-2">
-                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">← Prev</button>
-                  <button onClick={() => setPage(p => Math.min(result.pagination.total_pages, p + 1))} disabled={page === result.pagination.total_pages} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">Next →</button>
+                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 cursor-pointer">← Prev</button>
+                  <button onClick={() => setPage(p => Math.min(result.pagination.total_pages, p + 1))} disabled={page === result.pagination.total_pages} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 cursor-pointer">Next →</button>
                 </div>
               </div>
             )}
