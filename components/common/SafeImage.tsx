@@ -19,6 +19,8 @@ export default function SafeImage({
   fallbackSrc,
   id,
   className,
+  priority,
+  loading,
   ...props 
 }: SafeImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(DEFAULT_COW_IMAGE);
@@ -54,7 +56,9 @@ export default function SafeImage({
       id={id ? String(id) : undefined}
       className={`${className} ${isFallback ? "opacity-90 grayscale-[10%]" : ""}`}
       onError={handleError}
-      unoptimized
+      priority={priority}
+      loading={priority ? undefined : (loading ?? "lazy")}
+      decoding={priority ? undefined : "async"}
     />
   );
 }

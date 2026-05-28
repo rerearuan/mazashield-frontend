@@ -16,12 +16,24 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
+        // Production backend on Railway
+        protocol: 'https',
+        hostname: 'mazashield-backend-production.up.railway.app',
+        pathname: '/**',
+      },
+      {
         protocol: 'https',
         hostname: 'images.unsplash.com',
         pathname: '/**',
       },
+      {
+        // Cloudinary CDN for uploaded product images
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
     ],
-    unoptimized: true,
+    // unoptimized removed — Next.js Image Optimization is now active
   },
 };
 
