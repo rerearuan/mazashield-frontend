@@ -128,7 +128,7 @@ export default function LaporanPenjualanPage() {
           <div className="flex items-end">
             <button 
               onClick={reset} 
-              className="rounded-xl h-[42px] bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm w-full transition-colors cursor-pointer"
+              className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm w-full transition-colors cursor-pointer"
             >
               Reset Filter
             </button>
