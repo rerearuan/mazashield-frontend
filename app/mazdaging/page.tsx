@@ -12,6 +12,16 @@ import { catalogService } from "@/services/catalog.service";
 import { Icons } from "@/components/common/Icons";
 import { getRandomMeatImage } from "@/lib/image-utils";
 
+// Debounce hook — delays state updates by `delay` ms to avoid rapid API calls
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
 interface Daging {
   id: number;
   id_daging: string;
@@ -30,17 +40,22 @@ export default function MazdagingPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Filters
+  // Raw filter state — updates immediately on input
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [bagian, setBagian] = useState("all");
 
+  // Debounced values — API calls only fire 300ms after the user stops typing
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const debouncedMinPrice = useDebounce(minPrice, 300);
+  const debouncedMaxPrice = useDebounce(maxPrice, 300);
+
   const itemsPerPage = 3;
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, searchTerm, minPrice, maxPrice, bagian]);
+  }, [currentPage, debouncedSearch, debouncedMinPrice, debouncedMaxPrice, bagian]);
 
   const fetchProducts = async () => {
     try {
@@ -49,9 +64,9 @@ export default function MazdagingPage() {
         page: currentPage.toString(),
       };
 
-      if (searchTerm) params.nama = searchTerm;
-      if (minPrice) params.min_harga = minPrice;
-      if (maxPrice) params.max_harga = maxPrice;
+      if (debouncedSearch) params.nama = debouncedSearch;
+      if (debouncedMinPrice) params.min_harga = debouncedMinPrice;
+      if (debouncedMaxPrice) params.max_harga = debouncedMaxPrice;
       if (bagian !== "all") params.bagian = bagian;
 
       const data: any = await catalogService.getDagingPublic(params);
@@ -59,7 +74,8 @@ export default function MazdagingPage() {
       if (data.results) {
         setProducts(data.results);
         setTotalCount(data.count);
-        setTotalPages(Math.ceil(data.count / itemsPerPage));
+        // page_size is 12 (from backend CatalogPagination)
+        setTotalPages(Math.ceil(data.count / 12));
       } else {
         setProducts(Array.isArray(data) ? data : []);
         setTotalPages(1);

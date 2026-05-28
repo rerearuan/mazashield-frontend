@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import PageHeader from "@/components/common/PageHeader";
@@ -23,6 +23,16 @@ const formatUmur = (umurBulan: number) => {
 
 import { Icons } from "@/components/common/Icons";
 import { getRandomCowImage } from "@/lib/image-utils";
+
+// Debounce hook — delays state updates by `delay` ms to avoid rapid API calls
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
 
 interface Sapi {
   id: number;
@@ -46,7 +56,7 @@ export default function MazdafarmPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Filters
+  // Raw filter state — updates immediately on input
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -54,12 +64,16 @@ export default function MazdafarmPage() {
   const [minWeight, setMinWeight] = useState("");
   const [maxWeight, setMaxWeight] = useState("");
 
-  const itemsPerPage = 3;
-
+  // Debounced values — API calls only fire 300ms after the user stops typing
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const debouncedMinPrice = useDebounce(minPrice, 300);
+  const debouncedMaxPrice = useDebounce(maxPrice, 300);
+  const debouncedMinWeight = useDebounce(minWeight, 300);
+  const debouncedMaxWeight = useDebounce(maxWeight, 300);
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, searchTerm, minPrice, maxPrice, jenisSapi, minWeight, maxWeight]);
+  }, [currentPage, debouncedSearch, debouncedMinPrice, debouncedMaxPrice, jenisSapi, debouncedMinWeight, debouncedMaxWeight]);
 
   const fetchProducts = async () => {
     try {
@@ -68,19 +82,23 @@ export default function MazdafarmPage() {
         page: currentPage.toString(),
       };
 
-      if (searchTerm) params.nama = searchTerm;
-      if (minPrice) params.min_harga = minPrice;
-      if (maxPrice) params.max_harga = maxPrice;
+      if (debouncedSearch) params.nama = debouncedSearch;
+      if (debouncedMinPrice) params.min_harga = debouncedMinPrice;
+      if (debouncedMaxPrice) params.max_harga = debouncedMaxPrice;
       if (jenisSapi !== "all") params.jenis = jenisSapi;
-      if (minWeight) params.min_berat = minWeight;
-      if (maxWeight) params.max_berat = maxWeight;
+      if (debouncedMinWeight) params.min_berat = debouncedMinWeight;
+      if (debouncedMaxWeight) params.max_berat = debouncedMaxWeight;
 
       const data: any = await catalogService.getTernakPublic(params);
 
       if (data.results) {
         setCattle(data.results);
         setTotalCount(data.count);
-        setTotalPages(Math.ceil(data.count / itemsPerPage));
+        // page_size is 12 (from backend CatalogPagination); derive totalPages from API count
+        const pageSize = data.results.length > 0
+          ? Math.max(data.results.length, 1)
+          : 12;
+        setTotalPages(Math.ceil(data.count / 12));
       } else {
         setCattle(Array.isArray(data) ? data : []);
         setTotalPages(1);

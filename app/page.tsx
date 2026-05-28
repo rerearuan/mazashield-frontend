@@ -45,23 +45,28 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="relative min-h-[600px] h-[100svh] max-h-[900px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          {carouselImages.map((src, index) => (
-            <div
-              key={src}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
-            >
-              <SafeImage
-                src={src}
-                alt={`Mazashi slide ${index + 1}`}
-                fill
-                className="object-cover"
-                priority={index === 0}
-                unoptimized
-              />
-            </div>
-          ))}
+          {carouselImages.map((src, index) => {
+            // Only render the active slide and the next slide (virtualization)
+            const isActive = index === currentSlide;
+            const isNext = index === (currentSlide + 1) % carouselImages.length;
+            if (!isActive && !isNext) return null;
+            return (
+              <div
+                key={src}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  isActive ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              >
+                <SafeImage
+                  src={src}
+                  alt={`Mazashi slide ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={index === 0 && currentSlide === 0}
+                />
+              </div>
+            );
+          })}
           {/* Fading overlay on top of carousel */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 z-20" />
         </div>
@@ -141,16 +146,16 @@ export default function Home() {
             <div className="flex-1 grid grid-cols-2 gap-6 w-full relative">
               <div className="absolute inset-0 bg-[#1a8245]/5 rounded-[40px] -rotate-3 scale-105"></div>
               <div className="relative h-[240px] sm:h-[300px] mt-12">
-                <SafeImage src={images.about1} alt="Farm 1" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" unoptimized />
+                <SafeImage src={images.about1} alt="Kandang ternak Mazashi" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" />
               </div>
               <div className="relative h-[240px] sm:h-[300px]">
-                <SafeImage src={images.about2} alt="Farm 2" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" unoptimized />
+                <SafeImage src={images.about2} alt="Sapi berkualitas Mazashi" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" />
               </div>
               <div className="relative h-[240px] sm:h-[300px] -mt-12">
-                <SafeImage src={images.about3} alt="Farm 3" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" unoptimized />
+                <SafeImage src={images.about3} alt="Tim peternakan Mazashi" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" />
               </div>
               <div className="relative h-[240px] sm:h-[300px]">
-                <SafeImage src={images.about4} alt="Farm 4" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" unoptimized />
+                <SafeImage src={images.about4} alt="Produk daging segar Mazashi" fill className="object-cover rounded-[32px] shadow-2xl shadow-green-900/10" />
               </div>
             </div>
           </div>
@@ -175,7 +180,7 @@ export default function Home() {
             {/* Mazdaging */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("mazdaging")} alt="Mazdaging" fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
+                <SafeImage src={getRandomCowImage("mazdaging")} alt="Produk daging sapi premium Mazdaging" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Premium Meat</span>
@@ -192,7 +197,7 @@ export default function Home() {
             {/* Mazdafarm */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500 transform lg:-translate-y-8">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("mazdafarm")} alt="Mazdafarm" fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
+                <SafeImage src={getRandomCowImage("mazdafarm")} alt="Katalog sapi Mazdafarm" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Marketplace</span>
@@ -209,7 +214,7 @@ export default function Home() {
             {/* Qurban */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("qurban")} alt="Qurban" fill className="object-cover group-hover:scale-110 transition-transform duration-700" unoptimized />
+                <SafeImage src={getRandomCowImage("qurban")} alt="Paket investasi ternak qurban" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Syariah Invest</span>
@@ -344,10 +349,9 @@ export default function Home() {
             <div className="relative w-full max-w-[440px] aspect-[4/5] rounded-[48px] overflow-hidden shadow-2xl group">
               <SafeImage
                 src={images.ceo}
-                alt="CEO Mazashi"
+                alt="Shidqi Muhammad Naufal, Direktur Mazashi Farm"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
-                unoptimized
               />
               <div className="absolute inset-x-6 bottom-6 bg-white/80 backdrop-blur-xl p-8 rounded-[32px] border border-white/20 shadow-xl">
                 <p className="text-gray-900 font-black text-2xl tracking-tight">Shidqi Muhammad Naufal, S.Pt., M.Si</p>
