@@ -22,11 +22,11 @@ const images = {
 
 export default function Home() {
   const carouselImages = [
-    "/images/homepages/Sapi.png",
-    "/images/homepages/Daging.png",
-    "/images/homepages/image 8.png",
-    "/images/homepages/image 10.png",
-    "/images/homepages/image 13.png",
+    "/FotoSapi/Sapi-Qurban.jpg",
+    "/FotoSapi/file.jpg",
+    "/FotoSapi/kenapa-pilih-qurban-dengan-sapi-bali-1-scaled.jpg",
+    "/FotoSapi/52877473079-1779089747.jpg",
+    "/FotoSapi/qm2gsro09bt2osk.jpeg",
   ];
 
   const extendedImages = [
@@ -102,12 +102,10 @@ export default function Home() {
           >
             {extendedImages.map((src, index) => (
               <div key={index} className="relative w-full h-full flex-shrink-0">
-                <SafeImage
+                <img
                   src={src}
                   alt={`Mazashi slide ${index}`}
-                  fill
-                  className="object-cover"
-                  priority={index === 1}
+                  className="w-full h-full object-cover"
                 />
               </div>
             ))}
