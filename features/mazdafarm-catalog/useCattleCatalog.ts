@@ -16,7 +16,7 @@ export interface Cattle {
     harga: string;
     deskripsi: string;
     foto: string | null;
-    status_ternak: "Tersedia" | "Dipesan" | "Terjual";
+    status_ternak: "Available" | "Booked" | "Sold";
     created_at: string;
     updated_at: string;
 }
