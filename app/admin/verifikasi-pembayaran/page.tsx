@@ -244,15 +244,15 @@ export default function VerifikasiPembayaranPage() {
                                     </tr>
                                 ) : (
                                     currentPayments.map((payment) => (
-                                        <tr key={payment.id} className="hover:bg-green-50/30 transition-colors group cursor-pointer" onClick={() => setSelectedPayment(payment)}>
+                                        <tr key={payment.id} className="transition-colors">
                                             <td className="px-4 md:px-8 py-4 md:py-6">
-                                                <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg group-hover:bg-[#1a8245] group-hover:text-white transition-all text-xs">
+                                                <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg text-xs">
                                                     #{payment.id}
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors text-sm">{ORDER_TYPE_LABELS[payment.order_type] || payment.order_type}</span>
+                                                    <span className="font-black text-gray-900 text-sm">{ORDER_TYPE_LABELS[payment.order_type] || payment.order_type}</span>
                                                     <span className="text-[10px] text-gray-500 font-bold uppercase">#{payment.order_id}</span>
                                                 </div>
                                             </td>

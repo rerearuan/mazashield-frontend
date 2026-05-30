@@ -6,7 +6,6 @@ import Link from "next/link";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { Icons } from "@/components/common/Icons";
-import { getRandomCowImage } from "@/lib/image-utils";
 
 const images = {
   logo: "/images/logoPrimer 1.png",
@@ -22,7 +21,6 @@ const images = {
 };
 
 export default function Home() {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const carouselImages = [
     "/images/homepages/Sapi.png",
     "/images/homepages/Daging.png",
@@ -31,12 +29,60 @@ export default function Home() {
     "/images/homepages/image 13.png",
   ];
 
+  const extendedImages = [
+    carouselImages[carouselImages.length - 1],
+    ...carouselImages,
+    carouselImages[0],
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+
+  const nextSlide = () => {
+    if (!isTransitioning) return;
+    setCurrentSlide((prev) => prev + 1);
+  };
+
+  const prevSlide = () => {
+    if (!isTransitioning) return;
+    setCurrentSlide((prev) => prev - 1);
+  };
+
+  const goToSlide = (slideIndex: number) => {
+    if (!isTransitioning) return;
+    setCurrentSlide(slideIndex + 1);
+  };
+
+  const handleTransitionEnd = () => {
+    if (currentSlide === 0) {
+      setIsTransitioning(false);
+      setCurrentSlide(carouselImages.length);
+    } else if (currentSlide === carouselImages.length + 1) {
+      setIsTransitioning(false);
+      setCurrentSlide(1);
+    }
+  };
+
+  useEffect(() => {
+    if (!isTransitioning) {
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsTransitioning(true);
+        });
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isTransitioning]);
+
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
-    }, 5000);
+      nextSlide();
+    }, 4000);
     return () => clearInterval(timer);
-  }, [carouselImages.length]);
+  }, [currentSlide, isTransitioning]);
+
+  // Compute which real index is active (0 to 4) for the dots
+  const activeDotIndex = ((currentSlide - 1) + carouselImages.length) % carouselImages.length;
 
   return (
     <div className="bg-white min-h-screen font-primary">
@@ -44,31 +90,64 @@ export default function Home() {
 
       {/* Hero Section */}
       <section id="home" className="relative min-h-[600px] h-[100svh] max-h-[900px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          {carouselImages.map((src, index) => {
-            // Only render the active slide and the next slide (virtualization)
-            const isActive = index === currentSlide;
-            const isNext = index === (currentSlide + 1) % carouselImages.length;
-            if (!isActive && !isNext) return null;
-            return (
-              <div
-                key={src}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  isActive ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
-              >
+        {/* Horizontal Slider Track Wrapper */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div
+            className="flex h-full w-full"
+            style={{
+              transform: `translateX(-${currentSlide * 100}%)`,
+              transition: isTransitioning ? "transform 700ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
+            }}
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {extendedImages.map((src, index) => (
+              <div key={index} className="relative w-full h-full flex-shrink-0">
                 <SafeImage
                   src={src}
-                  alt={`Mazashi slide ${index + 1}`}
+                  alt={`Mazashi slide ${index}`}
                   fill
                   className="object-cover"
-                  priority={index === 0 && currentSlide === 0}
+                  priority={index === 1}
                 />
               </div>
-            );
-          })}
+            ))}
+          </div>
           {/* Fading overlay on top of carousel */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 z-20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/80 z-20 pointer-events-none" />
+        </div>
+
+        {/* Left Arrow Button */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all duration-300 group hover:-translate-x-1"
+          aria-label="Previous Slide"
+        >
+          <Icons.ChevronRight className="w-6 h-6 rotate-180 transition-transform group-hover:scale-110" />
+        </button>
+
+        {/* Right Arrow Button */}
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all duration-300 group hover:translate-x-1"
+          aria-label="Next Slide"
+        >
+          <Icons.ChevronRight className="w-6 h-6 transition-transform group-hover:scale-110" />
+        </button>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
+          {carouselImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => goToSlide(idx)}
+              className={`h-2.5 rounded-full transition-all duration-500 ${
+                idx === activeDotIndex
+                  ? "w-8 bg-[#96f7bb] opacity-100"
+                  : "w-2.5 bg-white/50 hover:bg-white/80 opacity-60"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
         <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left">
           <div className="max-w-[800px] space-y-6">
@@ -180,7 +259,7 @@ export default function Home() {
             {/* Mazdaging */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("mazdaging")} alt="Produk daging sapi premium Mazdaging" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                <SafeImage src={images.product1} alt="Produk daging sapi premium Mazdaging" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Premium Meat</span>
@@ -197,7 +276,7 @@ export default function Home() {
             {/* Mazdafarm */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500 transform lg:-translate-y-8">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("mazdafarm")} alt="Katalog sapi Mazdafarm" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                <SafeImage src={images.product2} alt="Katalog sapi Mazdafarm" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Marketplace</span>
@@ -214,7 +293,7 @@ export default function Home() {
             {/* Qurban */}
             <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden p-6 sm:p-8 hover:bg-white/10 transition-all duration-500">
               <div className="relative h-[200px] sm:h-[240px] rounded-[30px] overflow-hidden mb-6 sm:mb-8">
-                <SafeImage src={getRandomCowImage("qurban")} alt="Paket investasi ternak qurban" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                <SafeImage src={images.product3} alt="Paket investasi ternak qurban" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute bottom-6 left-6">
                   <span className="text-[#fbbf24] font-black text-[9px] uppercase tracking-[0.3em] mb-2 block">Syariah Invest</span>

@@ -165,13 +165,17 @@ export default function KatalogMazdafarmPage() {
                   unoptimized
                 />
                 <div className="absolute top-4 right-4">
-                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    item.status_ternak === 'Tersedia' ? 'bg-[#1a8245] text-white' :
-                    item.status_ternak === 'Dipesan' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white'
-                  }`}>
+                  <span
+                    style={{
+                      backgroundColor:
+                        item.status_ternak === 'Available' ? '#16a34a' :
+                        item.status_ternak === 'Booked' ? '#d97706' : '#dc2626',
+                      color: '#ffffff',
+                    }}
+                    className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+                  >
                     {item.status_ternak}
                   </span>
-
                 </div>
                 <div className="absolute top-4 left-4">
                     <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-gray-800 shadow-lg border border-white/20 uppercase">
@@ -195,22 +199,22 @@ export default function KatalogMazdafarmPage() {
                 </div>
 
 
-                <div className="bg-[#1a8245]/5 p-4 rounded-2xl mb-6 space-y-2 border border-[#1a8245]/10">
+                <div className="bg-[#0f2e28] p-4 rounded-2xl mb-6 space-y-2 border border-[#1a8245]/30">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Jenis</span>
-                    <span className="font-black text-gray-900">{item.jenis}</span>
+                    <span style={{ color: '#d1d5db' }} className="font-bold uppercase tracking-widest text-[9px]">Jenis</span>
+                    <span className="font-black text-white">{item.jenis}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Kelas</span>
-                    <span className="font-black text-[#1a8245]">{item.kelas}</span>
+                    <span style={{ color: '#d1d5db' }} className="font-bold uppercase tracking-widest text-[9px]">Kelas</span>
+                    <span style={{ color: '#86efac' }} className="font-black">{item.kelas}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Berat</span>
-                    <span className="font-black text-gray-900">{item.berat} kg</span>
+                    <span style={{ color: '#d1d5db' }} className="font-bold uppercase tracking-widest text-[9px]">Berat</span>
+                    <span className="font-black text-white">{item.berat} kg</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Usia</span>
-                    <span className="font-black text-gray-900">{formatUmur(item.umur)}</span>
+                    <span style={{ color: '#d1d5db' }} className="font-bold uppercase tracking-widest text-[9px]">Usia</span>
+                    <span className="font-black text-white">{formatUmur(item.umur)}</span>
                   </div>
                 </div>
 

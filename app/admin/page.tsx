@@ -100,11 +100,6 @@ export default function AdminHomePage() {
               >
                 Pengaturan Profil
               </Link>
-              <button
-                className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/20 transition-all"
-              >
-                Buka Dokumentasi
-              </button>
             </div>
           </div>
         </div>
