@@ -79,9 +79,9 @@ export default function ManajemenAkunExternalPage() {
           {(userRole === "SuperAdmin" || userRole === "Marketing") && (
             <Button
               onClick={actions.exportData}
-              variant="secondary"
+              variant="outline"
               size="lg"
-              className="rounded-2xl font-black uppercase text-[10px] tracking-widest px-8 h-14"
+              className="rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-black uppercase text-[10px] tracking-widest px-8 h-14"
             >
               Export CSV
             </Button>

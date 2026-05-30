@@ -123,10 +123,10 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                   </div>
                 )}
                 <Link
-                  href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin/profile" : "/profile"}
+                  href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin" : "/profile"}
                   className="text-gray-900 px-4 py-2 font-black uppercase tracking-widest text-[11px] hover:text-[#1a8245] transition-colors"
                 >
-                  Profil
+                  {userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "Dashboard Admin" : "Profil"}
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -218,11 +218,11 @@ export default function Navbar({ activePage = "home" }: NavbarProps) {
                   </>
                 )}
                 <Link
-                  href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin/profile" : "/profile"}
+                  href={userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "/admin" : "/profile"}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] text-gray-700 hover:bg-gray-50"
                 >
-                  Profil
+                  {userRole === "SuperAdmin" || userRole === "Marketing" || userRole === "Finance" || userRole === "CEO" || userRole === "Komisaris" ? "Dashboard Admin" : "Profil"}
                 </Link>
                 <button
                   onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}

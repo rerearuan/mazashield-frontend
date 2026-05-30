@@ -194,15 +194,15 @@ export default function ManajemenInvestTernakPage() {
                                     </tr>
                                 ) : (
                                     orders.map((order) => (
-                                        <tr key={order.id_pesanan} className="hover:bg-green-50/30 transition-colors group cursor-pointer" onClick={() => handleOpenDetail(order)}>
+                                        <tr key={order.id_pesanan} className="transition-colors">
                                             <td className="px-4 md:px-8 py-4 md:py-6">
-                                                <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg group-hover:bg-[#1a8245] group-hover:text-white transition-all text-xs">
+                                                <span className="font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg text-xs">
                                                     #{order.id_pesanan}
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 group-hover:text-[#1a8245] transition-colors text-sm">{order.data_customer.nama}</span>
+                                                    <span className="font-black text-gray-900 text-sm">{order.data_customer.nama}</span>
                                                     <span className="text-[10px] text-gray-400 font-medium">{order.data_customer.email}</span>
                                                 </div>
                                             </td>

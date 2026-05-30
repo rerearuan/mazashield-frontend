@@ -229,7 +229,7 @@ export default function Sidebar() {
     <>
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[#1a8245] flex items-center justify-between px-4 shadow-lg">
-        <Link href="/admin" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
             <Image src={logo} alt="Logo" width={24} height={24} className="object-contain" unoptimized />
           </div>
@@ -257,7 +257,7 @@ export default function Sidebar() {
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         {/* Header */}
         <div className="p-6 border-b border-[#2a9d5f] flex-shrink-0 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
               <Image
                 src={logo}
