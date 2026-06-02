@@ -28,15 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${plusJakartaSans.variable} ${poppins.variable} antialiased`}
       >
         <Toaster
           position="top-right"
           toastOptions={{
             className: 'premium-toast',
-            duration: 4000,
+            duration: 2500,
             style: {
               background: 'rgba(255, 255, 255, 0.8)',
               backdropFilter: 'blur(10px)',

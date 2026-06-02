@@ -310,9 +310,9 @@ export default function VerifikasiPembayaranPage() {
             {/* Proof Modal */}
             {selectedPayment && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white/90 backdrop-blur-xl border border-white/20 rounded-[32px] p-6 md:p-8 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Detail Pembayaran #{selectedPayment.id}</h2>
+                    <div className="bg-white border border-gray-100 rounded-[24px] md:rounded-[32px] p-5 md:p-8 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-start gap-4 mb-6 md:mb-8">
+                            <h2 className="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">Detail Pembayaran #{selectedPayment.id}</h2>
                             <button
                                 onClick={() => { setSelectedPayment(null); setCatatanVerifikasi(""); }}
                                 className="text-gray-400 hover:text-gray-900 bg-gray-100/50 hover:bg-gray-200 rounded-full p-2 transition-all w-10 h-10 flex items-center justify-center"
@@ -323,47 +323,47 @@ export default function VerifikasiPembayaranPage() {
                         </div>
                         
                         <div className="space-y-5 mb-8">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Customer</p>
                                     <p className="font-bold text-gray-900">{selectedPayment.customer_name || "-"}</p>
                                 </div>
-                                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tipe / Order</p>
+                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Tipe / Order</p>
                                     <p className="font-bold text-gray-900">{ORDER_TYPE_LABELS[selectedPayment.order_type] || selectedPayment.order_type} #{selectedPayment.order_id}</p>
                                 </div>
                             </div>
                             
-                            <div className="bg-[#1a8245]/5 p-5 rounded-2xl border border-[#1a8245]/10 flex items-center justify-between">
+                            <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex items-center justify-between shadow-sm">
                                 <div>
                                     <p className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-1">Nominal Pembayaran</p>
-                                    <p className="text-3xl font-black text-[#1a8245]">{formatRupiah(selectedPayment.nominal_pembayaran)}</p>
+                                    <p className="text-2xl md:text-3xl font-black text-green-950 break-words">{formatRupiah(selectedPayment.nominal_pembayaran)}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 border border-gray-100 rounded-2xl">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Bank Pengirim</p>
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Bank Pengirim</p>
                                     <p className="font-bold text-gray-900">{selectedPayment.bank_pengirim}</p>
                                 </div>
                                 <div className="p-4 border border-gray-100 rounded-2xl">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">No. Rekening</p>
-                                    <p className="font-bold text-gray-900">{selectedPayment.nomor_rekening_pengirim}</p>
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">No. Rekening</p>
+                                    <p className="font-bold text-gray-900 break-words">{selectedPayment.nomor_rekening_pengirim}</p>
                                 </div>
-                                <div className="p-4 border border-gray-100 rounded-2xl">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nama Pengirim</p>
+                                <div className="p-4 border border-gray-100 rounded-2xl sm:col-span-2">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Nama Pengirim</p>
                                     <p className="font-bold text-gray-900">{selectedPayment.nama_pengirim || "-"}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 border border-gray-100 rounded-2xl">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Tanggal & Waktu Transfer</p>
                                     <p className="font-bold text-gray-900 text-xs">{selectedPayment.tanggal_transfer} {selectedPayment.waktu_transfer}</p>
                                 </div>
-                                <div className="p-4 border border-green-100 rounded-2xl bg-green-50/20">
+                                <div className="p-4 border border-green-100 rounded-2xl bg-green-50">
                                     <p className="text-[10px] font-black text-[#1a8245] uppercase tracking-widest mb-1">Input Oleh</p>
-                                    <p className="font-bold text-[#1a8245]">{selectedPayment.created_by_name || "Sistem"}</p>
+                                    <p className="font-bold text-[#14532d]">{selectedPayment.created_by_name || "Sistem"}</p>
                                 </div>
                             </div>
 
@@ -388,7 +388,7 @@ export default function VerifikasiPembayaranPage() {
                         </div>
 
                         {selectedPayment.status === "Waiting" ? (
-                            <div className="flex gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4">
                                 <button
                                     disabled={verifying}
                                     onClick={() => handleVerify(selectedPayment.id, true)}

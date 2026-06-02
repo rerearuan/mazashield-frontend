@@ -120,8 +120,8 @@ export default function ManajemenInvestTernakPage() {
 
             {/* Filters */}
             <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-6 md:p-7 mb-10">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-5">
-                    <div className="md:col-span-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
+                    <div>
                         <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Status Pesanan</label>
                         <select
                             value={filters.statusFilter}
@@ -134,7 +134,7 @@ export default function ManajemenInvestTernakPage() {
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
-                    <div className="md:col-span-1">
+                    <div>
                         <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Dari Tanggal</label>
                         <input
                             type="date"
@@ -144,7 +144,7 @@ export default function ManajemenInvestTernakPage() {
                             className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
                         />
                     </div>
-                    <div className="md:col-span-1">
+                    <div>
                         <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Sampai Tanggal</label>
                         <input
                             type="date"
@@ -154,7 +154,7 @@ export default function ManajemenInvestTernakPage() {
                             className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl outline-none font-semibold text-sm text-gray-900 shadow-sm"
                         />
                     </div>
-                    <div className="md:col-span-1 flex items-end">
+                    <div className="flex items-end">
                         <Button
                             variant="secondary"
                             size="md"

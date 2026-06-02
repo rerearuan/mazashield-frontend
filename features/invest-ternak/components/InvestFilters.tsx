@@ -102,7 +102,7 @@ export default function InvestFilters({ filters }: InvestFiltersProps) {
                         onChange={(e) => filters.setStatusFilter(e.target.value)}
                         className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-semibold text-sm transition-all appearance-none text-gray-900 shadow-sm"
                     >
-                        <option value="all">Semua Status</option>
+                        <option value="all">All Status</option>
                         <option value="Open">Open</option>
                         <option value="Ongoing">Ongoing</option>
                         <option value="Closed">Closed</option>
