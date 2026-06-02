@@ -216,13 +216,13 @@ export default function LaporanInvestasiPage() {
       </div>
 
       {/* Customer Filter and Export Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center mb-6 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          <span className="text-xs font-black text-gray-400 uppercase tracking-wider whitespace-nowrap">Filter Customer:</span>
+      <div className="flex flex-col lg:flex-row gap-3 justify-between items-stretch lg:items-center mb-6 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full lg:w-auto min-w-0">
+          <span className="text-xs font-black text-gray-500 uppercase tracking-wider whitespace-nowrap">Filter Customer:</span>
           <select 
             value={selectedCustomer} 
             onChange={e => { setSelectedCustomer(e.target.value); setSelectedId(null); setLaporan(null); }}
-            className="px-3 py-2 text-xs font-bold border border-gray-200 rounded-xl outline-none bg-gray-50 focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+            className="w-full sm:w-auto min-w-0 px-3 py-2 text-xs font-bold border border-gray-200 rounded-xl outline-none bg-gray-50 text-gray-900 focus:ring-2 focus:ring-emerald-400 cursor-pointer"
           >
             <option value="">Semua Customer</option>
             {uniqueCustomers.map(custName => (
@@ -231,9 +231,9 @@ export default function LaporanInvestasiPage() {
           </select>
         </div>
 
-        <div className="flex gap-2 w-full sm:w-auto justify-end">
+        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:justify-end">
           <button onClick={() => exportCSV(filteredCustomerOrders)} disabled={filteredCustomerOrders.length === 0}
-            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-sm">
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-sm">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round"/></svg>
             Export CSV
           </button>
@@ -245,7 +245,7 @@ export default function LaporanInvestasiPage() {
               }
             }} 
             disabled={!selectedCustomer || filteredCustomerOrders.length === 0}
-            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 disabled:opacity-40 transition-colors shadow-sm">
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 disabled:opacity-40 transition-colors shadow-sm">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round"/></svg>
             Export PDF per Customer
           </button>
@@ -263,7 +263,7 @@ export default function LaporanInvestasiPage() {
             </div>
           </div>
 
-          <div className="overflow-y-auto flex-1 max-h-[65vh] divide-y divide-gray-200">
+          <div className="overflow-y-auto flex-1 max-h-[60vh] xl:max-h-[65vh] divide-y divide-gray-200">
             {loadingOrders
               ? <div className="p-4 space-y-3"><Sk c="h-20"/><Sk c="h-20"/><Sk c="h-20"/></div>
               : filtered.length === 0
@@ -301,7 +301,7 @@ export default function LaporanInvestasiPage() {
         {/* ── Right: detail ── */}
         <div className="xl:col-span-2 space-y-5">
           {!selectedId && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 flex flex-col items-center text-center">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 sm:p-16 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round"/></svg>
               </div>
@@ -316,13 +316,13 @@ export default function LaporanInvestasiPage() {
             <>
               {/* ── Info card ── */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                  <div className="min-w-0">
                     <p className="text-xs text-gray-400 mb-0.5">Laporan untuk</p>
                     <h2 className="text-lg font-black text-gray-900">{selectedOrder?.data_customer?.nama ?? "—"}</h2>
-                    <p className="text-xs text-gray-400">{selectedOrder?.data_customer?.email} · Pesanan #{laporan.id_pesanan}</p>
+                    <p className="text-xs text-gray-400 break-words">{selectedOrder?.data_customer?.email} · Pesanan #{laporan.id_pesanan}</p>
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex flex-col sm:items-end gap-2 shrink-0">
                     <div className="flex items-center gap-2">
                       <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[laporan.status_pesanan] ?? "bg-gray-400"}`} />
                       <span className={`text-xs font-bold px-3 py-1 rounded-full border ${STATUS_COLOR[laporan.status_pesanan] ?? ""}`}>{laporan.status_pesanan}</span>
@@ -339,7 +339,7 @@ export default function LaporanInvestasiPage() {
                 </div>
                 <div className="space-y-4 divide-y divide-gray-100">
                   {laporan.info_invest.map((inv, i) => (
-                    <div key={i} className={`grid grid-cols-2 sm:grid-cols-4 gap-3 ${i !== 0 ? 'pt-4' : ''}`}>
+                    <div key={i} className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 ${i !== 0 ? 'pt-4' : ''}`}>
                     {[
                       { label: "Paket", value: inv.nama },
                       { label: "Berat Awal", value: inv.berat_awal ? `${inv.berat_awal} kg` : "—" },
@@ -348,7 +348,7 @@ export default function LaporanInvestasiPage() {
                     ].map(f => (
                       <div key={f.label} className="bg-gray-50 rounded-xl p-3">
                         <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">{f.label}</p>
-                        <p className="text-sm font-bold text-gray-800 mt-0.5 truncate">{f.value}</p>
+                        <p className="text-sm font-bold text-gray-800 mt-0.5 break-words">{f.value}</p>
                       </div>
                     ))}
                   </div>
@@ -358,7 +358,7 @@ export default function LaporanInvestasiPage() {
 
               {/* ── Berat chart ── */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div>
                     <h2 className="text-sm font-bold text-gray-800">Perkembangan Berat Bulanan</h2>
                     <p className="text-xs text-gray-400 mt-0.5">Harga/kg: {fmtF(laporan.harga_jual_per_kg)} · {laporan.histori_berat.length} entri</p>
@@ -373,7 +373,7 @@ export default function LaporanInvestasiPage() {
                 <BeratChart data={laporan.histori_berat} />
                 {laporan.histori_berat.length > 0 && (
                   <div className="mt-4 overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full min-w-[640px] text-sm">
                       <thead><tr className="border-b border-gray-100">
                         <th className="pb-2 text-left text-xs text-gray-400 font-semibold">Tanggal</th>
                         <th className="pb-2 text-right text-xs text-gray-400 font-semibold">Berat (kg)</th>
@@ -402,19 +402,19 @@ export default function LaporanInvestasiPage() {
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Tambah Berat Bulanan</h2>
                   <p className="text-xs text-gray-400 mb-4">Setiap input tersimpan sebagai histori · estimasi dihitung otomatis</p>
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="col-span-2 sm:col-span-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <div>
                       <label className="text-xs text-gray-500 mb-1 block font-medium">Tanggal *</label>
                       <input type="date" className={inp}
                         max={new Date().toISOString().split("T")[0]}
                         value={beratForm.tanggal_input} onChange={e => setBeratForm(p => ({ ...p, [e.target.value ? "tanggal_input" : "tanggal_input"]: e.target.value }))} />
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div>
                       <label className="text-xs text-gray-500 mb-1 block font-medium">Berat (kg) *</label>
                       <input type="number" step="0.01" className={inp} placeholder="Contoh: 320.5"
                         value={beratForm.berat_kg} onChange={e => setBeratForm(p => ({ ...p, berat_kg: e.target.value }))} />
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div>
                       <label className="text-xs text-gray-500 mb-1 block font-medium">Harga per Kilo (Rp) *</label>
                       <input type="text" className={inp} placeholder="Contoh: 55.000"
                         value={beratForm.harga_per_kg ? Number(beratForm.harga_per_kg).toLocaleString("id-ID") : ""}
@@ -428,12 +428,12 @@ export default function LaporanInvestasiPage() {
                         </p>
                       )}
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div>
                       <label className="text-xs text-gray-500 mb-1 block font-medium">Target Panen (kg)</label>
                       <input type="number" step="0.01" className={inp} placeholder="Contoh: 500"
                         value={beratForm.target_berat_kg} onChange={e => setBeratForm(p => ({ ...p, target_berat_kg: e.target.value }))} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="text-xs text-gray-500 mb-1 block font-medium">Keterangan / Deskripsi (opsional)</label>
                         <textarea className={`${inp} min-h-[80px] resize-y`} placeholder="Contoh: Berat badan naik setelah pemberian vitamin tambahan..."
                           value={beratForm.keterangan} onChange={e => setBeratForm(p => ({ ...p, keterangan: e.target.value }))} />
@@ -452,7 +452,7 @@ export default function LaporanInvestasiPage() {
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                   <h2 className="text-sm font-bold text-gray-800 mb-0.5">Perhitungan Akhir Investasi</h2>
                   <p className="text-xs text-gray-400 mb-4">Laba &amp; bagi hasil dihitung otomatis setelah disimpan</p>
-                  <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {[
                       { key: "harga_jual_aktual", label: "Harga Jual Aktual (Rp) *" },
                       { key: "biaya_pakan", label: "Biaya Pakan (Rp) *" },
@@ -460,7 +460,7 @@ export default function LaporanInvestasiPage() {
                       { key: "biaya_obat_vitamin", label: "Biaya Obat & Vitamin (Rp) *" },
                       { key: "fee_marketing", label: "Fee Marketing (Rp) *" },
                     ].map(f => (
-                      <div key={f.key} className="col-span-2 sm:col-span-1">
+                      <div key={f.key}>
                         <label className="text-xs text-gray-500 mb-1 block font-medium">{f.label}</label>
                         <input 
                           type="number" 
@@ -473,7 +473,7 @@ export default function LaporanInvestasiPage() {
                     ))}
                   </div>
                   {laporan.laba_bersih != null && (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                       {[
                         { label: "Laba Kotor", v: laporan.laba_kotor, cls: "bg-blue-50 text-blue-700" },
                         { label: "Total Biaya", v: laporan.total_biaya, cls: "bg-orange-50 text-orange-700" },
@@ -495,7 +495,7 @@ export default function LaporanInvestasiPage() {
                       Laporan Telah Difinalisasi (Simpan Akhir)
                     </div>
                   ) : (
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <button 
                         onClick={() => submitAkhir(false)} 
                         disabled={savingAkhir}

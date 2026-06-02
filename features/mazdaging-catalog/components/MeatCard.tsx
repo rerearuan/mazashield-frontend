@@ -52,6 +52,12 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
     };
 
     const imageUrl = getImageUrl(item.foto);
+    const statusLabel = item.status_daging === "Tersedia" ? "Available" : item.status_daging === "Terjual" ? "Sold" : item.status_daging;
+    const statusClass = item.status_daging === "Tersedia"
+        ? "bg-green-100 text-green-700 border-green-200"
+        : item.status_daging === "Terjual"
+            ? "bg-red-100 text-red-700 border-red-200"
+            : "bg-amber-100 text-amber-700 border-amber-200";
 
     return (
         <div className="group bg-white/80 backdrop-blur-md rounded-[32px] shadow-sm border border-white/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -66,14 +72,9 @@ export default function MeatCard({ item, userRole, onEdit, onDelete }: MeatCardP
                 />
                 <div className="absolute top-4 right-4">
                     <span
-                        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${item.status_daging === "Tersedia"
-                                ? "bg-green-500 text-white"
-                                : item.status_daging === "Terjual"
-                                    ? "bg-red-500 text-white"
-                                    : "bg-blue-500 text-white"
-                            }`}
+                        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg border ${statusClass}`}
                     >
-                        {item.status_daging}
+                        {statusLabel}
                     </span>
                 </div>
                 <div className="absolute top-4 left-4">

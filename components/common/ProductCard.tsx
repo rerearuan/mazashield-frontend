@@ -80,6 +80,19 @@ export default function ProductCard({
   buttonColor = "#1a8245",
   onButtonClick,
 }: ProductCardProps) {
+  const normalizedStock = stock?.toLowerCase();
+  const stockLabel = normalizedStock === "tersedia"
+    ? "Available"
+    : normalizedStock === "terjual" || normalizedStock === "habis" || normalizedStock === "sold out"
+      ? "Sold"
+      : stock;
+  const stockClass = normalizedStock === "available" || normalizedStock === "tersedia"
+    ? "bg-green-100 text-green-700 border-green-200"
+    : normalizedStock === "sold" || normalizedStock === "sold out" || normalizedStock === "terjual" || normalizedStock === "habis"
+      ? "bg-red-100 text-red-700 border-red-200"
+      : "bg-amber-100 text-amber-700 border-amber-200";
+  const priceLabel = fallbackType === "meat" ? "HARGA DAGING" : fallbackType === "cow" ? "HARGA TERNAK" : "HARGA";
+
   return (
     <div className="bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group">
       <div className="bg-gray-50 h-[260px] relative overflow-hidden">
@@ -100,12 +113,8 @@ export default function ProductCard({
         )}
         {stock && (
             <div className="absolute top-4 right-4 z-10">
-                <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg border ${
-                    stock.toLowerCase() === 'available' || stock.toLowerCase() === 'tersedia' ? 'bg-green-100 text-green-700 border-green-200' :
-                    stock.toLowerCase() === 'sold out' || stock.toLowerCase() === 'habis' ? 'bg-red-100 text-red-700 border-red-200' :
-                    'bg-amber-100 text-amber-700 border-amber-200'
-                }`}>
-                    {stock}
+                <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg border ${stockClass}`}>
+                    {stockLabel}
                 </span>
             </div>
         )}
@@ -141,7 +150,7 @@ export default function ProductCard({
           <div className="flex-1"></div>
           {price && (
             <div className="text-right">
-              <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1 opacity-70">Investment Price</p>
+              <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[8px] mb-1 opacity-70">{priceLabel}</p>
               <p className="text-[#1a8245] font-black text-2xl tracking-tighter">{price}</p>
             </div>
           )}

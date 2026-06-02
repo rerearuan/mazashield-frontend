@@ -29,6 +29,7 @@ export default function CattleModal({
         jenis: "Sapi",
         kelas: "A",
         berat: "",
+        tanggal_penimbangan: new Date().toISOString().split("T")[0],
         tanggal_lahir: "",
         harga: "",
         deskripsi: "",
@@ -44,6 +45,7 @@ export default function CattleModal({
                 jenis: selectedItem.jenis,
                 kelas: selectedItem.kelas,
                 berat: selectedItem.berat.toString(),
+                tanggal_penimbangan: selectedItem.tanggal_penimbangan || new Date().toISOString().split("T")[0],
                 tanggal_lahir: selectedItem.tanggal_lahir || "",
                 harga: selectedItem.harga.toString(),
                 deskripsi: selectedItem.deskripsi,
@@ -56,9 +58,8 @@ export default function CattleModal({
                 jenis: "Sapi",
                 kelas: "A",
                 berat: "",
+                tanggal_penimbangan: new Date().toISOString().split("T")[0],
                 tanggal_lahir: "",
-
-
                 harga: "",
                 deskripsi: "",
                 status_ternak: "Available",
@@ -76,6 +77,10 @@ export default function CattleModal({
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 if (key === "id_ternak") return;
+                if (key === "berat") {
+                    data.append(key, value.replace(",", "."));
+                    return;
+                }
                 data.append(key, value);
             });
 
@@ -161,11 +166,17 @@ export default function CattleModal({
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Berat (Kg) <span className="text-red-500">*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             required
-                            min="0"
+                            inputMode="decimal"
                             value={formData.berat}
-                            onChange={(e) => setFormData({ ...formData, berat: e.target.value })}
+                            onChange={(e) => {
+                                const normalizedValue = e.target.value.replace(",", ".");
+                                if (/^\d*\.?\d{0,2}$/.test(normalizedValue)) {
+                                    setFormData({ ...formData, berat: normalizedValue });
+                                }
+                            }}
+                            placeholder="Contoh: 325.5"
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold"
                         />
                     </div>
@@ -236,12 +247,20 @@ export default function CattleModal({
                                 />
                             </div>
                         )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                            className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-[#1a8245] file:text-white hover:file:opacity-90 cursor-pointer bg-gray-50/50 p-2 rounded-[22px] border border-gray-100/50"
-                        />
+                        <div className="flex items-center gap-3 rounded-[28px] bg-[#007532] p-2 shadow-lg shadow-green-900/10">
+                            <label className="shrink-0 rounded-[24px] bg-[#1a8245] px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-[#156a38] cursor-pointer transition-colors">
+                                Choose File
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                                    className="sr-only"
+                                />
+                            </label>
+                            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-950">
+                                {uploadFile?.name || "No file chosen"}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

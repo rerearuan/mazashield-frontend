@@ -151,8 +151,8 @@ export default function MeatModal({
                             onChange={(e) => setFormData({ ...formData, status_daging: e.target.value })}
                             className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-[#1a8245] outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
-                            <option value="Tersedia">Tersedia</option>
-                            <option value="Terjual">Terjual</option>
+                            <option value="Tersedia">Available</option>
+                            <option value="Terjual">Sold</option>
                             <option value="Pre Order">Pre Order</option>
                         </select>
                     </div>
@@ -187,12 +187,20 @@ export default function MeatModal({
                                 />
                             </div>
                         )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                            className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-[#1a8245] file:text-white hover:file:opacity-90 cursor-pointer bg-gray-50/50 p-2 rounded-[22px] border border-gray-100/50"
-                        />
+                        <div className="flex items-center gap-3 rounded-[28px] bg-[#007532] p-2 shadow-lg shadow-green-900/10">
+                            <label className="shrink-0 rounded-[24px] bg-[#1a8245] px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-[#156a38] cursor-pointer transition-colors">
+                                Choose File
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                                    className="sr-only"
+                                />
+                            </label>
+                            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-950">
+                                {uploadFile?.name || "No file chosen"}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

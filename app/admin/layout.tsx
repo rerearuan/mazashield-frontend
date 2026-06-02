@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "@/components/admin/Sidebar";
-import { Toaster } from "react-hot-toast";
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -82,23 +81,6 @@ export default function AdminLayout({
             {children}
           </div>
         </main>
-
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            className: 'premium-toast',
-            duration: 4000,
-            style: {
-              background: 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(10px)',
-              color: '#1e293b',
-              padding: '16px 24px',
-              borderRadius: '24px',
-              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            },
-          }}
-        />
       </div>
     </AdminGuard>
   );

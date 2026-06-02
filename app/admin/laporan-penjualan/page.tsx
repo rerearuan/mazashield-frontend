@@ -78,10 +78,10 @@ export default function LaporanPenjualanPage() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2 text-[#1a8245]">Laporan Penjualan</h1>
           <p className="text-sm text-gray-500 font-medium mt-0.5">Pesanan selesai · Mazdafarm, Mazdaging, Invest Ternak</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 w-full md:w-auto">
           <button
             onClick={() => exportCSV(allRows)}
-            className="flex items-center gap-1.5 px-6 py-2 bg-[#1a8245] hover:bg-[#156a38] text-white text-[10px] font-black uppercase tracking-[0.16em] rounded-xl transition-all duration-300 shadow-xl shadow-green-100/50 h-14 border border-[#1a8245] whitespace-nowrap cursor-pointer"
+            className="flex w-full md:w-auto items-center justify-center gap-1.5 px-6 py-2 bg-[#1a8245] hover:bg-[#156a38] text-white text-[10px] font-black uppercase tracking-[0.16em] rounded-xl transition-all duration-300 shadow-xl shadow-green-100/50 h-14 border border-[#1a8245] whitespace-nowrap cursor-pointer"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-1">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" />
@@ -105,8 +105,8 @@ export default function LaporanPenjualanPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white/85 backdrop-blur-xl rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-6 md:p-7 mb-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+      <div className="bg-white/85 backdrop-blur-xl rounded-[28px] md:rounded-[32px] shadow-lg shadow-green-900/5 border border-white/50 p-4 sm:p-6 md:p-7 mb-8 md:mb-10 overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           <div>
             <label className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1a8245] mb-2 block">Dari Tanggal</label>
             <input 
@@ -125,7 +125,7 @@ export default function LaporanPenjualanPage() {
               onChange={e => { setEndDate(e.target.value); setPage(1); }} 
             />
           </div>
-          <div className="flex items-end">
+          <div className="flex items-end sm:col-span-2 lg:col-span-1">
             <button 
               onClick={reset} 
               className="rounded-xl h-[42px] bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-black text-[10px] uppercase tracking-[0.16em] shadow-sm w-full transition-colors cursor-pointer"
@@ -137,7 +137,8 @@ export default function LaporanPenjualanPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto p-1.5 bg-gray-100/80 rounded-2xl max-w-max border border-gray-200">
+      <div className="w-full overflow-x-auto mb-6">
+        <div className="flex gap-2 p-1.5 bg-gray-100/80 rounded-2xl min-w-max sm:min-w-0 sm:max-w-max border border-gray-200">
         {[
           { id: "Mazdafarm", label: "Mazdafarm" },
           { id: "Mazdaging", label: "Mazdaging" },
@@ -158,6 +159,7 @@ export default function LaporanPenjualanPage() {
             </button>
           );
         })}
+        </div>
       </div>
 
       {/* Table */}
@@ -198,7 +200,7 @@ export default function LaporanPenjualanPage() {
               </table>
             </div>
             {result && result.pagination.total_pages > 1 && (
-              <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+              <div className="px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <p className="text-xs text-gray-400">Hal. {result.pagination.page} / {result.pagination.total_pages} · {result.pagination.total_items} item</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs font-bold border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 cursor-pointer">← Prev</button>
