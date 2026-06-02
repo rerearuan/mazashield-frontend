@@ -9,7 +9,7 @@ export const catalogService = {
         apiFetch("/sales/mazdafarm", { method: "POST", body: formData }),
 
     updateTernak: (id: number | string, formData: FormData) =>
-        apiFetch(`/sales/mazdafarm/${id}`, { method: "PUT", body: formData }),
+        apiFetch(`/sales/mazdafarm/${id}`, { method: "PATCH", body: formData }),
 
     deleteTernak: (id: number | string) =>
         apiFetch(`/sales/mazdafarm/${id}`, { method: "DELETE" }),

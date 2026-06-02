@@ -28,6 +28,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
   const [submitting, setSubmitting] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState<string | null>(null);
+  const [signatureFileName, setSignatureFileName] = useState("");
 
   const [role, setRole] = useState("");
 
@@ -39,6 +40,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
     setStatusPesanan(order.status_pesanan);
     setCatatan(order.catatan || "");
     setSignatureImage(null);
+    setSignatureFileName("");
   }, [order]);
 
   const isCompletedOrCancelled = order.status_pesanan === 'Completed' || order.status_pesanan === 'Cancelled';
@@ -94,7 +96,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         {/* Ringkasan Pembayaran — full width, below tanggal */}
         <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3">
           <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em]">Ringkasan Pembayaran</label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-xl p-3 border border-gray-100">
               <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Tagihan</p>
               <p className="text-sm font-black text-gray-900">Rp {parseFloat(order.tagihan).toLocaleString('id-ID')}</p>
@@ -120,8 +122,8 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Log Pembayaran</label>
               {order.log_pembayaran.map((log: any) => (
                 <div key={log.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-1">
-                  <div className="flex justify-between items-start">
-                    <div>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                    <div className="min-w-0">
                       <p className="text-[10px] font-black text-gray-900">Rp {parseFloat(log.nominal_pembayaran).toLocaleString('id-ID')}</p>
                       <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">via {log.bank_pengirim} ({log.nama_pengirim || '-'})</p>
                       <p className="text-[8px] text-gray-400 font-semibold italic">Input oleh: {log.created_by_name || 'Sistem'}</p>
@@ -158,12 +160,12 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           <label className="block text-[10px] font-black text-[#1a8245] uppercase tracking-[0.2em] mb-2">Item Ternak</label>
           <div className="space-y-2 border border-gray-100 rounded-xl overflow-hidden">
             {order.daftar_ternak?.map((t: any) => (
-              <div key={t.id_ternak} className="flex justify-between items-center bg-white p-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-                <div>
+              <div key={t.id_ternak} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 bg-white p-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+                <div className="min-w-0">
                   <p className="font-bold text-sm text-gray-900">{t.nama}</p>
                   <p className="text-[10px] text-gray-400 font-medium italic">{t.id_ternak} — {t.berat}kg (Berat Pesanan: 1kg)</p>
                 </div>
-                <p className="font-black text-sm text-gray-900">Rp {parseFloat(t.harga).toLocaleString('id-ID')}</p>
+                <p className="font-black text-sm text-gray-900 sm:text-right">Rp {parseFloat(t.harga).toLocaleString('id-ID')}</p>
               </div>
             ))}
           </div>
@@ -204,25 +206,34 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
         </div>
 
         {/* Signature Upload Field */}
-        <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100/50 space-y-2">
+        <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100/50 space-y-3">
           <label className="block text-[10px] font-black text-amber-800 uppercase tracking-[0.2em]">
             Foto Tanda Tangan untuk Invoice
           </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setSignatureImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
-            className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-wider file:bg-[#1a8245] file:text-white hover:file:opacity-90 cursor-pointer"
-          />
+          <div className="flex items-center gap-3 rounded-[28px] bg-[#007532] p-2 shadow-lg shadow-green-900/10">
+            <label className="shrink-0 rounded-[24px] bg-[#1a8245] px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-[#156a38] cursor-pointer transition-colors">
+              Choose File
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSignatureFileName(file.name);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setSignatureImage(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="sr-only"
+              />
+            </label>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-950">
+              {signatureFileName || "No file chosen"}
+            </span>
+          </div>
           {signatureImage && (
             <div className="mt-2 p-2 bg-white rounded-lg border border-amber-100 inline-block">
               <p className="text-[9px] text-amber-800 font-bold uppercase tracking-wider mb-1">Preview:</p>
@@ -231,7 +242,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onSuccess }:
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-4">
           <Button type="button" variant="outline" onClick={() => generateMazdafarmInvoice(order, order.data_customer, order.daftar_ternak, signatureImage || undefined)} className="border-gray-200 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
             <Icons.Download className="w-4 h-4" /> Unduh Invoice
           </Button>

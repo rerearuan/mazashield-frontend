@@ -34,9 +34,9 @@ export default function MeatFilters({ filters }: MeatFiltersProps) {
                         onChange={(e) => filters.setFilterStatus(e.target.value)}
                         className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1a8245] focus:bg-white focus:border-transparent outline-none font-semibold text-sm transition-all appearance-none shadow-sm text-gray-900"
                     >
-                        <option value="all">Semua Status</option>
-                        <option value="Tersedia">Tersedia</option>
-                        <option value="Terjual">Terjual</option>
+                        <option value="all">All Status</option>
+                        <option value="Tersedia">Available</option>
+                        <option value="Terjual">Sold</option>
                         <option value="Pre Order">Pre Order</option>
                     </select>
                 </div>

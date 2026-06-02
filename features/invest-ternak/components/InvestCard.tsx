@@ -64,11 +64,11 @@ export default function InvestCard({ item, userRole, onEdit, onDelete }: InvestC
                 />
                 <div className="absolute top-4 right-4">
                     <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${item.status_investernak === "Open"
-                                ? "bg-green-500 text-white"
-                                : item.status_investernak === "Ongoing"
-                                    ? "bg-amber-500 text-white"
-                                    : "bg-gray-500 text-white"
+                        className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg border ${item.status_investernak === "Open"
+                                ? "bg-green-100 text-green-700 border-green-200"
+                                : item.status_investernak === "Closed"
+                                    ? "bg-red-100 text-red-700 border-red-200"
+                                    : "bg-amber-100 text-amber-700 border-amber-200"
                             }`}
                     >
                         {item.status_investernak}

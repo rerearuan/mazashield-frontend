@@ -370,12 +370,20 @@ export default function InvestModal({
                                 />
                             </div>
                         )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                            className="w-full text-xs text-gray-400 bg-gray-50/50 p-3 rounded-[20px] border border-gray-100"
-                        />
+                        <div className="flex items-center gap-3 rounded-[28px] bg-[#007532] p-2 shadow-lg shadow-green-900/10">
+                            <label className="shrink-0 rounded-[24px] bg-[#1a8245] px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-[#156a38] cursor-pointer transition-colors">
+                                Choose File
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                                    className="sr-only"
+                                />
+                            </label>
+                            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-950">
+                                {uploadFile?.name || "No file chosen"}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="space-y-2 md:col-span-3">

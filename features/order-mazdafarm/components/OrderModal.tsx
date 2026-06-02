@@ -197,19 +197,19 @@ export default function OrderModal({ isOpen, onClose, onSuccess }: OrderModalPro
                     <div 
                       key={c.id_ternak}
                       onClick={() => toggleCattle(c.id_ternak)}
-                      className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-all ${
+                      className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-lg cursor-pointer transition-all ${
                         selectedCattleIds.includes(c.id_ternak) 
                         ? 'bg-[#1a8245] text-white shadow-md' 
                         : 'bg-white hover:bg-gray-100 border border-gray-100'
                       }`}
                     >
-                      <div>
-                        <p className="font-bold text-sm">{c.nama}</p>
-                        <p className={`text-[10px] ${selectedCattleIds.includes(c.id_ternak) ? 'text-white/80' : 'text-gray-400'}`}>
+                      <div className="min-w-0">
+                        <p className={`font-bold text-sm ${selectedCattleIds.includes(c.id_ternak) ? 'text-white' : 'text-[#14532d]'}`}>{c.nama}</p>
+                        <p className={`text-[10px] ${selectedCattleIds.includes(c.id_ternak) ? 'text-white/80' : 'text-gray-600'}`}>
                           {c.id_ternak} — {c.jenis} — {c.berat}kg
                         </p>
                       </div>
-                      <p className="font-black text-xs">Rp {parseFloat(c.harga).toLocaleString('id-ID')}</p>
+                      <p className={`font-black text-xs sm:text-right ${selectedCattleIds.includes(c.id_ternak) ? 'text-white' : 'text-[#14532d]'}`}>Rp {parseFloat(c.harga).toLocaleString('id-ID')}</p>
                     </div>
                   ))
                 )}
