@@ -20,6 +20,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "PT Mazashi Semuda Farm",
   description: "Membangun Masa Depan Peternakan yang Lebih Modern",
+  icons: {
+    icon: "/LogoMazdafarm.png",
+  },
 };
 
 export default function RootLayout({
